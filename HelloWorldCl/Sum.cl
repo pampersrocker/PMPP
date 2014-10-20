@@ -19,7 +19,7 @@ kernel void sum(global int* in, global int* count, global int* tmpSums, global i
 	} while(localCount > 1);
 	
 	barrier(CLK_GLOBAL_MEM_FENCE);
-	if(get_global_id(0))
+	if(get_global_id(0)==0)
 	{
 		*out = tmpSums[0];
 	}
@@ -47,7 +47,7 @@ kernel void sum2(global int* in, global int* count, global int* tmpSums, global 
 	
 	barrier(CLK_GLOBAL_MEM_FENCE);
 
-	if(get_global_id(0))
+	if(get_global_id(0)==0)
 	{
 		*out = tmpSums[0];
 	}
