@@ -172,6 +172,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <Intel_OpenCL_Build_Rules Include="HelloWorld_Kernel.cl" />
+    <Intel_OpenCL_Build_Rules Include="Sum.cl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HelloWorld.cpp" />

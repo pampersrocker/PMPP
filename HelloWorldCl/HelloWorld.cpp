@@ -24,6 +24,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <string>
 #include <fstream>
 #include <bpp.hpp>
+#include "Logging/BPPDefaultConsoleLogger.hpp"
 #include "OpenCLProgram.h"
 
 using namespace bpp;
@@ -45,15 +46,14 @@ float summiere(float *f, int size)
 	return f[0];
 }
 
-int main(int argc, char* argv[])
+void RunHelloWorld()
 {
-
 	OpenCLProgram program;
 	program.Initialize( "HelloWorld_Kernel.cl", "helloworld" );
 	string hello = "Hello World";
 	char tmp[ 20 ];
-	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ( hello.size() + 1 )*sizeof( char ),(void *) hello.data());
-	program.AddKernelArg( CL_MEM_WRITE_ONLY, ( hello.size() + 1 )*sizeof( char ));
+	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ( hello.size() + 1 )*sizeof( char ), ( void * ) hello.data() );
+	program.AddKernelArg( CL_MEM_WRITE_ONLY, ( hello.size() + 1 )*sizeof( char ) );
 
 	program.Run();
 
@@ -67,21 +67,130 @@ int main(int argc, char* argv[])
 
 
 	program.Release();
-
-	Benchmarker& benchmarker = Benchmarker::Instance();
 }
 
-BPP_BEGIN_BENCHMARK( OpenCL, CPU)
-BPP_BENCHMARK
+void RunSumTest()
+{
+	OpenCLProgram program;
+	program.Initialize( "Sum.cl", "sum" );
+	vector<int> ints;
+	int size = 512;
+	ints.resize( size );
+	for( size_t i = 0; i < size; i++ )
+	{
+		ints[ i ] = i;
+	}
+	int count = ints.size();
+
+	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ints.size() * sizeof( int ), ( void * ) ints.data() );
+	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( int ), &count );
+	program.AddKernelArg( CL_MEM_READ_WRITE, ( ints.size() / 2 )*sizeof( int ) );
+	program.AddKernelArg( CL_MEM_WRITE_ONLY, sizeof( int ) );
+
+	program.SetFirstWorkSize( ints.size() / 2 );
+
+
+	program.Run();
+
+	int output;
+
+	program.ReadOutput( 3, &output );
+
+	int sum = 0;
+	for( auto it : ints )
+	{
+		sum += it;
+	}
+
+	cout << "Expected Output is: " << sum << std::endl;
+	cout << "Output is: " << output << std::endl;
+
+
+	program.Release();
+}
+
+int main(int argc, char* argv[])
 {
 
+	//RunHelloWorld();
+
+	//RunSumTest();
+
+
+	Benchmarker& benchmarker = Benchmarker::Instance();
+
+	DefaultConsoleLogger logger;
+	benchmarker.AddLogger( &logger );
+
+	benchmarker.Run();
+
+	benchmarker.Log();
+
+	benchmarker.Release();
 }
-BPP_END_BENCHMARK( OpenCL, CPU )
+
+int size = 2048;
+
 
 
 BPP_BEGIN_BENCHMARK( OpenCL, GPU )
+OpenCLProgram program;
+BPP_INITIALIZE_BENCHMARK
+{
+	program.Initialize( "Sum.cl", "sum" );
+	vector<int> ints;
+	ints.resize( size );
+	for( size_t i = 0; i < size; i++ )
+	{
+		ints[ i ] = i;
+	}
+	int count = ints.size();
+
+	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ints.size() * sizeof( int ), ( void * ) ints.data() );
+	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( int ), &count );
+	program.AddKernelArg( CL_MEM_READ_WRITE, ( ints.size() / 2 )*sizeof( int ) );
+	program.AddKernelArg( CL_MEM_WRITE_ONLY, sizeof( int ) );
+
+	program.SetFirstWorkSize( ints.size() / 2 );
+
+
+}
 BPP_BENCHMARK
 {
+	program.Run();
+}
+BPP_RELEASE_BENCHMARK
+{
+	int output;
+	program.ReadOutput( 3, &output );
+	cout << "Output:" << output << std::endl;
+	program.Release();
+}
+BPP_END_BENCHMARK( OpenCL, GPU )
 
+
+BPP_BEGIN_BENCHMARK( OpenCL, CPU )
+vector<int> ints;
+int sum;
+
+BPP_INITIALIZE_BENCHMARK
+{
+	ints.resize( size );
+	for( size_t i = 0; i < size; i++ )
+	{
+		ints[ i ] = i;
+	}
+}
+BPP_BENCHMARK
+{
+	sum = 0;
+	for( auto it : ints )
+	{
+		sum += it;
+	}
+}
+BPP_RELEASE_BENCHMARK
+{
+	cout << "Excpected Output:" << sum<< std::endl;
 }
 BPP_END_BENCHMARK( OpenCL, CPU )
