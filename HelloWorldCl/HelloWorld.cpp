@@ -120,6 +120,8 @@ int main(int argc, char* argv[])
 	Benchmarker& benchmarker = Benchmarker::Instance();
 
 	DefaultConsoleLogger logger;
+	benchmarker.Iterations( 50 );
+
 	benchmarker.AddLogger( &logger );
 
 	benchmarker.Run();
@@ -129,7 +131,7 @@ int main(int argc, char* argv[])
 	benchmarker.Release();
 }
 
-int size = 2048;
+int size = 1024;
 
 
 
@@ -137,6 +139,7 @@ BPP_BEGIN_BENCHMARK( OpenCL, GPU )
 OpenCLProgram program;
 BPP_INITIALIZE_BENCHMARK
 {
+	program = OpenCLProgram();
 	program.Initialize( "Sum.cl", "sum" );
 	vector<int> ints;
 	ints.resize( size );
@@ -146,9 +149,12 @@ BPP_INITIALIZE_BENCHMARK
 	}
 	int count = ints.size();
 
+	vector<int> tmp( ints.size() / 2 );
+
+
 	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ints.size() * sizeof( int ), ( void * ) ints.data() );
 	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( int ), &count );
-	program.AddKernelArg( CL_MEM_READ_WRITE, ( ints.size() / 2 )*sizeof( int ) );
+	program.AddKernelArg( CL_MEM_READ_WRITE , ( ints.size() / 2 )*sizeof( int ));
 	program.AddKernelArg( CL_MEM_WRITE_ONLY, sizeof( int ) );
 
 	program.SetFirstWorkSize( ints.size() / 2 );
@@ -163,10 +169,48 @@ BPP_RELEASE_BENCHMARK
 {
 	int output;
 	program.ReadOutput( 3, &output );
-	cout << "Output:" << output << std::endl;
+	cout << "Output1:" << output << std::endl;
 	program.Release();
 }
 BPP_END_BENCHMARK( OpenCL, GPU )
+
+BPP_BEGIN_BENCHMARK( OpenCL, GPU2 )
+OpenCLProgram program;
+BPP_INITIALIZE_BENCHMARK
+{
+	program = OpenCLProgram();
+	program.Initialize( "Sum.cl", "sum2" );
+	vector<int> ints;
+	ints.resize( size );
+	for( size_t i = 0; i < size; i++ )
+	{
+		ints[ i ] = i;
+	}
+	int count = ints.size();
+
+	vector<int> tmp( ints.size() / 2 );
+
+	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ints.size() * sizeof( int ), ( void * ) ints.data() );
+	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( int ), &count );
+	program.AddKernelArg( CL_MEM_READ_WRITE, ( ints.size() / 2 )*sizeof( int ));
+	program.AddKernelArg( CL_MEM_WRITE_ONLY, sizeof( int ) );
+
+	program.SetFirstWorkSize( ints.size() / 2 );
+
+
+}
+BPP_BENCHMARK
+{
+	program.Run();
+}
+BPP_RELEASE_BENCHMARK
+{
+	int output;
+	program.ReadOutput( 3, &output );
+	cout << "Output2:" << output << std::endl;
+	program.Release();
+}
+BPP_END_BENCHMARK( OpenCL, GPU2 )
 
 
 BPP_BEGIN_BENCHMARK( OpenCL, CPU )
