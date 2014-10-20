@@ -1,5 +1,5 @@
 
-__kernel void sum(__global int* in, __global int* count, __global int* tmpSums, __global int* out)
+kernel void sum(global int* in, global int* count, global int* tmpSums, global int* out)
 { 
 	int threadIdx = get_global_id(0);
 	int localCount = *count;
