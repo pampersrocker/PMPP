@@ -1,0 +1,3 @@
+[submodule "BenchmarkPlusPlus"]
+	path = BenchmarkPlusPlus
+	url = https://github.com/pampersrocker/BenchmarkPlusPlus.git
