@@ -12,28 +12,41 @@ struct KernelArg
 	cl_int* ptr; //for what?
 };
 
+class OpenCLPlatform;
+class OpenCLDevice;
+
 class OpenCLProgram
 {
 public:
 
-	void Initialize( const std::string& fileName, const std::string& functionName );
+	OpenCLProgram();
+	void InitializeCL();
+	void LoadKernel( const std::string& fileName, const std::string& functionName );
 	size_t AddKernelArg(cl_mem_flags flags, size_t size, void* initialData = nullptr, cl_int* = nullptr);
 	void ReadOutput( size_t argIdx, void* output );
 	void SetFirstWorkSize(size_t size);
 	void Release();
 	void Run();
+
+	const std::vector<OpenCLPlatform*>& Platforms() const;
+	void SelectPlatformAndDevice(cl_uint platformId, cl_uint deviceIdx);
+	void SelectPlatformAndDevice(OpenCLPlatform* platform, OpenCLDevice* device);
+	OpenCLPlatform* SelectedPlatform() const;
+	OpenCLDevice* SelectedDevice() const;
+
 protected:
 private:
 
 	std::vector<KernelArg> m_Args;
 
+	std::vector<OpenCLPlatform*> m_Platforms;
 	cl_uint numPlatforms;	//the NO. of platforms
-	cl_platform_id platform;	//the chosen platform
+	cl_uint m_SelectedPlatformIdx;	//the chosen platform
 	cl_int status;
 
 	/*Step 2:Query the platform and choose the first GPU device if has one.Otherwise use the CPU as device.*/
 	cl_uint				numDevices;
-	cl_device_id        *devices;
+	cl_uint m_SelectedDeviceIdx;
 
 	/*Step 3: Create context.*/
 	cl_context context;

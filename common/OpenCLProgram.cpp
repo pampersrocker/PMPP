@@ -2,7 +2,51 @@
 #include "OpenCLProgram.h"
 #include <iostream>
 #include <fstream>
+#include "OpenCLPlatform.h"
+#include "OpenCLDevice.h"
 using namespace std;
+
+
+OpenCLProgram::OpenCLProgram() :
+	m_SelectedPlatformIdx(0),
+	m_SelectedDeviceIdx(0)
+{
+	
+}
+
+
+void OpenCLProgram::InitializeCL()
+{
+	cl_uint platformNumEntries = 10;
+	cl_platform_id platformIds[10];
+	memset(platformIds,0,platformNumEntries);
+	cl_uint platformActualEntries =0;
+	clGetPlatformIDs(platformNumEntries, platformIds, &platformActualEntries);
+
+	for (int i = 0; i < platformActualEntries; i++)
+	{
+		OpenCLPlatform* platform = new OpenCLPlatform(platformIds[i]);
+
+		platform->LoadData();
+
+		cl_uint deviceNumEntries = 10;
+		cl_device_id deviceIds[10];
+		memset(platformIds,0,deviceNumEntries);
+		cl_uint deviceActualEntries =0;
+		clGetDeviceIDs(platform->PlatformId(), CL_DEVICE_TYPE_ALL, deviceNumEntries, deviceIds, &deviceActualEntries);
+
+		for (int i = 0; i < deviceActualEntries; i++)
+		{
+			OpenCLDevice* device = new OpenCLDevice(platform, deviceIds[i]);
+			device->LoadData();
+			platform->AddDevice(device);
+		}
+
+		m_Platforms.push_back(platform);
+	}
+}
+
+
 
 /* convert the kernel file into a string */
 int convertToString( const char *filename, std::string& s )
@@ -35,52 +79,16 @@ int convertToString( const char *filename, std::string& s )
 	return 1;
 }
 
-void OpenCLProgram::Initialize( const std::string& fileName, const std::string& functionName )
+void OpenCLProgram::LoadKernel( const std::string& fileName, const std::string& functionName )
 {
 	this->filename = fileName;
 
-	/*Step1: Getting platforms and choose an available one.*/
-	platform = NULL;	//the chosen platform
-	status = clGetPlatformIDs( 0, NULL, &numPlatforms );
-	if( status != CL_SUCCESS )
-	{
-		cout << "Error: Getting platforms!" << endl;
-		status = 1;
-		return;
-	}
-
-	/*For clarity, choose the first available platform. */
-	if( numPlatforms > 0 )
-	{
-		cl_platform_id* platforms = ( cl_platform_id* ) malloc( numPlatforms* sizeof( cl_platform_id ) );
-		status = clGetPlatformIDs( numPlatforms, platforms, NULL );
-		platform = platforms[ 0 ];
-		free( platforms );
-	}
-
-	/*Step 2:Query the platform and choose the first GPU device if has one.Otherwise use the CPU as device.*/
-	numDevices = 0;
-	status = clGetDeviceIDs( platform, CL_DEVICE_TYPE_GPU, 0, NULL, &numDevices );
-	if( numDevices == 0 )	//no GPU available.
-	{
-		cout << "No GPU device available." << endl;
-		cout << "Choose CPU as default device." << endl;
-		status = clGetDeviceIDs( platform, CL_DEVICE_TYPE_CPU, 0, NULL, &numDevices );
-		devices = ( cl_device_id* ) malloc( numDevices * sizeof( cl_device_id ) );
-		status = clGetDeviceIDs( platform, CL_DEVICE_TYPE_CPU, numDevices, devices, NULL );
-	}
-	else
-	{
-		devices = ( cl_device_id* ) malloc( numDevices * sizeof( cl_device_id ) );
-		status = clGetDeviceIDs( platform, CL_DEVICE_TYPE_GPU, numDevices, devices, NULL );
-	}
-
-
 	/*Step 3: Create context.*/
-	context = clCreateContext( NULL, 1, devices, NULL, NULL, NULL );
+	cl_device_id deviceId= m_Platforms[m_SelectedPlatformIdx]->Devices()[m_SelectedDeviceIdx]->DeviceId();
+	context = clCreateContext( nullptr, 1, &deviceId, nullptr, nullptr, nullptr );
 
 	/*Step 4: Creating command queue associate with the context.*/
-	commandQueue = clCreateCommandQueue( context, devices[ 0 ], 0, NULL );
+	commandQueue = clCreateCommandQueue( context, deviceId, 0, NULL );
 
 	/*Step 5: Create program object */
 	status = convertToString( filename.c_str(), sourceStr );
@@ -89,11 +97,11 @@ void OpenCLProgram::Initialize( const std::string& fileName, const std::string& 
 	program = clCreateProgramWithSource( context, 1, &source, sourceSize, NULL );
 
 	/*Step 6: Build program. */
-	status = clBuildProgram( program, 1, devices, NULL, NULL, NULL );
+	status = clBuildProgram( program, 1, &deviceId, NULL, NULL, NULL );
 	if( status )
 	{
 		char msg[ 120000 ];
-		clGetProgramBuildInfo( program, devices[ 0 ], CL_PROGRAM_BUILD_LOG, sizeof( msg ), msg, NULL );
+		clGetProgramBuildInfo( program, deviceId, CL_PROGRAM_BUILD_LOG, sizeof( msg ), msg, NULL );
 		cerr << "=== build failed ===\n" << msg << endl;
 		getc( stdin );
 		return;
@@ -118,6 +126,13 @@ void OpenCLProgram::Release()
 		clReleaseMemObject( arg.memory );
 	}
 	m_Args.clear();
+
+	for (auto iter = m_Platforms.begin(); iter != m_Platforms.end(); ++iter)
+	{
+		auto* arg = *iter;
+		delete arg;
+	}
+	m_Platforms.clear();
 	status = clReleaseCommandQueue( commandQueue );	//Release  Command queue.
 	status = clReleaseContext( context );				//Release context.
 }
@@ -157,4 +172,42 @@ void OpenCLProgram::ReadOutput( size_t argIdx, void* output )
 	/*Step 11: Read the cout put back to host memory.*/
 	status = clEnqueueReadBuffer( commandQueue, m_Args[argIdx].memory, CL_TRUE, 0, m_Args[argIdx].size, output, 0, NULL, NULL );
 
+}
+
+const std::vector<OpenCLPlatform*>& OpenCLProgram::Platforms() const
+{
+	return m_Platforms;
+}
+
+OpenCLPlatform* OpenCLProgram::SelectedPlatform() const
+{
+	return m_Platforms[m_SelectedPlatformIdx];
+}
+
+void OpenCLProgram::SelectPlatformAndDevice( cl_uint platformId, cl_uint deviceIdx )
+{
+	m_SelectedPlatformIdx = platformId;
+	m_SelectedDeviceIdx = deviceIdx;
+}
+
+void OpenCLProgram::SelectPlatformAndDevice( OpenCLPlatform* platform, OpenCLDevice* device )
+{
+	cl_uint idx=0;
+	for (int i = 0; i < m_Platforms.size(); ++i)
+	{
+		if (platform->PlatformId() == m_Platforms[i]->PlatformId())
+		{
+			idx = i;
+		}
+	}
+	m_SelectedPlatformIdx = idx;
+	idx =0;
+	for (int i = 0; i < m_Platforms[m_SelectedPlatformIdx]->Devices().size(); ++i)
+	{
+		if (device->DeviceId() == m_Platforms[m_SelectedPlatformIdx]->Devices()[i]->DeviceId())
+		{
+			idx = i;
+		}
+	}
+	m_SelectedDeviceIdx = idx;
 }

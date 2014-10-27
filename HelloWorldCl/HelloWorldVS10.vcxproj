@@ -172,10 +172,14 @@
     <Intel_OpenCL_Build_Rules Include="Sum.cl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\common\OpenCLDevice.cpp" />
+    <ClCompile Include="..\common\OpenCLPlatform.cpp" />
     <ClCompile Include="..\common\OpenCLProgram.cpp" />
     <ClCompile Include="HelloWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\common\OpenCLDevice.h" />
+    <ClInclude Include="..\common\OpenCLPlatform.h" />
     <ClInclude Include="..\common\OpenCLProgram.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
