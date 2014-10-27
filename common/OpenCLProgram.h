@@ -32,7 +32,7 @@ private:
 	cl_int status;
 
 	/*Step 2:Query the platform and choose the first GPU device if has one.Otherwise use the CPU as device.*/
-	cl_uint				numDevices = 0;
+	cl_uint				numDevices;
 	cl_device_id        *devices;
 
 	/*Step 3: Create context.*/

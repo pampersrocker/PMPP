@@ -129,6 +129,8 @@ int main(int argc, char* argv[])
 	benchmarker.Log();
 
 	benchmarker.Release();
+
+	std::cin.get();
 }
 
 int size = 1024;

@@ -112,10 +112,12 @@ void OpenCLProgram::Release()
 	/*Step 12: Clean the resources.*/
 	status = clReleaseKernel( kernel );				//Release kernel.
 	status = clReleaseProgram( program );				//Release the program object.
-	for (auto arg : m_Args)
+	for (auto iter = m_Args.begin(); iter != m_Args.end(); ++iter)
 	{
+		auto arg = *iter;
 		clReleaseMemObject( arg.memory );
 	}
+	m_Args.clear();
 	status = clReleaseCommandQueue( commandQueue );	//Release  Command queue.
 	status = clReleaseContext( context );				//Release context.
 }
