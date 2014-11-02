@@ -2,7 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="HelloWorld.cpp" />
-    <ClCompile Include="OpenCLProgram.cpp" />
+    <ClCompile Include="..\common\OpenCLProgram.cpp" />
+    <ClCompile Include="..\common\OpenCLPlatform.cpp" />
+    <ClCompile Include="..\common\OpenCLDevice.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Intel_OpenCL_Build_Rules Include="HelloWorld_Kernel.cl" />
@@ -17,6 +19,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="OpenCLProgram.h" />
+    <ClInclude Include="..\common\OpenCLProgram.h" />
+    <ClInclude Include="..\common\OpenCLPlatform.h" />
+    <ClInclude Include="..\common\OpenCLDevice.h" />
   </ItemGroup>
 </Project>

@@ -25,7 +25,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <fstream>
 #include <bpp.hpp>
 #include "Logging/BPPDefaultConsoleLogger.hpp"
-#include "OpenCLProgram.h"
+#include "..\common\OpenCLProgram.h"
 
 using namespace bpp;
 
@@ -49,7 +49,7 @@ float summiere(float *f, int size)
 void RunHelloWorld()
 {
 	OpenCLProgram program;
-	program.Initialize( "HelloWorld_Kernel.cl", "helloworld" );
+	program.LoadKernel( "HelloWorld_Kernel.cl", "helloworld" );
 	string hello = "Hello World";
 	char tmp[ 20 ];
 	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ( hello.size() + 1 )*sizeof( char ), ( void * ) hello.data() );
@@ -72,7 +72,7 @@ void RunHelloWorld()
 void RunSumTest()
 {
 	OpenCLProgram program;
-	program.Initialize( "Sum.cl", "sum" );
+	program.LoadKernel( "Sum.cl", "sum" );
 	vector<int> ints;
 	int size = 512;
 	ints.resize( size );
@@ -129,6 +129,8 @@ int main(int argc, char* argv[])
 	benchmarker.Log();
 
 	benchmarker.Release();
+
+	std::cin.get();
 }
 
 int size = 1024;
@@ -140,7 +142,7 @@ OpenCLProgram program;
 BPP_INITIALIZE_BENCHMARK
 {
 	program = OpenCLProgram();
-	program.Initialize( "Sum.cl", "sum" );
+	program.LoadKernel( "Sum.cl", "sum" );
 	vector<int> ints;
 	ints.resize( size );
 	for( size_t i = 0; i < size; i++ )
@@ -179,7 +181,7 @@ OpenCLProgram program;
 BPP_INITIALIZE_BENCHMARK
 {
 	program = OpenCLProgram();
-	program.Initialize( "Sum.cl", "sum2" );
+	program.LoadKernel( "Sum.cl", "sum2" );
 	vector<int> ints;
 	ints.resize( size );
 	for( size_t i = 0; i < size; i++ )
