@@ -58,8 +58,8 @@ void RunHelloWorld()
 	program.LoadKernel( "HelloWorld_Kernel.cl", "helloworld" );
 	string hello = "Hello World";
 	char tmp[ 20 ];
-	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ( hello.size() + 1 )*sizeof( char ), ( void * ) hello.data() );
-	program.AddKernelArg( CL_MEM_WRITE_ONLY, ( hello.size() + 1 )*sizeof( char ) );
+	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ( hello.size() + 1 )*sizeof( char ), ( void * ) hello.data() );
+	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, ( hello.size() + 1 )*sizeof( char ) );
 
 	program.Run();
 
@@ -90,10 +90,10 @@ void RunSumTest()
 	}
 	int count = ints.size();
 
-	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ints.size() * sizeof( int ), ( void * ) ints.data() );
-	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( int ), &count );
-	program.AddKernelArg( CL_MEM_READ_WRITE, ( ints.size() / 2 )*sizeof( int ) );
-	program.AddKernelArg( CL_MEM_WRITE_ONLY, sizeof( int ) );
+	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ints.size() * sizeof( int ), ( void * ) ints.data() );
+	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( int ), &count );
+	program.AddKernelArgGlobal( CL_MEM_READ_WRITE, ( ints.size() / 2 )*sizeof( int ) );
+	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, sizeof( int ) );
 
 	program.SetFirstWorkSize( ints.size() / 2 );
 
@@ -181,10 +181,10 @@ BPP_INITIALIZE_BENCHMARK
 	vector<int> tmp( ints.size() / 2 );
 
 
-	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ints.size() * sizeof( int ), ( void * ) ints.data() );
-	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( int ), &count );
-	program.AddKernelArg( CL_MEM_READ_WRITE , ( ints.size() / 2 )*sizeof( int ));
-	program.AddKernelArg( CL_MEM_WRITE_ONLY, sizeof( int ) );
+	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ints.size() * sizeof( int ), ( void * ) ints.data() );
+	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( int ), &count );
+	program.AddKernelArgGlobal( CL_MEM_READ_WRITE , ( ints.size() / 2 )*sizeof( int ));
+	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, sizeof( int ) );
 
 	program.SetFirstWorkSize( ints.size() / 2 );
 
@@ -221,10 +221,10 @@ BPP_INITIALIZE_BENCHMARK
 
 	vector<int> tmp( ints.size() / 2 );
 
-	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ints.size() * sizeof( int ), ( void * ) ints.data() );
-	program.AddKernelArg( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( int ), &count );
-	program.AddKernelArg( CL_MEM_READ_WRITE, ( ints.size() / 2 )*sizeof( int ));
-	program.AddKernelArg( CL_MEM_WRITE_ONLY, sizeof( int ) );
+	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ints.size() * sizeof( int ), ( void * ) ints.data() );
+	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( int ), &count );
+	program.AddKernelArgGlobal( CL_MEM_READ_WRITE, ( ints.size() / 2 )*sizeof( int ));
+	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, sizeof( int ) );
 
 	program.SetFirstWorkSize( ints.size() / 2 );
 
@@ -239,6 +239,46 @@ BPP_RELEASE_BENCHMARK
 	int output;
 	program.ReadOutput( 3, &output );
 	cout << "Output2:" << output << std::endl;
+	program.Release();
+}
+BPP_END_BENCHMARK
+
+	BPP_BEGIN_BENCHMARK( OpenCL, GPU3 )
+	OpenCLProgram program;
+BPP_INITIALIZE_BENCHMARK
+{
+	program = OpenCLProgram();
+	program.InitializeCL();
+	program.SelectPlatformAndDevice( selectedPlatformIdx,selectedDeviceIdx);
+	program.LoadKernel( "Sum.cl", "sum3" );
+	vector<int> ints;
+	ints.resize( size );
+	for( size_t i = 0; i < size; i++ )
+	{
+		ints[ i ] = i;
+	}
+	int count = ints.size();
+
+	vector<int> tmp( ints.size() / 2 );
+
+	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ints.size() * sizeof( int ), ( void * ) ints.data() );
+	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( int ), &count );
+	program.AddKernelArgLocal( ( ints.size() / 2 )*sizeof( int ));
+	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, sizeof( int ) );
+
+	program.SetFirstWorkSize( ints.size() / 2 );
+
+
+}
+BPP_BENCHMARK
+{
+	program.Run();
+}
+BPP_RELEASE_BENCHMARK
+{
+	int output;
+	program.ReadOutput( 3, &output );
+	cout << "Output3:" << output << std::endl;
 	program.Release();
 }
 BPP_END_BENCHMARK

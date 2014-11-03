@@ -21,7 +21,7 @@ void OpenCLProgram::InitializeCL()
 	cl_platform_id platformIds[10];
 	memset(platformIds,0,platformNumEntries);
 	cl_uint platformActualEntries =0;
-	clGetPlatformIDs(platformNumEntries, platformIds, &platformActualEntries);
+	CL_ASSERT(clGetPlatformIDs(platformNumEntries, platformIds, &platformActualEntries));
 
 	for (int i = 0; i < platformActualEntries; i++)
 	{
@@ -33,7 +33,7 @@ void OpenCLProgram::InitializeCL()
 		cl_device_id deviceIds[10];
 		memset(platformIds,0,deviceNumEntries);
 		cl_uint deviceActualEntries =0;
-		clGetDeviceIDs(platform->PlatformId(), CL_DEVICE_TYPE_ALL, deviceNumEntries, deviceIds, &deviceActualEntries);
+		CL_ASSERT(clGetDeviceIDs(platform->PlatformId(), CL_DEVICE_TYPE_ALL, deviceNumEntries, deviceIds, &deviceActualEntries));
 
 		for (int i = 0; i < deviceActualEntries; i++)
 		{
@@ -85,23 +85,25 @@ void OpenCLProgram::LoadKernel( const std::string& fileName, const std::string& 
 
 	/*Step 3: Create context.*/
 	cl_device_id deviceId= m_Platforms[m_SelectedPlatformIdx]->Devices()[m_SelectedDeviceIdx]->DeviceId();
-	context = clCreateContext( nullptr, 1, &deviceId, nullptr, nullptr, nullptr );
+	context = clCreateContext( nullptr, 1, &deviceId, nullptr, nullptr, &m_CurrentStatus );
+	CL_VERIFY(m_CurrentStatus);
 
 	/*Step 4: Creating command queue associate with the context.*/
-	commandQueue = clCreateCommandQueue( context, deviceId, 0, NULL );
+	commandQueue = clCreateCommandQueue( context, deviceId, 0, &m_CurrentStatus );
+	CL_VERIFY(m_CurrentStatus);
 
 	/*Step 5: Create program object */
-	status = convertToString( filename.c_str(), sourceStr );
+	CL_ASSERT(convertToString( filename.c_str(), sourceStr ));
 	const char *source = sourceStr.c_str();
 	size_t sourceSize [] = { strlen( source ) };
 	program = clCreateProgramWithSource( context, 1, &source, sourceSize, NULL );
 
 	/*Step 6: Build program. */
-	status = clBuildProgram( program, 1, &deviceId, NULL, NULL, NULL );
-	if( status )
+	CL_ASSERT(clBuildProgram( program, 1, &deviceId, NULL, NULL, NULL ));
+	if( m_CurrentStatus )
 	{
 		char msg[ 120000 ];
-		clGetProgramBuildInfo( program, deviceId, CL_PROGRAM_BUILD_LOG, sizeof( msg ), msg, NULL );
+		CL_ASSERT(clGetProgramBuildInfo( program, deviceId, CL_PROGRAM_BUILD_LOG, sizeof( msg ), msg, NULL ));
 		cerr << "=== build failed ===\n" << msg << endl;
 		getc( stdin );
 		return;
@@ -109,7 +111,8 @@ void OpenCLProgram::LoadKernel( const std::string& fileName, const std::string& 
 
 	
 	/*Step 8: Create kernel object */
-	kernel = clCreateKernel( program, functionName.c_str(), NULL );
+	kernel = clCreateKernel( program, functionName.c_str(), &m_CurrentStatus );
+	CL_VERIFY(m_CurrentStatus);
 
 	
 	
@@ -118,8 +121,8 @@ void OpenCLProgram::LoadKernel( const std::string& fileName, const std::string& 
 void OpenCLProgram::Release()
 {
 	/*Step 12: Clean the resources.*/
-	status = clReleaseKernel( kernel );				//Release kernel.
-	status = clReleaseProgram( program );				//Release the program object.
+	CL_ASSERT(clReleaseKernel( kernel ));				//Release kernel.
+	CL_ASSERT(clReleaseProgram( program ));				//Release the program object.
 	for (auto iter = m_Args.begin(); iter != m_Args.end(); ++iter)
 	{
 		auto arg = *iter;
@@ -133,8 +136,8 @@ void OpenCLProgram::Release()
 		delete arg;
 	}
 	m_Platforms.clear();
-	status = clReleaseCommandQueue( commandQueue );	//Release  Command queue.
-	status = clReleaseContext( context );				//Release context.
+	CL_ASSERT(clReleaseCommandQueue( commandQueue ));	//Release  Command queue.
+	CL_ASSERT(clReleaseContext( context ));				//Release context.
 }
 
 void OpenCLProgram::Run()
@@ -142,15 +145,22 @@ void OpenCLProgram::Run()
 
 	for( size_t i = 0; i < m_Args.size(); i++ )
 	{
-		status = clSetKernelArg( kernel, i, sizeof( cl_mem ), &(m_Args[i].memory));
+		if (m_Args[i].memory == nullptr)
+		{
+			CL_ASSERT(clSetKernelArg( kernel, i, m_Args[i].size, nullptr));
+		}
+		else
+		{
+			CL_ASSERT(clSetKernelArg( kernel, i, sizeof( cl_mem ), &(m_Args[i].memory)));
+		}
 	}
 
 	/*Step 10: Running the kernel.*/
 	size_t global_work_size[ 1 ] = { first_work_size };
-	status = clEnqueueNDRangeKernel( commandQueue, kernel, 1, NULL, global_work_size, NULL, 0, NULL, NULL );
+	CL_ASSERT(clEnqueueNDRangeKernel( commandQueue, kernel, 1, NULL, global_work_size, NULL, 0, NULL, NULL ));
 }
 
-size_t OpenCLProgram::AddKernelArg( cl_mem_flags flags, size_t size, void* initialData, cl_int* ptr)
+size_t OpenCLProgram::AddKernelArgGlobal( cl_mem_flags flags, size_t size, void* initialData, cl_int* ptr)
 {
 	KernelArg arg;
 	arg.flags = flags;
@@ -162,6 +172,18 @@ size_t OpenCLProgram::AddKernelArg( cl_mem_flags flags, size_t size, void* initi
 	return m_Args.size() - 1;
 }
 
+size_t OpenCLProgram::AddKernelArgLocal( size_t size )
+{
+	KernelArg arg;
+	arg.size = size;
+	arg.memory = nullptr;
+	arg.initalData = nullptr;
+	arg.ptr = nullptr;
+	m_Args.push_back( arg );
+	return m_Args.size() - 1;
+}
+
+
 void OpenCLProgram::SetFirstWorkSize( size_t size )
 {
 	first_work_size = size;
@@ -170,7 +192,7 @@ void OpenCLProgram::SetFirstWorkSize( size_t size )
 void OpenCLProgram::ReadOutput( size_t argIdx, void* output )
 {
 	/*Step 11: Read the cout put back to host memory.*/
-	status = clEnqueueReadBuffer( commandQueue, m_Args[argIdx].memory, CL_TRUE, 0, m_Args[argIdx].size, output, 0, NULL, NULL );
+	CL_ASSERT(clEnqueueReadBuffer( commandQueue, m_Args[argIdx].memory, CL_TRUE, 0, m_Args[argIdx].size, output, 0, NULL, NULL ));
 
 }
 
