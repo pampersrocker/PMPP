@@ -184,9 +184,9 @@ OpenCLPlatform* OpenCLProgram::SelectedPlatform() const
 	return m_Platforms[m_SelectedPlatformIdx];
 }
 
-void OpenCLProgram::SelectPlatformAndDevice( cl_uint platformId, cl_uint deviceIdx )
+void OpenCLProgram::SelectPlatformAndDevice( cl_uint platformIdx, cl_uint deviceIdx )
 {
-	m_SelectedPlatformIdx = platformId;
+	m_SelectedPlatformIdx = platformIdx;
 	m_SelectedDeviceIdx = deviceIdx;
 }
 

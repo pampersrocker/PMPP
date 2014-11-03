@@ -26,6 +26,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <bpp.hpp>
 #include "Logging/BPPDefaultConsoleLogger.hpp"
 #include "..\common\OpenCLProgram.h"
+#include "..\common\OpenCLPlatform.h"
+#include "..\common\OpenCLDevice.h"
 
 using namespace bpp;
 
@@ -45,10 +47,14 @@ float summiere(float *f, int size)
 
 	return f[0];
 }
+int selectedPlatformIdx = 0;
+int selectedDeviceIdx = 0;
 
 void RunHelloWorld()
 {
 	OpenCLProgram program;
+	program.InitializeCL();
+	program.SelectPlatformAndDevice( selectedPlatformIdx,selectedDeviceIdx);
 	program.LoadKernel( "HelloWorld_Kernel.cl", "helloworld" );
 	string hello = "Hello World";
 	char tmp[ 20 ];
@@ -72,6 +78,8 @@ void RunHelloWorld()
 void RunSumTest()
 {
 	OpenCLProgram program;
+	program.InitializeCL();
+	program.SelectPlatformAndDevice( selectedPlatformIdx,selectedDeviceIdx);
 	program.LoadKernel( "Sum.cl", "sum" );
 	vector<int> ints;
 	int size = 512;
@@ -109,12 +117,29 @@ void RunSumTest()
 	program.Release();
 }
 
+
+
 int main(int argc, char* argv[])
 {
 
 	//RunHelloWorld();
 
 	//RunSumTest();
+
+	OpenCLProgram program;
+	program.InitializeCL();
+	int i =0;
+	for (auto platform : program.Platforms())
+	{
+		std::cout << "[ " << i++ << " ] " << platform->PlatformName() << std::endl;
+	}
+	cin >> selectedPlatformIdx;
+	i=0;
+	for (auto device : (program.Platforms()[i]->Devices()))
+	{
+		std::cout << "[ " << i++ << " ] " << device->cl_device_name << " (" << (device->CL_device_type == CL_DEVICE_TYPE_GPU ? "GPU" : "CPU") << ")" << std::endl;
+	}
+	cin >> selectedDeviceIdx;
 
 
 	Benchmarker& benchmarker = Benchmarker::Instance();
@@ -133,7 +158,7 @@ int main(int argc, char* argv[])
 	std::cin.get();
 }
 
-int size = 1024;
+int size = 512;
 
 
 
@@ -142,6 +167,8 @@ OpenCLProgram program;
 BPP_INITIALIZE_BENCHMARK
 {
 	program = OpenCLProgram();
+	program.InitializeCL();
+	program.SelectPlatformAndDevice( selectedPlatformIdx,selectedDeviceIdx);
 	program.LoadKernel( "Sum.cl", "sum" );
 	vector<int> ints;
 	ints.resize( size );
@@ -174,13 +201,15 @@ BPP_RELEASE_BENCHMARK
 	cout << "Output1:" << output << std::endl;
 	program.Release();
 }
-BPP_END_BENCHMARK( OpenCL, GPU )
+BPP_END_BENCHMARK
 
 BPP_BEGIN_BENCHMARK( OpenCL, GPU2 )
 OpenCLProgram program;
 BPP_INITIALIZE_BENCHMARK
 {
 	program = OpenCLProgram();
+	program.InitializeCL();
+	program.SelectPlatformAndDevice( selectedPlatformIdx,selectedDeviceIdx);
 	program.LoadKernel( "Sum.cl", "sum2" );
 	vector<int> ints;
 	ints.resize( size );
@@ -212,7 +241,7 @@ BPP_RELEASE_BENCHMARK
 	cout << "Output2:" << output << std::endl;
 	program.Release();
 }
-BPP_END_BENCHMARK( OpenCL, GPU2 )
+BPP_END_BENCHMARK
 
 
 BPP_BEGIN_BENCHMARK( OpenCL, CPU )
@@ -237,6 +266,6 @@ BPP_BENCHMARK
 }
 BPP_RELEASE_BENCHMARK
 {
-	cout << "Excpected Output:" << sum<< std::endl;
+	cout << "Expected Output:" << sum<< std::endl;
 }
-BPP_END_BENCHMARK( OpenCL, CPU )
+BPP_END_BENCHMARK

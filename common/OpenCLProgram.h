@@ -29,7 +29,7 @@ public:
 	void Run();
 
 	const std::vector<OpenCLPlatform*>& Platforms() const;
-	void SelectPlatformAndDevice(cl_uint platformId, cl_uint deviceIdx);
+	void SelectPlatformAndDevice(cl_uint platformIdx, cl_uint deviceIdx);
 	void SelectPlatformAndDevice(OpenCLPlatform* platform, OpenCLDevice* device);
 	OpenCLPlatform* SelectedPlatform() const;
 	OpenCLDevice* SelectedDevice() const;
