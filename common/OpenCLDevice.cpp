@@ -23,7 +23,7 @@ bool OpenCLDevice::LoadData()
 	LoadData<cl_uint>(&cl_device_address_bits,CL_DEVICE_ADDRESS_BITS);
 	LoadData<cl_bool>(&cl_device_available,CL_DEVICE_AVAILABLE);
 	LoadData<cl_bool>(&cl_device_compiler_available,CL_DEVICE_COMPILER_AVAILABLE);
-	LoadData<cl_device_fp_config>(&cl_device_double_fp_config,CL_DEVICE_DOUBLE_FP_CONFIG);
+	//LoadData<cl_device_fp_config>(&cl_device_double_fp_config,CL_DEVICE_DOUBLE_FP_CONFIG);
 	LoadData<cl_bool>(&cl_device_endian_little,CL_DEVICE_ENDIAN_LITTLE);
 	LoadData<cl_bool>(&cl_device_error_correction_support,CL_DEVICE_ERROR_CORRECTION_SUPPORT);
 	LoadData<cl_device_exec_capabilities>(&cl_device_execution_capabilities,CL_DEVICE_EXECUTION_CAPABILITIES);

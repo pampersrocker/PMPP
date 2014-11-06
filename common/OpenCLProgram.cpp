@@ -19,7 +19,7 @@ void OpenCLProgram::InitializeCL()
 {
 	cl_uint platformNumEntries = 10;
 	cl_platform_id platformIds[10];
-	memset(platformIds,0,platformNumEntries);
+	memset(platformIds,0,platformNumEntries*sizeof(cl_platform_id));
 	cl_uint platformActualEntries =0;
 	CL_ASSERT(clGetPlatformIDs(platformNumEntries, platformIds, &platformActualEntries));
 
@@ -31,7 +31,7 @@ void OpenCLProgram::InitializeCL()
 
 		cl_uint deviceNumEntries = 10;
 		cl_device_id deviceIds[10];
-		memset(platformIds,0,deviceNumEntries);
+		memset( deviceIds, 0, deviceNumEntries*sizeof( cl_device_id ) );
 		cl_uint deviceActualEntries =0;
 		CL_ASSERT(clGetDeviceIDs(platform->PlatformId(), CL_DEVICE_TYPE_ALL, deviceNumEntries, deviceIds, &deviceActualEntries));
 

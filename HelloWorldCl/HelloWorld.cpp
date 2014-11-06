@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
 	}
 	cin >> selectedPlatformIdx;
 	i=0;
-	for (auto device : (program.Platforms()[i]->Devices()))
+	for( auto device : ( program.Platforms()[ selectedPlatformIdx ]->Devices() ) )
 	{
 		std::cout << "[ " << i++ << " ] " << device->cl_device_name << " (" << (device->CL_device_type == CL_DEVICE_TYPE_GPU ? "GPU" : "CPU") << ")" << std::endl;
 	}
