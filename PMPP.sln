@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloWorld", "HelloWorldCl\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenCLCommon", "OpenCLCommon\OpenCLCommon.vcxproj", "{269C88F5-21E7-4A44-90E4-C65FECC5FE3C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MatrixMulitplication", "MatrixMulitplication\MatrixMulitplication.vcxproj", "{621A5E65-A925-47F6-B4EA-AEBD86CA3AB1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MatrixMultiplication", "MatrixMultiplication\MatrixMultiplication.vcxproj", "{621A5E65-A925-47F6-B4EA-AEBD86CA3AB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
