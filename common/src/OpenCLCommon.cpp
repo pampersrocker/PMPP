@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "OpenCLCommon.h"
 #include <cl\cl.h>
 #include <string>

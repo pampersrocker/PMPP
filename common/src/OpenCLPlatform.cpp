@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "OpenCLPlatform.h"
 #include <CL/cl.h>
 

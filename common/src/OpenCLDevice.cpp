@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "OpenCLDevice.h"
 
 OpenCLDevice::OpenCLDevice( OpenCLPlatform* platform, cl_device_id deviceId ) :

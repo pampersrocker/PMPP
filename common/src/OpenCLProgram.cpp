@@ -1,4 +1,4 @@
-
+#include "stdafx.h"
 #include "OpenCLProgram.h"
 #include <iostream>
 #include <fstream>
