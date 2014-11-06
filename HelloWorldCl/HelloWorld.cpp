@@ -25,9 +25,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <fstream>
 #include <bpp.hpp>
 #include "Logging/BPPDefaultConsoleLogger.hpp"
-#include "..\common\OpenCLProgram.h"
-#include "..\common\OpenCLPlatform.h"
-#include "..\common\OpenCLDevice.h"
+#include "OpenCLProgram.h"
+#include "OpenCLPlatform.h"
+#include "OpenCLDevice.h"
 
 using namespace bpp;
 
@@ -84,11 +84,11 @@ void RunSumTest()
 	vector<int> ints;
 	int size = 512;
 	ints.resize( size );
-	for( size_t i = 0; i < size; i++ )
+	for( int i = 0; i < size; i++ )
 	{
 		ints[ i ] = i;
 	}
-	int count = ints.size();
+	size_t count = ints.size();
 
 	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, ints.size() * sizeof( int ), ( void * ) ints.data() );
 	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( int ), &count );
@@ -172,11 +172,11 @@ BPP_INITIALIZE_BENCHMARK
 	program.LoadKernel( "Sum.cl", "sum" );
 	vector<int> ints;
 	ints.resize( size );
-	for( size_t i = 0; i < size; i++ )
+	for( int i = 0; i < size; i++ )
 	{
 		ints[ i ] = i;
 	}
-	int count = ints.size();
+	size_t count = ints.size();
 
 	vector<int> tmp( ints.size() / 2 );
 
@@ -213,11 +213,11 @@ BPP_INITIALIZE_BENCHMARK
 	program.LoadKernel( "Sum.cl", "sum2" );
 	vector<int> ints;
 	ints.resize( size );
-	for( size_t i = 0; i < size; i++ )
+	for( int i = 0; i < size; i++ )
 	{
 		ints[ i ] = i;
 	}
-	int count = ints.size();
+	size_t count = ints.size();
 
 	vector<int> tmp( ints.size() / 2 );
 
@@ -253,11 +253,11 @@ BPP_INITIALIZE_BENCHMARK
 	program.LoadKernel( "Sum.cl", "sum3" );
 	vector<int> ints;
 	ints.resize( size );
-	for( size_t i = 0; i < size; i++ )
+	for( int i = 0; i < size; i++ )
 	{
 		ints[ i ] = i;
 	}
-	int count = ints.size();
+	size_t count = ints.size();
 
 	vector<int> tmp( ints.size() / 2 );
 
@@ -291,7 +291,7 @@ int sum;
 BPP_INITIALIZE_BENCHMARK
 {
 	ints.resize( size );
-	for( size_t i = 0; i < size; i++ )
+	for( int i = 0; i < size; i++ )
 	{
 		ints[ i ] = i;
 	}

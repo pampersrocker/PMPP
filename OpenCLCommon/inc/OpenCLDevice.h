@@ -11,7 +11,6 @@ public:
 	OpenCLPlatform* Platform() const;
 	cl_device_id DeviceId() const;
 
-	bool LoadData();
 	friend class OpenCLProgram;
 
 	cl_uint cl_device_address_bits;
@@ -67,6 +66,8 @@ public:
 
 protected:
 private:
+
+	bool LoadData();
 
 	template <typename T>
 	void LoadData(T* dst,cl_device_info info);

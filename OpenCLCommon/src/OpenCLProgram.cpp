@@ -23,7 +23,7 @@ void OpenCLProgram::InitializeCL()
 	cl_uint platformActualEntries =0;
 	CL_ASSERT(clGetPlatformIDs(platformNumEntries, platformIds, &platformActualEntries));
 
-	for (int i = 0; i < platformActualEntries; i++)
+	for (cl_uint i = 0; i < platformActualEntries; i++)
 	{
 		OpenCLPlatform* platform = new OpenCLPlatform(platformIds[i]);
 
@@ -35,7 +35,7 @@ void OpenCLProgram::InitializeCL()
 		cl_uint deviceActualEntries =0;
 		CL_ASSERT(clGetDeviceIDs(platform->PlatformId(), CL_DEVICE_TYPE_ALL, deviceNumEntries, deviceIds, &deviceActualEntries));
 
-		for (int i = 0; i < deviceActualEntries; i++)
+		for (cl_uint i = 0; i < deviceActualEntries; i++)
 		{
 			OpenCLDevice* device = new OpenCLDevice(platform, deviceIds[i]);
 			device->LoadData();
@@ -143,7 +143,7 @@ void OpenCLProgram::Release()
 void OpenCLProgram::Run()
 {
 
-	for( size_t i = 0; i < m_Args.size(); i++ )
+	for( cl_uint i = 0; i < m_Args.size(); i++ )
 	{
 		if (m_Args[i].memory == nullptr)
 		{

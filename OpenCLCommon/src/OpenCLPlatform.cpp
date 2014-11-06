@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "OpenCLPlatform.h"
+#include "OpenCLDevice.h"
 #include <CL/cl.h>
 
 
