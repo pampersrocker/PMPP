@@ -176,6 +176,9 @@
       <Project>{269c88f5-21e7-4a44-90e4-c65fecc5fe3c}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="inc\Matrix.inl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -1,11 +1,33 @@
 #pragma once
+#include <stdint.h>
 
-class Matrix
+template <typename T>
+class Matrix_tpl
 {
 public:
-	Matrix();
-	~Matrix();
+	Matrix_tpl();
+	Matrix_tpl( uint32_t sizeX, uint32_t sizeY );
+	Matrix_tpl( Matrix_tpl<T>&& rhs );
+	~Matrix_tpl();
+
+	T* Data() const;
+
+	Matrix_tpl<T> operator * ( const Matrix_tpl<T>& rhs ) const;
+
+	T* operator[] ( uint32_t idx ) const;
+
+	bool operator == ( const Matrix_tpl<T>& rhs ) const;
+	bool operator != ( const Matrix_tpl<T>& rhs ) const;
+
+	std::string ToString() const;
 
 private:
 
+	uint32_t m_SizeX;
+	uint32_t m_SizeY;
+
+	T* m_Data;
+
 };
+
+#include "Matrix.inl"
