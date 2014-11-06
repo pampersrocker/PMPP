@@ -18,6 +18,7 @@ Matrix_tpl<T>::Matrix_tpl( uint32_t sizeX, uint32_t sizeY ) :
 
 
 template <typename T>
+inline
 Matrix_tpl<T>& Matrix_tpl<T>::operator=( const Matrix_tpl<T>& rhs )
 {
 	if( m_Data != nullptr )
@@ -31,6 +32,7 @@ Matrix_tpl<T>& Matrix_tpl<T>::operator=( const Matrix_tpl<T>& rhs )
 }
 
 template <typename T>
+inline
 Matrix_tpl<T>::Matrix_tpl( const Matrix_tpl<T>& rhs )
 {
 	m_SizeX = rhs.m_SizeX;
@@ -40,6 +42,7 @@ Matrix_tpl<T>::Matrix_tpl( const Matrix_tpl<T>& rhs )
 }
 
 template <typename T>
+inline
 Matrix_tpl<T>::Matrix_tpl() :
 	m_SizeX(0),
 	m_SizeY(0),
@@ -49,6 +52,7 @@ Matrix_tpl<T>::Matrix_tpl() :
 }
 
 template <typename T>
+inline
 Matrix_tpl<T>::Matrix_tpl( Matrix_tpl<T>&& rhs )
 {
 	m_Data = rhs.m_Data;
@@ -61,6 +65,7 @@ Matrix_tpl<T>::Matrix_tpl( Matrix_tpl<T>&& rhs )
 
 
 template <typename T>
+inline
 T* Matrix_tpl<T>::operator[]( uint32_t idx ) const
 {
 	return m_Data + idx * m_SizeX;
@@ -82,6 +87,7 @@ T* Matrix_tpl<T>::Data() const
 }
 
 template <typename T>
+inline
 Matrix_tpl<T> Matrix_tpl<T>::operator*( const Matrix_tpl<T>& rhs ) const
 {
 	if( m_SizeX == rhs.m_SizeY )
@@ -108,6 +114,7 @@ Matrix_tpl<T> Matrix_tpl<T>::operator*( const Matrix_tpl<T>& rhs ) const
 }
 
 template <typename T>
+inline
 bool Matrix_tpl<T>::operator==( const Matrix_tpl<T>& rhs ) const
 {
 	if( m_SizeX == rhs.m_SizeX && m_SizeY == rhs.m_SizeY )
@@ -131,6 +138,7 @@ bool Matrix_tpl<T>::operator==( const Matrix_tpl<T>& rhs ) const
 }
 
 template <typename T>
+inline
 bool Matrix_tpl<T>::operator!=( const Matrix_tpl<T>& rhs ) const
 {
 	if( m_SizeX == rhs.m_SizeX && m_SizeY == rhs.m_SizeY )
@@ -155,6 +163,7 @@ bool Matrix_tpl<T>::operator!=( const Matrix_tpl<T>& rhs ) const
 
 
 template <typename T>
+inline
 std::string Matrix_tpl<T>::ToString() const
 {
 	std::ostringstream stream;
@@ -168,4 +177,18 @@ std::string Matrix_tpl<T>::ToString() const
 		stream << "   |" << std::endl;
 	}
 	return stream.str();
+}
+
+template <typename T>
+inline
+uint32_t Matrix_tpl<T>::SizeY() const
+{
+	return m_SizeY;
+}
+
+template <typename T>
+inline
+uint32_t Matrix_tpl<T>::SizeX() const
+{
+	return m_SizeX;
 }

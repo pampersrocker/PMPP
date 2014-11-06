@@ -33,14 +33,19 @@ public:
 
 	std::string ToString() const;
 
+	uint32_t SizeX() const;
+	uint32_t SizeY() const;
+
 private:
 
 	uint32_t m_SizeX;
 	uint32_t m_SizeY;
-
+	
 	T* m_Data;
 
 };
+
+
 
 
 #include "Matrix.inl"
