@@ -16,6 +16,29 @@ Matrix_tpl<T>::Matrix_tpl( uint32_t sizeX, uint32_t sizeY ) :
 	}
 }
 
+
+template <typename T>
+Matrix_tpl<T>& Matrix_tpl<T>::operator=( const Matrix_tpl<T>& rhs )
+{
+	if( m_Data != nullptr )
+	{
+		delete [] m_Data;
+	}
+	m_SizeX = rhs.m_SizeX;
+	m_SizeY = rhs.m_SizeY;
+	m_Data = new T[ m_SizeX*m_SizeY ];
+	memcpy( m_Data, rhs.m_Data, m_SizeX*m_SizeY*sizeof( T ) );
+}
+
+template <typename T>
+Matrix_tpl<T>::Matrix_tpl( const Matrix_tpl<T>& rhs )
+{
+	m_SizeX = rhs.m_SizeX;
+	m_SizeY = rhs.m_SizeY;
+	m_Data = new T[ m_SizeX*m_SizeY ];
+	memcpy( m_Data, rhs.m_Data, m_SizeX*m_SizeY*sizeof( T ) );
+}
+
 template <typename T>
 Matrix_tpl<T>::Matrix_tpl() :
 	m_SizeX(0),
@@ -42,9 +65,6 @@ T* Matrix_tpl<T>::operator[]( uint32_t idx ) const
 {
 	return m_Data + idx * m_SizeX;
 }
-
-
-
 
 template <typename T>
 inline
