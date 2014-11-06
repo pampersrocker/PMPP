@@ -5,6 +5,7 @@
     <ClCompile Include="..\common\OpenCLProgram.cpp" />
     <ClCompile Include="..\common\OpenCLPlatform.cpp" />
     <ClCompile Include="..\common\OpenCLDevice.cpp" />
+    <ClCompile Include="..\common\OpenCLCommon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Intel_OpenCL_Build_Rules Include="HelloWorld_Kernel.cl" />
@@ -22,5 +23,6 @@
     <ClInclude Include="..\common\OpenCLProgram.h" />
     <ClInclude Include="..\common\OpenCLPlatform.h" />
     <ClInclude Include="..\common\OpenCLDevice.h" />
+    <ClInclude Include="..\common\OpenCLCommon.h" />
   </ItemGroup>
 </Project>
