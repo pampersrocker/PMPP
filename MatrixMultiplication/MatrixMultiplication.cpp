@@ -8,44 +8,51 @@
 #include "OpenCLDevice.h"
 #include "Matrix.h"
 #include <iostream>
+#include <random>
+#include <bpp.hpp>
+#include <functional>
+#include "Logging\BPPDefaultConsoleLogger.hpp"
 using namespace std;
+typedef Matrix_tpl<float> Matrix;
+
+Matrix mat1;
+Matrix mat2;
+
+Matrix resultCPU; 
+Matrix expected;
+Matrix resultGPU;
+cl_uint selectedPlatformIdx = 0;
+cl_uint selectedDeviceIdx = 0;
 
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	typedef Matrix_tpl<float> Matrix;
 
-	Matrix mat1( 3, 2 );
+	cl_uint matrixSize = 1;
 
-	mat1[ 0 ][ 0 ] = 1.0f;
-	mat1[ 0 ][ 1 ] = 2.0f;
-	mat1[ 0 ][ 2 ] = 3.0f;
-	mat1[ 1 ][ 0 ] = 4.0f;
-	mat1[ 1 ][ 1 ] = 5.0f;
-	mat1[ 1 ][ 2 ] = 6.0f;
+	cout << "Set Matrix Size:";
 
-	Matrix mat2( 2, 3 );
+	cin >> matrixSize;
 
 
-	mat2[ 0 ][ 0 ] = 7.0f;
-	mat2[ 0 ][ 1 ] = 8.0f;
-	mat2[ 1 ][ 0 ] = 9.0f;
-	mat2[ 1 ][ 1 ] = 10.0f;
-	mat2[ 2 ][ 0 ] = 11.0f;
-	mat2[ 2 ][ 1 ] = 12.0f;
+	default_random_engine engine;
+	uniform_real_distribution<float> distribution(0,100.0f);
+	auto rand = std::bind( distribution, engine );
 
-	Matrix mat3 = mat1*mat2;
+	mat1 = Matrix( matrixSize, matrixSize );
+	mat2 = Matrix( matrixSize, matrixSize );
+	resultCPU = Matrix( matrixSize, matrixSize );
+	resultGPU = Matrix( matrixSize, matrixSize );
+	for( size_t i = 0; i < mat1.SizeX()*mat2.SizeY(); i++ )
+	{
+		mat1.Data()[ i ] = rand();
+		mat2.Data()[ i ] = rand();
+	}
 
 
-	//cout << mat1.ToString() << std::endl;
-	//cout << mat2.ToString() << std::endl;
-	//cout << mat3.ToString() << std::endl;
+	
 
-
-	cl_uint selectedPlatformIdx = 0; 
-	cl_uint selectedDeviceIdx = 0;
-
-	Matrix resultGPU( 2, 2 );
+	expected = mat1 * mat2;
 
 	OpenCLProgram program;
 	program.InitializeCL();
@@ -62,6 +69,37 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	cin >> selectedDeviceIdx;
 
+
+	{
+		using namespace bpp;
+		Benchmarker& benchmarker = Benchmarker::Instance();
+		DefaultConsoleLogger logger;
+		benchmarker.AddLogger( &logger );
+
+		benchmarker.Iterations( 10 );
+
+		benchmarker.Run();
+
+		benchmarker.Log();
+
+		benchmarker.Release();
+	}
+
+	char dummy;
+	cin >> dummy;
+
+	return 0;
+}
+
+
+BPP_BEGIN_BENCHMARK( MatrixMult, GPU )
+
+OpenCLProgram program;
+
+BPP_INITIALIZE_BENCHMARK
+{
+	program.InitializeCL();
+
 	program.SelectPlatformAndDevice( selectedPlatformIdx, selectedDeviceIdx );
 
 	program.LoadKernel( "MatrixMultiplication.cl", "matmult" );
@@ -72,15 +110,40 @@ int _tmain(int argc, _TCHAR* argv[])
 	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat2.SizeX()*mat2.SizeY(), mat2.Data() );
 	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, sizeof( float )*resultGPU.SizeX()*resultGPU.SizeY() );
 
-	program.SetFirstWorkSize( 1 );
+	program.SetFirstWorkSize( 1024 );
+}
 
+BPP_BENCHMARK
+{
 	program.Run();
+}
 
+BPP_RELEASE_BENCHMARK
+{
 	program.ReadOutput( 4, resultGPU.Data() );
 
-	//cout << resultGPU.ToString();
-	char dummy;
-	cin >> dummy;
+	if( expected == resultGPU )
+	{
+		cout << "The computation is correct!" << std::endl;
+	}
+	else
+	{
+		cout << "Error in the computation!" << std::endl;
+		uint32_t idx = expected.GetErrorIdx( resultGPU );
+		cout << "Idx: " << idx << " Expected:" << expected.Data()[idx] << " Got:" << resultGPU.Data()[ idx ] << std::endl;
+	}
 
-	return 0;
+	program.Release();
 }
+
+BPP_END_BENCHMARK
+
+BPP_BEGIN_BENCHMARK( MatrixMult, CPU)
+
+
+BPP_BENCHMARK
+{
+	Matrix::MatMult( mat1, mat2, resultCPU );
+}
+
+BPP_END_BENCHMARK

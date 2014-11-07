@@ -1,5 +1,13 @@
 #pragma once
 #include <stdint.h>
+#include <math.h>
+#include <limits>
+
+inline
+bool fcmp( float a, float b, float epsilon = 1e-4f )
+{
+	return fabs( a - b ) < (epsilon * std::max( fabs( a ), fabs( b ) ));
+}
 
 template <typename T>
 class Matrix_tpl
@@ -17,6 +25,8 @@ public:
 
 	Matrix_tpl<T> operator * ( const Matrix_tpl<T>& rhs ) const;
 
+	static void MatMult( const Matrix_tpl<T>& mat1, const Matrix_tpl<T>& mat2, Matrix_tpl<T>& result );
+
 
 	
 	/**
@@ -30,6 +40,8 @@ public:
 
 	bool operator == ( const Matrix_tpl<T>& rhs ) const;
 	bool operator != ( const Matrix_tpl<T>& rhs ) const;
+
+	uint32_t GetErrorIdx( const Matrix_tpl<T>& rhs ) const;
 
 	std::string ToString() const;
 
