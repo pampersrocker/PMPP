@@ -147,11 +147,14 @@ void OpenCLProgram::Run()
 	{
 		if (m_Args[i].memory == nullptr)
 		{
-			CL_ASSERT(clSetKernelArg( kernel, i, m_Args[i].size, nullptr));
-		}
-		else if( m_Args[i].size == 0 )
-		{
-			CL_ASSERT(clSetKernelArg( kernel, i, sizeof( cl_uint ), &(m_Args[i].value)));
+			if( m_Args[ i ].size == 0 )
+			{
+				CL_ASSERT( clSetKernelArg( kernel, i, sizeof( cl_uint ), &( m_Args[ i ].value ) ) );
+			}
+			else
+			{
+				CL_ASSERT( clSetKernelArg( kernel, i, m_Args[ i ].size, nullptr ) );
+			}
 		}
 		else
 		{
