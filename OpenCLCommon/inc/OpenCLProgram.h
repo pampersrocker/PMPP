@@ -11,6 +11,7 @@ struct KernelArg
 	size_t size;
 	void* initalData;
 	cl_int* ptr; //for what?
+	cl_uint value;
 };
 
 class OpenCLPlatform;
@@ -24,6 +25,7 @@ public:
 	void InitializeCL();
 	void LoadKernel( const std::string& fileName, const std::string& functionName );
 	size_t AddKernelArgGlobal(cl_mem_flags flags, size_t size, void* initialData = nullptr, cl_int* = nullptr);
+	size_t AddKernelArgInt( cl_uint value );
 	size_t AddKernelArgLocal(size_t size);
 	void ReadOutput( size_t argIdx, void* output );
 	void SetFirstWorkSize(size_t size);

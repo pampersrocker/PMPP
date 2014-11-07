@@ -149,9 +149,14 @@ void OpenCLProgram::Run()
 		{
 			CL_ASSERT(clSetKernelArg( kernel, i, m_Args[i].size, nullptr));
 		}
+		else if( m_Args[i].size == 0 )
+		{
+			CL_ASSERT(clSetKernelArg( kernel, i, sizeof( cl_uint ), &(m_Args[i].value)));
+		}
 		else
 		{
-			CL_ASSERT(clSetKernelArg( kernel, i, sizeof( cl_mem ), &(m_Args[i].memory)));
+			CL_ASSERT( clSetKernelArg( kernel, i, sizeof( cl_mem ), &( m_Args[ i ].memory ) ) );
+
 		}
 	}
 
@@ -182,6 +187,20 @@ size_t OpenCLProgram::AddKernelArgLocal( size_t size )
 	m_Args.push_back( arg );
 	return m_Args.size() - 1;
 }
+
+
+size_t OpenCLProgram::AddKernelArgInt( cl_uint value )
+{
+	KernelArg arg;
+	arg.size = 0;
+	arg.memory = nullptr;
+	arg.initalData = nullptr;
+	arg.ptr = nullptr;
+	arg.value = value;
+	m_Args.push_back( arg );
+	return m_Args.size() - 1;
+}
+
 
 
 void OpenCLProgram::SetFirstWorkSize( size_t size )
