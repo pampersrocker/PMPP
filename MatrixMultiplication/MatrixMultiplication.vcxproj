@@ -156,6 +156,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Text Include="MatrixMultiplication.cl" />
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
