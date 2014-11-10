@@ -34,7 +34,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	cin >> matrixSize;
 
-
+	cout << "Creating random matrices" << std::endl;
 	default_random_engine engine;
 	uniform_real_distribution<float> distribution(0,100.0f);
 	auto rand = std::bind( distribution, engine );
@@ -49,11 +49,15 @@ int _tmain(int argc, _TCHAR* argv[])
 		mat2.Data()[ i ] = rand();
 	}
 
+	cout << "Matrices created" << std::endl;
 
-	
+
+
+	cout << "Calculating expected Result" << std::endl;
 
 	expected = mat1 * mat2;
 
+	cout << "Expected Result calculated" << std::endl;
 	OpenCLProgram program;
 	program.InitializeCL();
 	int i = 0;

@@ -3,6 +3,14 @@
 #include <math.h>
 #include <limits>
 
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
 inline
 bool fcmp( float a, float b, float epsilon = 1e-4f )
 {

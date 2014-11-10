@@ -9,12 +9,16 @@ public:
 };
 
 #if defined(DEBUG) || defined(_DEBUG)
+#include <windows.h>
 
 #define CL_VERIFY(status) \
 	if(status != CL_SUCCESS)\
 	{\
-	std::cout << OpenCLHelper::GetErrorMessage(status) << std::endl; \
-	__debugbreak();\
+		std::cout << OpenCLHelper::GetErrorMessage(status) << std::endl; \
+		if (::IsDebuggerPresent())\
+		{\
+			::DebugBreak();\
+		}\
 	}
 
 #define CL_ASSERT( command ) \
@@ -22,8 +26,11 @@ public:
 		m_CurrentStatus = command; \
 		if( m_CurrentStatus != CL_SUCCESS ) \
 		{\
-		std::cout << OpenCLHelper::GetErrorMessage(m_CurrentStatus) << std::endl; \
-		__debugbreak();\
+			std::cout << OpenCLHelper::GetErrorMessage(m_CurrentStatus) << std::endl; \
+			if (::IsDebuggerPresent())\
+			{\
+				::DebugBreak();\
+			}\
 		}\
 	} while(0)
 #else
