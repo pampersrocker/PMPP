@@ -17,18 +17,25 @@ struct KernelArg
 class OpenCLPlatform;
 class OpenCLDevice;
 
-class OpenCLProgram
+template < unsigned int IndexDimension = 1 >
+class OpenCLProgram_tpl
 {
 public:
 
-	OpenCLProgram();
+	static_assert( IndexDimension > 0, "IndexDimension Template argument for OpenCLProgram_tpl must be bigger than 0!" );
+
+
+	OpenCLProgram_tpl();
 	void InitializeCL();
 	void LoadKernel( const std::string& fileName, const std::string& functionName );
 	size_t AddKernelArgGlobal(cl_mem_flags flags, size_t size, void* initialData = nullptr, cl_int* = nullptr);
 	size_t AddKernelArgInt( cl_uint value );
 	size_t AddKernelArgLocal(size_t size);
 	void ReadOutput( size_t argIdx, void* output );
-	void SetFirstWorkSize(size_t size);
+	template<unsigned int Dimension>
+	void SetWorkSize( size_t size );
+	template<unsigned int Dimension>
+	void SetGroupCount( size_t size );
 	void Release();
 	void Run();
 
@@ -61,7 +68,10 @@ private:
 	std::string filename;
 	std::string sourceStr;
 
-	size_t first_work_size;
+	// Number of threads per group
+	size_t m_WorkSize[ IndexDimension ];
+	//Number of groups
+	size_t m_GroupCount[ IndexDimension ];
 
 	cl_program program;
 	cl_kernel kernel;
@@ -71,3 +81,5 @@ private:
 
 
 };
+
+#include "OpenCLProgram.inl"

@@ -6,16 +6,24 @@
 #include "OpenCLDevice.h"
 using namespace std;
 
-
-OpenCLProgram::OpenCLProgram() :
+template< unsigned int IndexDimension >
+inline
+OpenCLProgram_tpl<IndexDimension>::OpenCLProgram_tpl() :
 	m_SelectedPlatformIdx(0),
 	m_SelectedDeviceIdx(0)
 {
-	
+
+	for( size_t i = 0; i < IndexDimension; i++ )
+	{
+		m_WorkSize[ i ] = 1;
+		m_GroupCount[ i ] = 1;
+	}
 }
 
 
-void OpenCLProgram::InitializeCL()
+template< unsigned int IndexDimension >
+inline
+void OpenCLProgram_tpl<IndexDimension>::InitializeCL()
 {
 	cl_uint platformNumEntries = 10;
 	cl_platform_id platformIds[10];
@@ -79,7 +87,9 @@ int convertToString( const char *filename, std::string& s )
 	return 1;
 }
 
-void OpenCLProgram::LoadKernel( const std::string& fileName, const std::string& functionName )
+template< unsigned int IndexDimension >
+inline
+void OpenCLProgram_tpl<IndexDimension>::LoadKernel( const std::string& fileName, const std::string& functionName )
 {
 	this->filename = fileName;
 
@@ -118,7 +128,9 @@ void OpenCLProgram::LoadKernel( const std::string& fileName, const std::string& 
 	
 }
 
-void OpenCLProgram::Release()
+template< unsigned int IndexDimension >
+inline
+void OpenCLProgram_tpl<IndexDimension>::Release()
 {
 	/*Step 12: Clean the resources.*/
 	CL_ASSERT(clReleaseKernel( kernel ));				//Release kernel.
@@ -140,7 +152,9 @@ void OpenCLProgram::Release()
 	CL_ASSERT(clReleaseContext( context ));				//Release context.
 }
 
-void OpenCLProgram::Run()
+template< unsigned int IndexDimension >
+inline
+void OpenCLProgram_tpl<IndexDimension>::Run()
 {
 
 	for( cl_uint i = 0; i < m_Args.size(); i++ )
@@ -164,11 +178,19 @@ void OpenCLProgram::Run()
 	}
 
 	/*Step 10: Running the kernel.*/
-	size_t global_work_size[ 1 ] = { first_work_size };
-	CL_ASSERT(clEnqueueNDRangeKernel( commandQueue, kernel, 1, NULL, global_work_size, NULL, 0, NULL, NULL ));
+	size_t globalWorkSize[ IndexDimension ];
+
+	for( size_t i = 0; i < IndexDimension; i++ )
+	{
+		globalWorkSize[ i ] = m_GroupCount[ i ] * m_WorkSize[ i ];
+	}
+
+	CL_ASSERT(clEnqueueNDRangeKernel( commandQueue, kernel, 1, m_WorkSize, global_work_size, NULL, 0, NULL, NULL ));
 }
 
-size_t OpenCLProgram::AddKernelArgGlobal( cl_mem_flags flags, size_t size, void* initialData, cl_int* ptr)
+template< unsigned int IndexDimension >
+inline
+size_t OpenCLProgram_tpl<IndexDimension>::AddKernelArgGlobal( cl_mem_flags flags, size_t size, void* initialData, cl_int* ptr)
 {
 	KernelArg arg;
 	arg.flags = flags;
@@ -180,7 +202,9 @@ size_t OpenCLProgram::AddKernelArgGlobal( cl_mem_flags flags, size_t size, void*
 	return m_Args.size() - 1;
 }
 
-size_t OpenCLProgram::AddKernelArgLocal( size_t size )
+template< unsigned int IndexDimension >
+inline
+size_t OpenCLProgram_tpl<IndexDimension>::AddKernelArgLocal( size_t size )
 {
 	KernelArg arg;
 	arg.size = size;
@@ -192,7 +216,9 @@ size_t OpenCLProgram::AddKernelArgLocal( size_t size )
 }
 
 
-size_t OpenCLProgram::AddKernelArgInt( cl_uint value )
+template< unsigned int IndexDimension >
+inline
+size_t OpenCLProgram_tpl<IndexDimension>::AddKernelArgInt( cl_uint value )
 {
 	KernelArg arg;
 	arg.size = 0;
@@ -206,35 +232,60 @@ size_t OpenCLProgram::AddKernelArgInt( cl_uint value )
 
 
 
-void OpenCLProgram::SetFirstWorkSize( size_t size )
+template< unsigned int IndexDimension >
+template< unsigned int Dimension>
+inline
+void OpenCLProgram_tpl<IndexDimension>::SetWorkSize( size_t size )
 {
-	first_work_size = size;
+	static_assert( IndexDimension > Dimension, "Dimension must be smaller than IndexDimension" );
+	m_WorkSize[ Dimension ] = size;
 }
 
-void OpenCLProgram::ReadOutput( size_t argIdx, void* output )
+
+template< unsigned int IndexDimension >
+template< unsigned int Dimension>
+inline
+void OpenCLProgram_tpl<IndexDimension>::SetGroupCount( size_t size )
+{
+	static_assert( IndexDimension > Dimension, "Dimension must be smaller than IndexDimension" );
+	m_GroupCount[ Dimension ] = size;
+}
+
+
+template< unsigned int IndexDimension >
+inline
+void OpenCLProgram_tpl<IndexDimension>::ReadOutput( size_t argIdx, void* output )
 {
 	/*Step 11: Read the cout put back to host memory.*/
 	CL_ASSERT(clEnqueueReadBuffer( commandQueue, m_Args[argIdx].memory, CL_TRUE, 0, m_Args[argIdx].size, output, 0, NULL, NULL ));
 
 }
 
-const std::vector<OpenCLPlatform*>& OpenCLProgram::Platforms() const
+template< unsigned int IndexDimension >
+inline
+const std::vector<OpenCLPlatform*>& OpenCLProgram_tpl<IndexDimension>::Platforms() const
 {
 	return m_Platforms;
 }
 
-OpenCLPlatform* OpenCLProgram::SelectedPlatform() const
+template< unsigned int IndexDimension >
+inline
+OpenCLPlatform* OpenCLProgram_tpl<IndexDimension>::SelectedPlatform() const
 {
 	return m_Platforms[m_SelectedPlatformIdx];
 }
 
-void OpenCLProgram::SelectPlatformAndDevice( cl_uint platformIdx, cl_uint deviceIdx )
+template< unsigned int IndexDimension >
+inline
+void OpenCLProgram_tpl<IndexDimension>::SelectPlatformAndDevice( cl_uint platformIdx, cl_uint deviceIdx )
 {
 	m_SelectedPlatformIdx = platformIdx;
 	m_SelectedDeviceIdx = deviceIdx;
 }
 
-void OpenCLProgram::SelectPlatformAndDevice( OpenCLPlatform* platform, OpenCLDevice* device )
+template< unsigned int IndexDimension >
+inline
+void OpenCLProgram_tpl<IndexDimension>::SelectPlatformAndDevice( OpenCLPlatform* platform, OpenCLDevice* device )
 {
 	cl_uint idx=0;
 	for (int i = 0; i < m_Platforms.size(); ++i)

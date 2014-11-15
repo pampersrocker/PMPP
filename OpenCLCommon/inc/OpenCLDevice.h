@@ -11,7 +11,8 @@ public:
 	OpenCLPlatform* Platform() const;
 	cl_device_id DeviceId() const;
 
-	friend class OpenCLProgram;
+	template <unsigned int IndexDimension>
+	friend class OpenCLProgram_tpl;
 
 	cl_uint cl_device_address_bits;
 	cl_bool cl_device_available;

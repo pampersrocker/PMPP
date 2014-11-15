@@ -16,12 +16,13 @@
     <Filter Include="CL">
       <UniqueIdentifier>{35a93b91-c3bb-49b1-8fe6-ff0b6c8a164c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="OpenCL Files">
+      <UniqueIdentifier>{D011BB44-1BF7-4113-997B-A081035B40D8}</UniqueIdentifier>
+      <Extensions>cl</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
-    <Text Include="MatrixMultiplication.cl">
-      <Filter>CL</Filter>
-    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -46,5 +47,13 @@
     <None Include="inc\Matrix.inl">
       <Filter>Header Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Intel_OpenCL_Build_Rules Include="MatrixMultiplication.cl">
+      <Filter>CL</Filter>
+    </Intel_OpenCL_Build_Rules>
+    <Intel_OpenCL_Build_Rules Include="MatrixMultiplicationShared.cl">
+      <Filter>CL</Filter>
+    </Intel_OpenCL_Build_Rules>
   </ItemGroup>
 </Project>

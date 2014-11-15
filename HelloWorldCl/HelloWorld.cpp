@@ -95,7 +95,7 @@ void RunSumTest()
 	program.AddKernelArgGlobal( CL_MEM_READ_WRITE, ( ints.size() / 2 )*sizeof( int ) );
 	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, sizeof( int ) );
 
-	program.SetFirstWorkSize( ints.size() / 2 );
+	program.SetWorkSize( ints.size() / 2 );
 
 
 	program.Run();
@@ -186,7 +186,7 @@ BPP_INITIALIZE_BENCHMARK
 	program.AddKernelArgGlobal( CL_MEM_READ_WRITE , ( ints.size() / 2 )*sizeof( int ));
 	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, sizeof( int ) );
 
-	program.SetFirstWorkSize( ints.size() / 2 );
+	program.SetWorkSize( ints.size() / 2 );
 
 
 }
@@ -226,7 +226,7 @@ BPP_INITIALIZE_BENCHMARK
 	program.AddKernelArgGlobal( CL_MEM_READ_WRITE, ( ints.size() / 2 )*sizeof( int ));
 	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, sizeof( int ) );
 
-	program.SetFirstWorkSize( ints.size() / 2 );
+	program.SetWorkSize( ints.size() / 2 );
 
 
 }
@@ -266,7 +266,7 @@ BPP_INITIALIZE_BENCHMARK
 	program.AddKernelArgLocal( ( ints.size() / 2 )*sizeof( int ));
 	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, sizeof( int ) );
 
-	program.SetFirstWorkSize( ints.size() / 2 );
+	program.SetWorkSize( ints.size() / 2 );
 
 
 }
