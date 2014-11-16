@@ -75,6 +75,7 @@ private:
 
 	cl_program program;
 	cl_kernel kernel;
+
 };
 
 #include "OpenCLProgram.inl"
