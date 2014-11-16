@@ -37,7 +37,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	cin >> matrixSize;
 
 	cout << "Creating random matrices" << std::endl;
-	default_random_engine engine;
+	default_random_engine engine( ( unsigned int ) time( 0 ) );
 	uniform_real_distribution<float> distribution(0,100.0f);
 	auto rand = std::bind( distribution, engine );
 
