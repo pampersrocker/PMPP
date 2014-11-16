@@ -163,7 +163,7 @@ void OpenCLProgram_tpl<IndexDimension>::Run()
 		globalWorkSize[ i ] = m_GroupCount[ i ] * m_WorkSize[ i ];
 	}
 
-	CL_ASSERT( clEnqueueNDRangeKernel( commandQueue, kernel, IndexDimension, nullptr, globalWorkSize, m_WorkSize, 0, nullptr, nullptr ) );
+	CL_ASSERT( clEnqueueNDRangeKernel( commandQueue, kernel, IndexDimension, nullptr, globalWorkSize, m_WorkSize, 0, nullptr, &m_KernelEvent ) );
 }
 
 template< unsigned int IndexDimension >

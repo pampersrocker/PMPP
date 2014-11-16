@@ -45,6 +45,8 @@ public:
 	OpenCLPlatform* SelectedPlatform() const;
 	OpenCLDevice* SelectedDevice() const;
 	void SetArgs();
+
+	void WaitForKernel();
 protected:
 private:
 
@@ -76,6 +78,15 @@ private:
 	cl_program program;
 	cl_kernel kernel;
 
+	cl_event m_KernelEvent;
+
 };
+
+template < unsigned int IndexDimension /*= 1 */>
+inline
+void OpenCLProgram_tpl<IndexDimension>::WaitForKernel()
+{
+	CL_ASSERT( clWaitForEvents( 1, &m_KernelEvent ) );
+}
 
 #include "OpenCLProgram.inl"
