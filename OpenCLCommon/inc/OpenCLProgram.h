@@ -44,7 +44,7 @@ public:
 	void SelectPlatformAndDevice(OpenCLPlatform* platform, OpenCLDevice* device);
 	OpenCLPlatform* SelectedPlatform() const;
 	OpenCLDevice* SelectedDevice() const;
-
+	void SetArgs();
 protected:
 private:
 
@@ -75,11 +75,6 @@ private:
 
 	cl_program program;
 	cl_kernel kernel;
-
-	size_t *global_work_size;
-
-
-
 };
 
 #include "OpenCLProgram.inl"

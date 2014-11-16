@@ -156,27 +156,6 @@ template< unsigned int IndexDimension >
 inline
 void OpenCLProgram_tpl<IndexDimension>::Run()
 {
-
-	for( cl_uint i = 0; i < m_Args.size(); i++ )
-	{
-		if (m_Args[i].memory == nullptr)
-		{
-			if( m_Args[ i ].size == 0 )
-			{
-				CL_ASSERT( clSetKernelArg( kernel, i, sizeof( cl_uint ), &( m_Args[ i ].value ) ) );
-			}
-			else
-			{
-				CL_ASSERT( clSetKernelArg( kernel, i, m_Args[ i ].size, nullptr ) );
-			}
-		}
-		else
-		{
-			CL_ASSERT( clSetKernelArg( kernel, i, sizeof( cl_mem ), &( m_Args[ i ].memory ) ) );
-
-		}
-	}
-
 	/*Step 10: Running the kernel.*/
 	size_t globalWorkSize[ IndexDimension ];
 
@@ -185,7 +164,7 @@ void OpenCLProgram_tpl<IndexDimension>::Run()
 		globalWorkSize[ i ] = m_GroupCount[ i ] * m_WorkSize[ i ];
 	}
 
-	CL_ASSERT(clEnqueueNDRangeKernel( commandQueue, kernel, 1, m_WorkSize, global_work_size, NULL, 0, NULL, NULL ));
+	CL_ASSERT( clEnqueueNDRangeKernel( commandQueue, kernel, IndexDimension, m_WorkSize, globalWorkSize, nullptr, 0, nullptr, nullptr ) );
 }
 
 template< unsigned int IndexDimension >
@@ -305,4 +284,28 @@ void OpenCLProgram_tpl<IndexDimension>::SelectPlatformAndDevice( OpenCLPlatform*
 		}
 	}
 	m_SelectedDeviceIdx = idx;
+}
+template <unsigned int IndexDimension>
+inline 
+void OpenCLProgram_tpl<IndexDimension>::SetArgs()
+{
+	for( cl_uint i = 0; i < m_Args.size(); i++ )
+	{
+		if( m_Args[ i ].memory == nullptr )
+		{
+			if( m_Args[ i ].size == 0 )
+			{
+				CL_ASSERT( clSetKernelArg( kernel, i, sizeof( cl_uint ), &( m_Args[ i ].value ) ) );
+			}
+			else
+			{
+				CL_ASSERT( clSetKernelArg( kernel, i, m_Args[ i ].size, nullptr ) );
+			}
+		}
+		else
+		{
+			CL_ASSERT( clSetKernelArg( kernel, i, sizeof( cl_mem ), &( m_Args[ i ].memory ) ) );
+
+		}
+	}
 }

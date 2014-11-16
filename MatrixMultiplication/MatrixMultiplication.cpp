@@ -116,7 +116,9 @@ BPP_INITIALIZE_BENCHMARK
 	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat2.SizeX()*mat2.SizeY(), mat2.Data() );
 	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, sizeof( float )*resultGPU.SizeX()*resultGPU.SizeY() );
 
-	program.SetWorkSize<0>( 1024 );
+	program.SetWorkSize<0>( 1024 ); 
+
+	program.SetArgs();
 }
 
 BPP_BENCHMARK
