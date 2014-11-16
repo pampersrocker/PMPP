@@ -166,6 +166,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <Intel_OpenCL_Build_Rules Include="MatrixMultiplication.cl" />
+    <Intel_OpenCL_Build_Rules Include="MatrixMultiplicationSharedTransposed.cl" />
+    <Intel_OpenCL_Build_Rules Include="MatrixMultiplicationSharedSafe.cl" />
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>

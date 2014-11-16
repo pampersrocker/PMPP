@@ -17,7 +17,7 @@ kernel void MatrixMultShared(
 	global float* dataB,
 	global float* resultMat,
 	local float subA[ BLOCK_SIZE * BLOCK_SIZE ],
-	local float subB[ BLOCK_SIZE * BLOCK_SIZE ]
+	local float subB[ BLOCK_SIZE * BLOCK_SIZE ] 
 	)
 {
 	
@@ -38,33 +38,33 @@ kernel void MatrixMultShared(
 	resultMat[ globalIdx + globalIdy * n] = 0.0f;
 	for( unsigned int i = 0; i < m / BLOCK_SIZE; ++i )
 	{
-		Matrix blockA = {
-			BLOCK_SIZE,
-			BLOCK_SIZE,
-			dataA + i * BLOCK_SIZE +
-			blockIdy * BLOCK_SIZE * m,
+		Matrix blockA = { 
+			BLOCK_SIZE, 
+			BLOCK_SIZE, 
+			dataA + i * BLOCK_SIZE + 
+			blockIdy * BLOCK_SIZE * m, 
 			m };
-		Matrix blockB = {
-				BLOCK_SIZE,
-				BLOCK_SIZE,
-				dataB + blockIdx * BLOCK_SIZE +
-				i * BLOCK_SIZE * n,
+		Matrix blockB = { 
+				BLOCK_SIZE, 
+				BLOCK_SIZE, 
+				dataB + blockIdx * BLOCK_SIZE + 
+				i * BLOCK_SIZE * n, 
 				n };
-		Matrix blockC = {
-				BLOCK_SIZE,
-				BLOCK_SIZE,
-				resultMat + blockIdx * BLOCK_SIZE +
-				blockIdy * BLOCK_SIZE * n,
+		Matrix blockC = { 
+				BLOCK_SIZE, 
+				BLOCK_SIZE, 
+				resultMat + blockIdx * BLOCK_SIZE + 
+				blockIdy * BLOCK_SIZE * n, 
 				n };
 		
 		subA[ localIdy*BLOCK_SIZE + localIdx ] = blockA.data[ localIdx + localIdy * blockA.stride ];
-		subB[ localIdy*BLOCK_SIZE + localIdx ] = blockB.data[ localIdx + localIdy * blockB.stride ];
+		subB[ localIdy*BLOCK_SIZE + localIdx ] = blockB.data[ localIdy + localIdx * blockB.stride ];
 		
 		barrier(CLK_LOCAL_MEM_FENCE);
 		
 		for (unsigned int subId = 0; subId < BLOCK_SIZE; ++subId)
 		{
-			 result += subA[subId + BLOCK_SIZE * localIdy] * subB[localIdx + BLOCK_SIZE * subId];
+			 result += subA[subId + BLOCK_SIZE * localIdy] * subB[localIdx * BLOCK_SIZE + subId];
 		}
 		
 		barrier(CLK_LOCAL_MEM_FENCE);

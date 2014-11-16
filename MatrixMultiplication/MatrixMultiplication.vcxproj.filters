@@ -58,5 +58,11 @@
     <Intel_OpenCL_Build_Rules Include="MatrixMultiplicationShared.cl">
       <Filter>CL</Filter>
     </Intel_OpenCL_Build_Rules>
+    <Intel_OpenCL_Build_Rules Include="MatrixMultiplicationSharedTransposed.cl">
+      <Filter>CL</Filter>
+    </Intel_OpenCL_Build_Rules>
+    <Intel_OpenCL_Build_Rules Include="MatrixMultiplicationSharedSafe.cl">
+      <Filter>CL</Filter>
+    </Intel_OpenCL_Build_Rules>
   </ItemGroup>
 </Project>
