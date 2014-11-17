@@ -52,11 +52,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\IntelOpenCL.props" />
-  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\BenchmarkPlusPlus.props" />
     <Import Project="..\IntelOpenCL.props" />
     <Import Project="..\NvidiaOpenCL.props" />
@@ -65,7 +61,6 @@
     <Import Project="..\AMDOpenCLLib32.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\BenchmarkPlusPlus.props" />
     <Import Project="..\IntelOpenCL.props" />
     <Import Project="..\NvidiaOpenCL.props" />
@@ -74,7 +69,6 @@
     <Import Project="..\AMDOpenCLLib64.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\BenchmarkPlusPlus.props" />
     <Import Project="..\IntelOpenCL.props" />
     <Import Project="..\NvidiaOpenCL.props" />
@@ -83,7 +77,6 @@
     <Import Project="..\AMDOpenCLLib32.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\BenchmarkPlusPlus.props" />
     <Import Project="..\IntelOpenCL.props" />
     <Import Project="..\NvidiaOpenCL.props" />
@@ -195,7 +188,4 @@
     <Intel_OpenCL_Build_Rules Include="MatrixMultiplicationShared.cl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\IntelOpenCL.targets" />
-  </ImportGroup>
 </Project>

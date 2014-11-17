@@ -84,6 +84,13 @@ private:
 
 template < unsigned int IndexDimension /*= 1 */>
 inline
+OpenCLDevice* OpenCLProgram_tpl<IndexDimension>::SelectedDevice() const
+{
+	return m_Platforms[m_SelectedPlatformIdx]->Devices()[m_SelectedDeviceIdx];
+}
+
+template < unsigned int IndexDimension /*= 1 */>
+inline
 void OpenCLProgram_tpl<IndexDimension>::WaitForKernel()
 {
 	CL_ASSERT( clWaitForEvents( 1, &m_KernelEvent ) );

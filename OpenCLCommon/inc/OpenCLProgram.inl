@@ -3,6 +3,7 @@
 #include <fstream>
 #include "OpenCLPlatform.h"
 #include "OpenCLDevice.h"
+#include <direct.h>
 using namespace std;
 
 template< unsigned int IndexDimension >
@@ -107,8 +108,16 @@ void OpenCLProgram_tpl<IndexDimension>::LoadKernel( const std::string& fileName,
 	size_t sourceSize [] = { strlen( source ) };
 	program = clCreateProgramWithSource( context, 1, &source, sourceSize, NULL );
 
+	char buffer[255];
+	char *cwd = getcwd(buffer, sizeof(buffer));
+	string s_cwd;
+	if (cwd)
+	{
+		s_cwd = cwd;
+	}
+
 	/*Step 6: Build program. */
-	CL_ASSERT(clBuildProgram( program, 1, &deviceId, NULL, NULL, NULL ));
+	CL_ASSERT(clBuildProgram( program, 1, &deviceId, ("-I " + s_cwd).c_str(), NULL, NULL ));
 	if( m_CurrentStatus )
 	{
 		char msg[ 120000 ];
@@ -175,7 +184,8 @@ size_t OpenCLProgram_tpl<IndexDimension>::AddKernelArgGlobal( cl_mem_flags flags
 	arg.size = size;
 	arg.initalData = initialData;
 	arg.ptr = ptr;
-	arg.memory = clCreateBuffer( context, flags, size, initialData, ptr );
+	arg.memory = clCreateBuffer( context, flags, size, initialData, &m_CurrentStatus );
+	CL_VERIFY(m_CurrentStatus);
 	m_Args.push_back( arg );
 	return m_Args.size() - 1;
 }

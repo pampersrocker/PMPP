@@ -120,9 +120,9 @@ BPP_INITIALIZE_BENCHMARK
 	program.AddKernelArgInt( resultGPU.SizeX() );
 	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat1.SizeX()*mat1.SizeY(), mat1.Data() );
 	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat2.SizeX()*mat2.SizeY(), mat2.Data() );
-	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, sizeof( float )*resultGPU.SizeX()*resultGPU.SizeY(), resultGPU.Data() );
+	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof( float )*resultGPU.SizeX()*resultGPU.SizeY(), resultGPU.Data() );
 
-	program.SetWorkSize<0>( 1024 ); 
+	program.SetWorkSize<0>( program.SelectedDevice()->cl_device_max_work_group_size ); 
 
 	program.SetArgs();
 }
@@ -175,7 +175,7 @@ BPP_INITIALIZE_BENCHMARK
 	program.AddKernelArgInt( resultGPU.SizeX() );
 	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat1.SizeX()*mat1.SizeY(), mat1.Data() );
 	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat2.SizeX()*mat2.SizeY(), mat2.Data() );
-	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, sizeof( float )*resultGPU.SizeX()*resultGPU.SizeY(), resultGPU.Data() );
+	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof( float )*resultGPU.SizeX()*resultGPU.SizeY(), resultGPU.Data() );
 	program.AddKernelArgLocal( sizeof( float ) * BLOCK_SIZE * BLOCK_SIZE );
 	program.AddKernelArgLocal( sizeof( float ) * BLOCK_SIZE * BLOCK_SIZE );
 
@@ -236,7 +236,7 @@ BPP_INITIALIZE_BENCHMARK
 	program.AddKernelArgInt( resultGPU.SizeX() );
 	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat1.SizeX()*mat1.SizeY(), mat1.Data() );
 	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat2.SizeX()*mat2.SizeY(), mat2.Data() );
-	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, sizeof( float )*resultGPU.SizeX()*resultGPU.SizeY(), resultGPU.Data() );
+	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof( float )*resultGPU.SizeX()*resultGPU.SizeY(), resultGPU.Data() );
 	program.AddKernelArgLocal( sizeof( float ) * BLOCK_SIZE * BLOCK_SIZE );
 	program.AddKernelArgLocal( sizeof( float ) * BLOCK_SIZE * BLOCK_SIZE );
 
@@ -297,7 +297,7 @@ BPP_INITIALIZE_BENCHMARK
 	program.AddKernelArgInt( resultGPU.SizeX() );
 	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat1.SizeX()*mat1.SizeY(), mat1.Data() );
 	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat2.SizeX()*mat2.SizeY(), mat2.Data() );
-	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, sizeof( float )*resultGPU.SizeX()*resultGPU.SizeY(), resultGPU.Data() );
+	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof( float )*resultGPU.SizeX()*resultGPU.SizeY(), resultGPU.Data() );
 	program.AddKernelArgLocal( sizeof( float ) * BLOCK_SIZE * BLOCK_SIZE );
 	program.AddKernelArgLocal( sizeof( float ) * BLOCK_SIZE * BLOCK_SIZE );
 
@@ -344,6 +344,20 @@ BPP_END_BENCHMARK
 //BPP_BENCHMARK
 //{
 //	Matrix::MatMult( mat1, mat2, resultCPU );
+//}
+//
+//BPP_RELEASE_BENCHMARK
+//{
+//	if( expected == resultCPU )
+//	{
+//		cout << "The computation is correct!" << std::endl;
+//	}
+//	else
+//	{
+//		cout << "Error in the computation!" << std::endl;
+//		uint32_t idx = expected.GetErrorIdx( resultCPU );
+//		cout << "Idx: " << idx << " Expected:" << expected.Data()[ idx ] << " Got:" << resultCPU.Data()[ idx ] << std::endl;
+//	}
 //}
 //
 //BPP_END_BENCHMARK
