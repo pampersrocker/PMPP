@@ -109,7 +109,7 @@ void OpenCLProgram_tpl<IndexDimension>::LoadKernel( const std::string& fileName,
 	program = clCreateProgramWithSource( context, 1, &source, sourceSize, NULL );
 
 	char buffer[255];
-	char *cwd = getcwd(buffer, sizeof(buffer));
+	char *cwd = _getcwd(buffer, sizeof(buffer));
 	string s_cwd;
 	if (cwd)
 	{
