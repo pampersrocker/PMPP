@@ -7,6 +7,12 @@ PrefixSum::PrefixSum( const std::vector< int >& data ) :
 
 }
 
+PrefixSum::PrefixSum() :
+	m_Data(std::vector<int>())
+{
+	// m_Data is now broken, DO NOT USE
+}
+
 PrefixSum::~PrefixSum()
 {
 
@@ -17,7 +23,7 @@ void PrefixSum::CalculateResult( std::vector< int >& result ) const
 	result[ 0 ] = 0;
 	for( size_t i = 1; i < m_Data.size(); i++ )
 	{
-		result[ i ] = result[ i - 1 ] + m_Data[ i ];
+		result[ i ] = result[ i - 1 ] + m_Data[ i - 1 ];
 	}
 }
 
@@ -42,6 +48,8 @@ void PrefixSum::InitOpenCL( size_t selectedPlatform, size_t selectedDevice )
 void PrefixSum::RunOpenCL()
 {
 	program.Run();
+
+	program.WaitForKernel();
 }
 
 void PrefixSum::ReleaseOpenCL( const std::vector<int>& expected, std::vector<int>* result )
@@ -67,7 +75,7 @@ bool PrefixSum::CheckResult( const std::vector< int >* result, const std::vector
 				"Incorrect result at idx: " << i <<
 				" expected " << (*expected)[ i ] <<
 				" got " << (*result)[ i ] << std::endl;
-			break;
+			//break;
 		}
 	}
 

@@ -15,7 +15,9 @@ PrefixSumScenario::~PrefixSumScenario()
 
 }
 
-PrefixSumScenario::PrefixSumScenario( size_t size )
+PrefixSumScenario::PrefixSumScenario( size_t size, size_t selDevice, size_t selPlatform ) :
+	selectedDevice( selDevice ),
+	selectedPlatform( selPlatform )
 {
 	using namespace std;
 	default_random_engine engine( ( unsigned int ) std::time( 0 ) );

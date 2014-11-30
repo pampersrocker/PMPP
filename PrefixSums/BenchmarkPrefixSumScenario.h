@@ -12,12 +12,16 @@ class PrefixSumScenario
 {
 public:
 
-	PrefixSumScenario( size_t size );
+	PrefixSumScenario( size_t size, size_t selectedDevice, size_t selectedPlatform );
 	~PrefixSumScenario();
 
 	std::vector< int > data;
 	std::vector< int > result;
 	std::vector< int > expected;
+
+
+	size_t selectedDevice; 
+	size_t selectedPlatform;
 
 	std::string ToString() const;
 

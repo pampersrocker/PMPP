@@ -9,6 +9,7 @@ typedef OpenCLProgram_tpl<1> OpenCLProgram;
 class PrefixSum
 {
 public:
+	PrefixSum( );
 	PrefixSum(const std::vector< int >& data);
 	~PrefixSum();
 

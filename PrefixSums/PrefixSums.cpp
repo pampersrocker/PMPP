@@ -9,20 +9,36 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	size_t selectedPlatformIdx;
+	size_t selectedDeviceIdx;
+	OpenCLProgram program;
+	program.InitializeCL();
+	int i = 0;
+	for( auto platform : program.Platforms() )
+	{
+		std::cout << "[ " << i++ << " ] " << platform->PlatformName() << std::endl;
+	}
+	cin >> selectedPlatformIdx;
+	i = 0;
+	for( auto device : ( program.Platforms()[ selectedPlatformIdx ]->Devices() ) )
+	{
+		std::cout << "[ " << i++ << " ] " << device->cl_device_name << " (" << ( device->CL_device_type == CL_DEVICE_TYPE_GPU ? "GPU" : "CPU" ) << ")" << std::endl;
+	}
+	cin >> selectedDeviceIdx;
 
 	std::vector< PrefixSumScenario > scenarios{
-		PrefixSumScenario( 256 ),
-		PrefixSumScenario( 512 ),
-		PrefixSumScenario( 1024 ),
-		PrefixSumScenario( 2048 ),
-		PrefixSumScenario( 4096 ),
-		PrefixSumScenario( 8192 ),
-		PrefixSumScenario( 16384 ),
-		PrefixSumScenario( 32768 ), 
-		PrefixSumScenario( 65536 ),
-		PrefixSumScenario( 131072 ),
-		PrefixSumScenario( 2621440 ),
-		PrefixSumScenario( 10000000 )
+		//PrefixSumScenario( 256, selectedDeviceIdx, selectedPlatformIdx ),
+		PrefixSumScenario( 512, selectedDeviceIdx, selectedPlatformIdx ),
+		//PrefixSumScenario( 1024, selectedDeviceIdx, selectedPlatformIdx ),
+		//PrefixSumScenario( 2048, selectedDeviceIdx, selectedPlatformIdx ),
+		//PrefixSumScenario( 4096, selectedDeviceIdx, selectedPlatformIdx ),
+		//PrefixSumScenario( 8192, selectedDeviceIdx, selectedPlatformIdx ),
+		//PrefixSumScenario( 16384, selectedDeviceIdx, selectedPlatformIdx ),
+		//PrefixSumScenario( 32768, selectedDeviceIdx, selectedPlatformIdx ),
+		//PrefixSumScenario( 65536, selectedDeviceIdx, selectedPlatformIdx ),
+		//PrefixSumScenario( 131072, selectedDeviceIdx, selectedPlatformIdx ),
+		//PrefixSumScenario( 2621440, selectedDeviceIdx, selectedPlatformIdx ),
+		//PrefixSumScenario( 10000000, selectedDeviceIdx, selectedPlatformIdx )
 	
 	};
 

@@ -1,7 +1,7 @@
 
 void PrefixSums512(global int* data, global int* result)
 {
-	local int[512] cache;
+	local int cache[512];
 	cache[ get_local_id(0) ] = data[ get_local_id(0) ];
 	cache[ get_local_id(0) + 256 ] = data[ get_local_id(0) + 256 ];
 
@@ -10,11 +10,11 @@ void PrefixSums512(global int* data, global int* result)
 	for(int d = 0; d<9; ++d)
 	{
 
-		int targetArrayIdx = ((get_local_id(0) + 1 ) * 2 << d) - 1;
+		int targetArrayIdx = ((get_local_id(0) + 1 ) * 1 << (d+1)) - 1;
 		if( targetArrayIdx < 512 )
 		{
-			int otherSrcIdx = targetArrayIdx - ( 2 << d );
-			cache[ i ] = cache[ targetArrayIdx ] + cache[ otherSrcIdx ];
+			int otherSrcIdx = targetArrayIdx - ( 1 << d );
+			cache[ targetArrayIdx ] = cache[ targetArrayIdx ] + cache[ otherSrcIdx ];
 		}
 		barrier(CLK_LOCAL_MEM_FENCE);
 	}
@@ -28,12 +28,12 @@ void PrefixSums512(global int* data, global int* result)
 	for(int d = 9; d>=0; --d)
 	{
 
-		int targetArrayIdx = ((get_local_id(0) + 1 ) * 2 << d) - 1;
+		int targetArrayIdx = ((get_local_id(0) + 1 ) * 1 << (d+1)) - 1;
 		if( targetArrayIdx < 512 )
 		{
-			int otherSrcIdx = targetArrayIdx - ( 2 << d );
+			int otherSrcIdx = targetArrayIdx - ( 1 << d );
 			int tmp = cache[ targetArrayIdx ];
-			cache[ i ] += cache[ otherSrcIdx ];
+			cache[ targetArrayIdx ] += cache[ otherSrcIdx ];
 			cache[ otherSrcIdx ] = tmp;
 		}
 		barrier(CLK_LOCAL_MEM_FENCE);
@@ -45,7 +45,7 @@ void PrefixSums512(global int* data, global int* result)
 	barrier(CLK_LOCAL_MEM_FENCE);
 }
 
-kernel void PrefixSums(global int* data, global int* result, global int size)
+kernel void PrefixSums(global int* data, global int* result, int size)
 {
 	PrefixSums512(data, result);
 }

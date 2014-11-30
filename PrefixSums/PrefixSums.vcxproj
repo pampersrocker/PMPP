@@ -184,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BenchmarkPrefixSumCPU.cpp" />
+    <ClCompile Include="BenchmarkPrefixSumGPU.cpp" />
     <ClCompile Include="BenchmarkPrefixSumScenario.cpp" />
     <ClCompile Include="PrefixSum.cpp" />
     <ClCompile Include="PrefixSums.cpp" />
