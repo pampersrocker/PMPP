@@ -8,7 +8,6 @@
 #include <random>
 #include <functional>
 #include <ctime>
-#include "PrefixSum.h"
 class PrefixSumScenario
 {
 public:

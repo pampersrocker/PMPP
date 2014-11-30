@@ -15,24 +15,7 @@ BPP_BENCHMARK
 
 BPP_RELEASE_BENCHMARK
 {
-	bool correct = true;
-	for( size_t i = 0; i < curScenario->data.size(); i++ )
-	{
-		if( curScenario->result[i] != curScenario->expected[i] )
-		{
-			correct = false;
-			std::cout << 
-				"Incorrect result at idx: " << i << 
-				" expected " << curScenario->expected[ i ] << 
-				" got " << curScenario->result[ i ] << std::endl;
-			break;
-		}
-	}
-
-	if( correct )
-	{
-		std::cout << "Correct Result" << std::endl;
-	}
+	PrefixSum::CheckResult( &curScenario->result, &curScenario->expected );
 }
 
 BPP_END_BENCHMARK

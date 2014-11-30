@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <math.h>
 #include <limits>
+#include <algorithm>
 
 #ifdef max
 #undef max

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "BenchmarkPrefixSumScenario.h"
+#include "PrefixSum.h"
 
 
 
