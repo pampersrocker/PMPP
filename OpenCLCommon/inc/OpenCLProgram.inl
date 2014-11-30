@@ -57,7 +57,7 @@ void OpenCLProgram_tpl<IndexDimension>::InitializeCL()
 
 
 /* convert the kernel file into a string */
-int convertToString( const char *filename, std::string& s )
+inline int convertToString( const char *filename, std::string& s )
 {
 	size_t size;
 	char*  str;
