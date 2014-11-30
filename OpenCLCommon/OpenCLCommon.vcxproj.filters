@@ -50,9 +50,6 @@
     <ClCompile Include="src\OpenCLPlatform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\OpenCLProgram.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="inc\OpenCLProgram.inl">
