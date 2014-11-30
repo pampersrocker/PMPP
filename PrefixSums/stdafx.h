@@ -10,7 +10,8 @@
 #include <stdio.h>
 #include <tchar.h>
 
-
+#include "BenchmarkPrefixSumScenario.h"
+#define BPP_CUSTOM_SCENARIO ::PrefixSumScenario
 #include "bpp.hpp"
 
 
