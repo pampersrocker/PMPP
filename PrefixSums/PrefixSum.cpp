@@ -36,6 +36,7 @@ void PrefixSum::InitOpenCL( size_t selectedPlatform, size_t selectedDevice )
 
 	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( int ) * m_Data.size(), const_cast<int *>(m_Data.data()) );
 	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, sizeof( int ) * m_Data.size() );
+	program.AddKernelArgLocal( sizeof( int ) * m_Data.size() );
 	program.AddKernelArgInt( m_Data.size() );
 
 	program.SetWorkSize<0>( 256 );

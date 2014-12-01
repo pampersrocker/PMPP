@@ -1,7 +1,6 @@
 
-void PrefixSums512(global int* data, global int* result)
+void PrefixSums512(global int* data, global int* result, local int* cache)
 {
-	local int cache[512];
 	cache[ get_local_id(0) ] = data[ get_local_id(0) ];
 	cache[ get_local_id(0) + 256 ] = data[ get_local_id(0) + 256 ];
 
@@ -45,7 +44,7 @@ void PrefixSums512(global int* data, global int* result)
 	barrier(CLK_LOCAL_MEM_FENCE);
 }
 
-kernel void PrefixSums(global int* data, global int* result, int size)
+kernel void PrefixSums(global int* data, global int* result, local int* cache, int size)
 {
-	PrefixSums512(data, result);
+	PrefixSums512(data, result, cache);
 }
