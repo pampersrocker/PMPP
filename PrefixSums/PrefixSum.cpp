@@ -7,12 +7,6 @@ PrefixSum::PrefixSum( const std::vector< int >& data ) :
 
 }
 
-PrefixSum::PrefixSum() :
-	m_Data(std::vector<int>())
-{
-	// m_Data is now broken, DO NOT USE
-}
-
 PrefixSum::~PrefixSum()
 {
 
