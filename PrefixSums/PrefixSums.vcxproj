@@ -61,6 +61,7 @@
     <Import Project="..\IntelOpenCL.props" />
     <Import Project="..\NvidiaOpenCL.props" />
     <Import Project="..\OpenCLCommon.props" />
+    <Import Project="..\Output.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -71,6 +72,7 @@
     <Import Project="..\NvidiaOpenCL.props" />
     <Import Project="..\OpenCLCommon.props" />
     <Import Project="..\AMDOpenCLLib64.props" />
+    <Import Project="..\Output.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -80,6 +82,7 @@
     <Import Project="..\NvidiaOpenCL.props" />
     <Import Project="..\OpenCLCommon.props" />
     <Import Project="..\AMDOpenCLLib32.props" />
+    <Import Project="..\Output.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -89,23 +92,20 @@
     <Import Project="..\NvidiaOpenCL.props" />
     <Import Project="..\OpenCLCommon.props" />
     <Import Project="..\AMDOpenCLLib64.props" />
+    <Import Project="..\Output.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IntDir>tmp\$(ProjectName)\$(Configuration)$(PlatformArchitecture)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IntDir>tmp\$(ProjectName)\$(Configuration)$(PlatformArchitecture)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IntDir>tmp\$(ProjectName)\$(Configuration)$(PlatformArchitecture)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IntDir>tmp\$(ProjectName)\$(Configuration)$(PlatformArchitecture)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
