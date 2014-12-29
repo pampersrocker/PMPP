@@ -187,7 +187,9 @@
     <ClCompile Include="TextureTiler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="TextureTiler.cl" />
+    <Text Include="TextureTiler.cl">
+      <FileType>Document</FileType>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenCLCommon\OpenCLCommon.vcxproj">

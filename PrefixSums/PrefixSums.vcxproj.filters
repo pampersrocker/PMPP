@@ -19,6 +19,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+    <Text Include="PrefixSum.cl">
+      <Filter>CL</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -53,10 +56,5 @@
     <ClCompile Include="BenchmarkPrefixSumGPU.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="PrefixSum.cl">
-      <Filter>CL</Filter>
-    </None>
   </ItemGroup>
 </Project>
