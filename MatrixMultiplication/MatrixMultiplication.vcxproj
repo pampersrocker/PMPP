@@ -198,4 +198,7 @@
     <Intel_OpenCL_Build_Rules Include="MatrixMultiplicationShared.cl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(SolutionDir)CopyCLFiles.targets" />
+  </ImportGroup>
 </Project>
