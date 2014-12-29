@@ -16,6 +16,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	sf::Texture gravelTiled;
 	sf::Sprite rawSprite;
 
+	sf::Vector2i imageOffset;
+	sf::Vector2i initialOffset;
+	bool offsetActive = false;
+
 	sf::Image tiledImage;
 	if( !gravel.loadFromFile( "Gravel.jpg" ) )
 	{
@@ -138,6 +142,30 @@ int _tmain(int argc, _TCHAR* argv[])
 				default:
 					break;
 				}
+			case sf::Event::MouseButtonPressed:
+				if (event.mouseButton.button == sf::Mouse::Button::Right )
+				{
+					offsetActive = true;
+					initialOffset = sf::Vector2i( event.mouseButton.x, event.mouseButton.y ) - imageOffset;
+				}
+				break;
+
+			case sf::Event::MouseButtonReleased:
+				if( event.mouseButton.button == sf::Mouse::Button::Right )
+				{
+					offsetActive = false;
+				}
+				break;
+
+			case sf::Event::MouseMoved:
+				if (offsetActive)
+				{
+					imageOffset = sf::Vector2i( event.mouseMove.x , event.mouseMove.y ) - initialOffset;
+				}
+				break;
+			case sf::Event::MouseWheelMoved:
+				scale *= 1.0f + (0.25f * event.mouseWheel.delta);
+				break;
 			default:
 				break;
 			}
@@ -151,14 +179,14 @@ int _tmain(int argc, _TCHAR* argv[])
 		sf::Vector2u size = gravel.getSize();
 		size = sf::Vector2u( ( unsigned int ) ( size.x * scale ), ( unsigned int ) ( size.y * scale ));
 
-		unsigned int xSize = 2;
-		unsigned int ySize = 2;
+		unsigned int xSize = 5;
+		unsigned int ySize = 5;
 
 		for( size_t x = 0; x < xSize; x++ )
 		{
 			for( size_t y = 0; y < ySize; y++ )
 			{
-				rawSprite.setPosition( ( float ) size.x * x, ( float ) size.y * y );
+				rawSprite.setPosition( ( float ) size.x * x + imageOffset.x, ( float ) size.y * y + imageOffset.y );
 				window.draw( rawSprite );
 			}
 		}
