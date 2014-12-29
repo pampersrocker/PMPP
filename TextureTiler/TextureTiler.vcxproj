@@ -58,24 +58,48 @@
     <Import Project="..\SFML.props" />
     <Import Project="..\SFML-Debug.props" />
     <Import Project="..\Output.props" />
+    <Import Project="..\AMDOpenCL.props" />
+    <Import Project="..\BenchmarkPlusPlus.props" />
+    <Import Project="..\IntelOpenCL.props" />
+    <Import Project="..\NvidiaOpenCL.props" />
+    <Import Project="..\OpenCLCommon.props" />
+    <Import Project="..\AMDOpenCLLib32.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\SFML.props" />
     <Import Project="..\SFML-Debug.props" />
     <Import Project="..\Output.props" />
+    <Import Project="..\AMDOpenCL.props" />
+    <Import Project="..\BenchmarkPlusPlus.props" />
+    <Import Project="..\IntelOpenCL.props" />
+    <Import Project="..\NvidiaOpenCL.props" />
+    <Import Project="..\OpenCLCommon.props" />
+    <Import Project="..\AMDOpenCLLib64.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\SFML.props" />
     <Import Project="..\SFML-Release.props" />
     <Import Project="..\Output.props" />
+    <Import Project="..\AMDOpenCL.props" />
+    <Import Project="..\BenchmarkPlusPlus.props" />
+    <Import Project="..\IntelOpenCL.props" />
+    <Import Project="..\NvidiaOpenCL.props" />
+    <Import Project="..\OpenCLCommon.props" />
+    <Import Project="..\AMDOpenCLLib32.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\SFML.props" />
     <Import Project="..\SFML-Release.props" />
     <Import Project="..\Output.props" />
+    <Import Project="..\AMDOpenCL.props" />
+    <Import Project="..\BenchmarkPlusPlus.props" />
+    <Import Project="..\IntelOpenCL.props" />
+    <Import Project="..\NvidiaOpenCL.props" />
+    <Import Project="..\OpenCLCommon.props" />
+    <Import Project="..\AMDOpenCLLib64.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -161,6 +185,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TextureTiler.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TextureTiler.cl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OpenCLCommon\OpenCLCommon.vcxproj">
+      <Project>{269c88f5-21e7-4a44-90e4-c65fecc5fe3c}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

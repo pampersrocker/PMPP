@@ -160,6 +160,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="inc\OpenCL.h" />
     <ClInclude Include="inc\OpenCLCommon.h" />
     <ClInclude Include="inc\OpenCLDevice.h" />
     <ClInclude Include="inc\OpenCLPlatform.h" />
