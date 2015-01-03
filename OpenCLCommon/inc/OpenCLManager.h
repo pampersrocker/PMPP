@@ -13,7 +13,9 @@ public:
 
 	void Initialize();
 
-	const std::vector< OpenCLPlatform* >& Platforms();
+	const std::vector< OpenCLPlatform* >& Platforms() const;
+
+	OpenCLDevice* ConsoleSelectPlatformAndDevice() const;
 
 	void Release();
 

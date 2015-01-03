@@ -21,11 +21,9 @@ void PrefixSum::CalculateResult( std::vector< int >& result ) const
 	}
 }
 
-void PrefixSum::InitOpenCL( size_t selectedPlatform, size_t selectedDevice )
+void PrefixSum::InitOpenCL( OpenCLDevice* device )
 {
-	program.InitializeCL();
 
-	program.SelectPlatformAndDevice( selectedPlatform, selectedDevice );
 	program.LoadKernel( "PrefixSum.cl", "PrefixSums" );
 
 	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( int ) * m_Data.size(), const_cast<int *>(m_Data.data()) );

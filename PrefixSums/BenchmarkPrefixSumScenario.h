@@ -8,11 +8,12 @@
 #include <random>
 #include <functional>
 #include <ctime>
+class OpenCLDevice;
 class PrefixSumScenario
 {
 public:
 
-	PrefixSumScenario( size_t size, size_t selectedDevice, size_t selectedPlatform );
+	PrefixSumScenario( size_t size, OpenCLDevice* device );
 	~PrefixSumScenario();
 
 	std::vector< int > data;
@@ -20,8 +21,7 @@ public:
 	std::vector< int > expected;
 
 
-	size_t selectedDevice; 
-	size_t selectedPlatform;
+	OpenCLDevice* device;
 
 	std::string ToString() const;
 

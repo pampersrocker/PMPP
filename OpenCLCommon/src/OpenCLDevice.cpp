@@ -1,9 +1,15 @@
 #include "stdafx.h"
 #include "OpenCLDevice.h"
+#include "OpenCLContext.h"
 
 OpenCLDevice::OpenCLDevice( OpenCLPlatform* platform, cl_device_id deviceId ) :
 	m_Platform(platform),
 	m_DeviceId(deviceId)
+{
+
+}
+
+OpenCLDevice::~OpenCLDevice()
 {
 
 }
@@ -73,4 +79,9 @@ bool OpenCLDevice::LoadData()
 	LoadData<std::string>(&cl_driver_version,CL_DRIVER_VERSION);
 
 	return true;
+}
+
+OpenCLContext* OpenCLDevice::CreateContext()
+{
+	return new OpenCLContext( this );
 }

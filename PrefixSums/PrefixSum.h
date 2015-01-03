@@ -16,7 +16,7 @@ public:
 
 	static bool CheckResult( const std::vector< int >* result, const std::vector< int >* expected );
 
-	void InitOpenCL( size_t selectedPlatform, size_t selectedDevice );
+	void InitOpenCL( OpenCLDevice* device );
 	void RunOpenCL();
 	void ReleaseOpenCL( const std::vector<int>& expected, std::vector<int>* result );
 

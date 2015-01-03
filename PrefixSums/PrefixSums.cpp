@@ -9,26 +9,15 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	size_t selectedPlatformIdx;
-	size_t selectedDeviceIdx;
+	OpenCLManager clManager;
+	clManager.Initialize();
+	clManager.ConsoleSelectPlatformAndDevice();
 	OpenCLProgram program;
-	program.InitializeCL();
-	int i = 0;
-	for( auto platform : program.Platforms() )
-	{
-		std::cout << "[ " << i++ << " ] " << platform->PlatformName() << std::endl;
-	}
-	cin >> selectedPlatformIdx;
-	i = 0;
-	for( auto device : ( program.Platforms()[ selectedPlatformIdx ]->Devices() ) )
-	{
-		std::cout << "[ " << i++ << " ] " << device->cl_device_name << " (" << ( device->CL_device_type == CL_DEVICE_TYPE_GPU ? "GPU" : "CPU" ) << ")" << std::endl;
-	}
-	cin >> selectedDeviceIdx;
+	
 
 	std::vector< PrefixSumScenario > scenarios{
 		//PrefixSumScenario( 256, selectedDeviceIdx, selectedPlatformIdx ),
-		PrefixSumScenario( 512, selectedDeviceIdx, selectedPlatformIdx ),
+		PrefixSumScenario( 512, nullptr ),
 		//PrefixSumScenario( 1024, selectedDeviceIdx, selectedPlatformIdx ),
 		//PrefixSumScenario( 2048, selectedDeviceIdx, selectedPlatformIdx ),
 		//PrefixSumScenario( 4096, selectedDeviceIdx, selectedPlatformIdx ),

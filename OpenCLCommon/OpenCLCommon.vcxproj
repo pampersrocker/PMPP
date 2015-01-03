@@ -162,6 +162,8 @@
   <ItemGroup>
     <ClInclude Include="inc\Allocator.hpp" />
     <ClInclude Include="inc\CLMemory.h" />
+    <ClInclude Include="inc\OpenCLCommandQueue.h" />
+    <ClInclude Include="inc\OpenCLContext.h" />
     <ClInclude Include="inc\OpenCLManager.h" />
     <ClInclude Include="inc\RefCountPolicy.hpp" />
     <ClInclude Include="inc\OpenCL.h" />
@@ -174,7 +176,9 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\OpenCLCommandQueue.cpp" />
     <ClCompile Include="src\OpenCLCommon.cpp" />
+    <ClCompile Include="src\OpenCLContext.cpp" />
     <ClCompile Include="src\OpenCLDevice.cpp" />
     <ClCompile Include="src\OpenCLPlatform.cpp" />
     <ClCompile Include="stdafx.cpp">

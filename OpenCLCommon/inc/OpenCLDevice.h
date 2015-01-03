@@ -2,18 +2,21 @@
 #include <CL\cl.h>
 #include <string>
 class OpenCLPlatform;
+class OpenCLContext;
 
 class OpenCLDevice
 {
 public:
 
-	OpenCLDevice(OpenCLPlatform* platform, cl_device_id deviceId);
 	OpenCLPlatform* Platform() const;
 	cl_device_id DeviceId() const;
+
+	OpenCLContext* CreateContext();
 
 	template <unsigned int IndexDimension>
 	friend class OpenCLProgram_tpl;
 	friend class OpenCLManager;
+	friend class OpenCLPlatform;
 
 	cl_uint cl_device_address_bits;
 	cl_bool cl_device_available;
@@ -68,6 +71,8 @@ public:
 
 protected:
 private:
+	OpenCLDevice( OpenCLPlatform* platform, cl_device_id deviceId );
+	~OpenCLDevice();
 
 	bool LoadData();
 

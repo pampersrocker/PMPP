@@ -26,7 +26,6 @@ public:
 
 
 	OpenCLProgram_tpl();
-	void InitializeCL();
 	void LoadKernel( const std::string& fileName, const std::string& functionName );
 	size_t AddKernelArgGlobal(cl_mem_flags flags, size_t size, void* initialData = nullptr, cl_int* = nullptr);
 	size_t AddKernelArgInt( cl_uint value );
@@ -55,7 +54,7 @@ private:
 	std::vector<OpenCLPlatform*> m_Platforms;
 	cl_uint numPlatforms;	//the NO. of platforms
 	cl_uint m_SelectedPlatformIdx;	//the chosen platform
-	cl_int m_CurrentStatus;
+	cl_int statusm_CurrentStatus;
 
 	/*Step 2:Query the platform and choose the first GPU device if has one.Otherwise use the CPU as device.*/
 	cl_uint				numDevices;

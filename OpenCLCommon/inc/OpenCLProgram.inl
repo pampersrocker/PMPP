@@ -21,15 +21,6 @@ OpenCLProgram_tpl<IndexDimension>::OpenCLProgram_tpl() :
 }
 
 
-template< unsigned int IndexDimension >
-inline
-void OpenCLProgram_tpl<IndexDimension>::InitializeCL()
-{
-	
-}
-
-
-
 /* convert the kernel file into a string */
 inline int convertToString( const char *filename, std::string& s )
 {
@@ -66,15 +57,6 @@ inline
 void OpenCLProgram_tpl<IndexDimension>::LoadKernel( const std::string& fileName, const std::string& functionName )
 {
 	this->filename = fileName;
-
-	/*Step 3: Create context.*/
-	cl_device_id deviceId= m_Platforms[m_SelectedPlatformIdx]->Devices()[m_SelectedDeviceIdx]->DeviceId();
-	context = clCreateContext( nullptr, 1, &deviceId, nullptr, nullptr, &m_CurrentStatus );
-	CL_VERIFY(m_CurrentStatus);
-
-	/*Step 4: Creating command queue associate with the context.*/
-	commandQueue = clCreateCommandQueue( context, deviceId, 0, &m_CurrentStatus );
-	CL_VERIFY(m_CurrentStatus);
 
 	/*Step 5: Create program object */
 	CL_ASSERT(convertToString( filename.c_str(), sourceStr ));
@@ -124,14 +106,7 @@ void OpenCLProgram_tpl<IndexDimension>::Release()
 	}
 	m_Args.clear();
 
-	for (auto iter = m_Platforms.begin(); iter != m_Platforms.end(); ++iter)
-	{
-		auto* arg = *iter;
-		delete arg;
-	}
-	m_Platforms.clear();
-	CL_ASSERT(clReleaseCommandQueue( commandQueue ));	//Release  Command queue.
-	CL_ASSERT(clReleaseContext( context ));				//Release context.
+	
 }
 
 template< unsigned int IndexDimension >

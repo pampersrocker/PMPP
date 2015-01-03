@@ -14,9 +14,7 @@
 #define BPP_CUSTOM_SCENARIO ::PrefixSumScenario
 #include "bpp.hpp"
 
-#include "OpenCLProgram.h"
-#include "OpenCLPlatform.h"
-#include "OpenCLDevice.h"
+#include "OpenCL.h"
 
 
 
