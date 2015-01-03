@@ -161,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\Allocator.hpp" />
+    <ClInclude Include="inc\CLMemory.h" />
     <ClInclude Include="inc\RefCountPolicy.hpp" />
     <ClInclude Include="inc\OpenCL.h" />
     <ClInclude Include="inc\OpenCLCommon.h" />
