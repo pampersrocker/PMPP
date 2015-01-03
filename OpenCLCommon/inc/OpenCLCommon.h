@@ -3,6 +3,8 @@
 #include "CL/cl.h"
 #include <stdint.h>
 
+class OpenCLManager;
+
 class OpenCLHelper
 {
 public:

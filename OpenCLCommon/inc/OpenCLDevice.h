@@ -13,6 +13,7 @@ public:
 
 	template <unsigned int IndexDimension>
 	friend class OpenCLProgram_tpl;
+	friend class OpenCLManager;
 
 	cl_uint cl_device_address_bits;
 	cl_bool cl_device_available;

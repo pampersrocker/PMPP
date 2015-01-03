@@ -23,6 +23,7 @@ public:
 	~OpenCLPlatform();
 	template <unsigned int IndexDimension>
 	friend class OpenCLProgram_tpl;
+	friend class OpenCLManager;
 protected:
 private:
 

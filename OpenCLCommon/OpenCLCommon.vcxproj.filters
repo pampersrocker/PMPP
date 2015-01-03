@@ -51,6 +51,9 @@
     <ClInclude Include="inc\CLMemory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\OpenCLManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -74,6 +77,9 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="inc\ReferenceCounted.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="inc\OpenCLManager.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

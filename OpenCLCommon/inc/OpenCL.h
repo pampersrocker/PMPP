@@ -7,3 +7,4 @@
 #include "OpenCLDevice.h"
 #include "OpenCLPlatform.h"
 #include "OpenCLProgram.h"
+#include "OpenCLManager.h"

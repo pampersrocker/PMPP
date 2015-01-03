@@ -162,6 +162,7 @@
   <ItemGroup>
     <ClInclude Include="inc\Allocator.hpp" />
     <ClInclude Include="inc\CLMemory.h" />
+    <ClInclude Include="inc\OpenCLManager.h" />
     <ClInclude Include="inc\RefCountPolicy.hpp" />
     <ClInclude Include="inc\OpenCL.h" />
     <ClInclude Include="inc\OpenCLCommon.h" />
@@ -185,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="inc\Allocator.inl" />
+    <None Include="inc\OpenCLManager.inl" />
     <None Include="inc\OpenCLProgram.inl" />
     <None Include="inc\ReferenceCounted.inl" />
   </ItemGroup>
