@@ -160,11 +160,14 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="inc\Allocator.hpp" />
+    <ClInclude Include="inc\RefCountPolicy.hpp" />
     <ClInclude Include="inc\OpenCL.h" />
     <ClInclude Include="inc\OpenCLCommon.h" />
     <ClInclude Include="inc\OpenCLDevice.h" />
     <ClInclude Include="inc\OpenCLPlatform.h" />
     <ClInclude Include="inc\OpenCLProgram.h" />
+    <ClInclude Include="inc\ReferenceCounted.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -180,7 +183,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="inc\Allocator.inl" />
     <None Include="inc\OpenCLProgram.inl" />
+    <None Include="inc\ReferenceCounted.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

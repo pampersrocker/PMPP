@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include "CL/cl.h"
+#include <stdint.h>
 
 class OpenCLHelper
 {
@@ -38,5 +39,6 @@ public:
 #define CL_VERIFY( status )
 #endif
 
+typedef uint32_t u32;
 
 

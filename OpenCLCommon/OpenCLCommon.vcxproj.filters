@@ -39,6 +39,15 @@
     <ClInclude Include="inc\OpenCL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\Allocator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\ReferenceCounted.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\RefCountPolicy.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -56,6 +65,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="inc\OpenCLProgram.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="inc\Allocator.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="inc\ReferenceCounted.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
