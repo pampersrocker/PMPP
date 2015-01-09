@@ -1,6 +1,8 @@
 #pragma once
 #ifndef Allocator_h__
 #define Allocator_h__
+#include "stdafx.h"
+#include "OpenCLCommon.h"
 
 /**
 \brief Basic Interface for any custom Allocator.
