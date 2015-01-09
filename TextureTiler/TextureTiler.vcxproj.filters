@@ -19,6 +19,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+    <Text Include="TextureTiler.cl">
+      <Filter>CL</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -35,10 +38,5 @@
     <ClCompile Include="TextureTiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="TextureTiler.cl">
-      <Filter>CL</Filter>
-    </None>
   </ItemGroup>
 </Project>
