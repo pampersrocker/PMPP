@@ -2,13 +2,14 @@
 #include <iostream>
 #include "CL/cl.h"
 #include <stdint.h>
+#include <string>
 
 class OpenCLManager;
 
 class OpenCLHelper
 {
 public:
-	static std::string GetErrorMessage(cl_uint code);
+	static std::string GetErrorMessage(cl_int code);
 };
 
 #if defined(DEBUG) || defined(_DEBUG)
