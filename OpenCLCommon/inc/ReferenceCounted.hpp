@@ -1,13 +1,14 @@
 #pragma once
 #ifndef ReferenceCounted_h__
 #define ReferenceCounted_h__
-
+#include "Allocator.hpp"
+#include "RefCountPolicy.hpp"
 
 /**
 \brief Reference Counter class.
 
 */
-template< typename T, typename Allocator, typename RefCountPolicy = DefaultRefCountPolicy >
+template< typename T, typename Allocator = DefaultAllocator, typename RefCountPolicy = DefaultRefCountPolicy >
 class ReferenceCounted
 {
 public:

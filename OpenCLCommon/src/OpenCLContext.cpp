@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "OpenCL.h"
 #include "OpenCLContext.h"
+#include "OpenCLDevice.h"
 
 OpenCLContext::OpenCLContext( OpenCLDevice* parentDevice ) :
 	m_Device( parentDevice ),
@@ -18,6 +19,11 @@ OpenCLContext::~OpenCLContext()
 	m_Device = nullptr;
 	CL_ASSERT( clReleaseContext( m_Context ) );
 	m_Context = nullptr;
+}
+
+template<typename T>
+OpenCLBufferPtr OpenCLContext::CreateBuffer( size_t numElements, OpenCLBufferFlags flags, const T* initialData /*= nullptr */ ) const
+{
 }
 
 OpenCLDevice* OpenCLContext::Device() const
