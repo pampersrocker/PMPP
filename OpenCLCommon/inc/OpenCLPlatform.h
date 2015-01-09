@@ -14,7 +14,7 @@ public:
 	std::string PlatformName() const;
 	std::string PlatformVendor() const;
 	std::string PlatformExtensions() const;
-	cl_platform_id PlatformId() const;
+	cl_platform_id CLPlatformId() const;
 
 
 	const std::vector<OpenCLDevice*>& Devices() const { return m_Devices; }

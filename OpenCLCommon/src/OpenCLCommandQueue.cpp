@@ -9,8 +9,8 @@ OpenCLCommandQueue::OpenCLCommandQueue( OpenCLContext* parentContext ) :
 {
 	cl_int status = 0;
 	m_CommandQueue = clCreateCommandQueue( 
-		m_Context->Context(), 
-		m_Context->Device()->DeviceId(), 0, &status );
+		m_Context->CLContext(), 
+		m_Context->Device()->CLDeviceId(), 0, &status );
 	CL_VERIFY( status );
 
 }
@@ -22,7 +22,7 @@ OpenCLCommandQueue::~OpenCLCommandQueue()
 	m_CommandQueue = nullptr;
 }
 
-cl_command_queue OpenCLCommandQueue::CommandQueue() const
+cl_command_queue OpenCLCommandQueue::CLCommandQueue() const
 {
 	return m_CommandQueue;
 }

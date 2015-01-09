@@ -9,7 +9,7 @@ class OpenCLDevice
 public:
 
 	OpenCLPlatform* Platform() const;
-	cl_device_id DeviceId() const;
+	cl_device_id CLDeviceId() const;
 
 	OpenCLContext* CreateContext();
 

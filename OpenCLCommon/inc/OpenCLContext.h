@@ -10,7 +10,7 @@ public:
 
 	OpenCLDevice* Device() const;
 
-	cl_context Context() const;
+	cl_context CLContext() const;
 
 private:
 

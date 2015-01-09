@@ -19,7 +19,7 @@ OpenCLPlatform* OpenCLDevice::Platform() const
 	return m_Platform;
 }
 
-cl_device_id OpenCLDevice::DeviceId() const
+cl_device_id OpenCLDevice::CLDeviceId() const
 {
 	return m_DeviceId;
 }

@@ -227,7 +227,7 @@ void OpenCLProgram_tpl<IndexDimension>::SelectPlatformAndDevice( OpenCLPlatform*
 	cl_uint idx=0;
 	for (int i = 0; i < m_Platforms.size(); ++i)
 	{
-		if (platform->PlatformId() == m_Platforms[i]->PlatformId())
+		if (platform->CLPlatformId() == m_Platforms[i]->CLPlatformId())
 		{
 			idx = i;
 		}
@@ -236,7 +236,7 @@ void OpenCLProgram_tpl<IndexDimension>::SelectPlatformAndDevice( OpenCLPlatform*
 	idx =0;
 	for (int i = 0; i < m_Platforms[m_SelectedPlatformIdx]->Devices().size(); ++i)
 	{
-		if (device->DeviceId() == m_Platforms[m_SelectedPlatformIdx]->Devices()[i]->DeviceId())
+		if (device->CLDeviceId() == m_Platforms[m_SelectedPlatformIdx]->Devices()[i]->CLDeviceId())
 		{
 			idx = i;
 		}

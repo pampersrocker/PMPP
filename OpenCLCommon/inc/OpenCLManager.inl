@@ -67,7 +67,7 @@ void OpenCLManager::Initialize()
 		cl_device_id deviceIds[ 10 ];
 		memset( deviceIds, 0, deviceNumEntries*sizeof( cl_device_id ) );
 		cl_uint deviceActualEntries = 0;
-		CL_ASSERT( clGetDeviceIDs( platform->PlatformId(), CL_DEVICE_TYPE_ALL, deviceNumEntries, deviceIds, &deviceActualEntries ) );
+		CL_ASSERT( clGetDeviceIDs( platform->CLPlatformId(), CL_DEVICE_TYPE_ALL, deviceNumEntries, deviceIds, &deviceActualEntries ) );
 
 		for( cl_uint i = 0; i < deviceActualEntries; i++ )
 		{

@@ -11,7 +11,7 @@ public:
 	~OpenCLCommandQueue();
 
 	OpenCLContext* Context() const;
-	cl_command_queue CommandQueue() const;
+	cl_command_queue CLCommandQueue() const;
 
 private:
 

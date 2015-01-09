@@ -6,7 +6,7 @@ OpenCLContext::OpenCLContext( OpenCLDevice* parentDevice ) :
 	m_Device( parentDevice ),
 	m_Context( nullptr )
 {
-	cl_device_id deviceId = parentDevice->DeviceId();
+	cl_device_id deviceId = parentDevice->CLDeviceId();
 	cl_int status = 0;
 	m_Context = clCreateContext( nullptr, 1, &deviceId, nullptr, nullptr, &status );
 	CL_VERIFY( status );
@@ -25,7 +25,7 @@ OpenCLDevice* OpenCLContext::Device() const
 	return m_Device;
 }
 
-cl_context OpenCLContext::Context() const
+cl_context OpenCLContext::CLContext() const
 {
 	return m_Context;
 }
