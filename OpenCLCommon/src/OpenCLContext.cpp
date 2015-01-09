@@ -24,6 +24,12 @@ OpenCLContext::~OpenCLContext()
 template<typename T>
 OpenCLBufferPtr OpenCLContext::CreateBuffer( size_t numElements, OpenCLBufferFlags flags, const T* initialData /*= nullptr */ ) const
 {
+	OpenCLBufferPtr buffer( new OpenCLBuffer() );
+
+	buffer->Create( this, sizeof( T )*numElements, flags, initialData );
+
+	return buffer;
+
 }
 
 OpenCLDevice* OpenCLContext::Device() const
