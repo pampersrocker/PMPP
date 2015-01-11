@@ -24,7 +24,6 @@ public:
 	OpenCLBuffer();
 	~OpenCLBuffer();
 
-	OpenCLBufferFlags Flags() const;
 
 	void Release();
 

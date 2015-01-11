@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include <vector>
 
-typedef OpenCLProgram_tpl<1> OpenCLProgram;
+typedef OpenCLKernel_tpl<1> OpenCLProgram;
 
 class PrefixSum
 {

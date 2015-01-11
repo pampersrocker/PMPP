@@ -18,14 +18,14 @@ class OpenCLPlatform;
 class OpenCLDevice;
 
 template < unsigned int IndexDimension = 1 >
-class OpenCLProgram_tpl
+class OpenCLKernel_tpl
 {
 public:
 
 	static_assert( IndexDimension > 0, "IndexDimension Template argument for OpenCLProgram_tpl must be bigger than 0!" );
 
 
-	OpenCLProgram_tpl();
+	OpenCLKernel_tpl();
 	void LoadKernel( const std::string& fileName, const std::string& functionName );
 	size_t AddKernelArgGlobal(cl_mem_flags flags, size_t size, void* initialData = nullptr, cl_int* = nullptr);
 	size_t AddKernelArgInt( cl_uint value );
@@ -83,14 +83,14 @@ private:
 
 template < unsigned int IndexDimension /*= 1 */>
 inline
-OpenCLDevice* OpenCLProgram_tpl<IndexDimension>::SelectedDevice() const
+OpenCLDevice* OpenCLKernel_tpl<IndexDimension>::SelectedDevice() const
 {
 	return m_Platforms[m_SelectedPlatformIdx]->Devices()[m_SelectedDeviceIdx];
 }
 
 template < unsigned int IndexDimension /*= 1 */>
 inline
-void OpenCLProgram_tpl<IndexDimension>::WaitForKernel()
+void OpenCLKernel_tpl<IndexDimension>::WaitForKernel()
 {
 	CL_ASSERT( clWaitForEvents( 1, &m_KernelEvent ) );
 }

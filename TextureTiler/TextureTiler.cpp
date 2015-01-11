@@ -5,7 +5,7 @@
 #include <iostream>
 #include "OpenCL.h"
 
-typedef OpenCLProgram_tpl<1> OpenCLProgram;
+typedef OpenCLKernel_tpl<1> OpenCLProgram;
 
 
 int _tmain(int argc, _TCHAR* argv[])
