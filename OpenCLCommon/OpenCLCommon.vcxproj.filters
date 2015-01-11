@@ -33,9 +33,6 @@
     <ClInclude Include="inc\OpenCLPlatform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inc\OpenCLProgram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="inc\OpenCL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -58,6 +55,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="inc\OpenCLBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\OpenCLKernel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -85,9 +85,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="inc\OpenCLProgram.inl">
-      <Filter>Header Files</Filter>
-    </None>
     <None Include="inc\Allocator.inl">
       <Filter>Header Files</Filter>
     </None>
@@ -95,6 +92,9 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="inc\OpenCLManager.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="inc\OpenCLKernel.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

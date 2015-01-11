@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 
-#include "OpenCLProgram.h"
+#include "OpenCLKernel.h"
 #include "OpenCLPlatform.h"
 #include "OpenCLDevice.h"
 #include "Matrix.h"

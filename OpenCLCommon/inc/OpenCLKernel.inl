@@ -1,4 +1,4 @@
-#include "OpenCLProgram.h"
+#include "OpenCLKernel.h"
 #include <iostream>
 #include <fstream>
 #include "OpenCLPlatform.h"

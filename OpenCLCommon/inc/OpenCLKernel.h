@@ -95,4 +95,4 @@ void OpenCLKernel_tpl<IndexDimension>::WaitForKernel()
 	CL_ASSERT( clWaitForEvents( 1, &m_KernelEvent ) );
 }
 
-#include "OpenCLProgram.inl"
+#include "OpenCLKernel.inl"

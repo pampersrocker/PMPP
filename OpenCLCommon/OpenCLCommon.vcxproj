@@ -170,7 +170,7 @@
     <ClInclude Include="inc\OpenCLCommon.h" />
     <ClInclude Include="inc\OpenCLDevice.h" />
     <ClInclude Include="inc\OpenCLPlatform.h" />
-    <ClInclude Include="inc\OpenCLProgram.h" />
+    <ClInclude Include="inc\OpenCLKernel.h" />
     <ClInclude Include="inc\ReferenceCounted.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -192,7 +192,7 @@
   <ItemGroup>
     <None Include="inc\Allocator.inl" />
     <None Include="inc\OpenCLManager.inl" />
-    <None Include="inc\OpenCLProgram.inl" />
+    <None Include="inc\OpenCLKernel.inl" />
     <None Include="inc\ReferenceCounted.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
