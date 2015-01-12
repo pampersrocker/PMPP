@@ -2,6 +2,7 @@
 #include "OpenCL.h"
 #include "OpenCLContext.h"
 #include "OpenCLDevice.h"
+#include "OpenCLCommandQueue.h"
 
 OpenCLContext::OpenCLContext( OpenCLDevice* parentDevice ) :
 	m_Device( parentDevice ),
@@ -22,6 +23,7 @@ OpenCLContext::~OpenCLContext()
 }
 
 template<typename T>
+inline 
 OpenCLBufferPtr OpenCLContext::CreateBuffer( size_t numElements, OpenCLBufferFlags flags, const T* initialData /*= nullptr */ ) const
 {
 	OpenCLBufferPtr buffer( new OpenCLBuffer() );
@@ -32,6 +34,16 @@ OpenCLBufferPtr OpenCLContext::CreateBuffer( size_t numElements, OpenCLBufferFla
 
 }
 
+
+template< size_t N >
+inline
+OpenCLKernel_tpl< N >
+OpenCLContext::CreateKernel( const std::string& file, const std::string& functionName ) const
+{
+
+}
+
+
 OpenCLDevice* OpenCLContext::Device() const
 {
 	return m_Device;
@@ -40,5 +52,15 @@ OpenCLDevice* OpenCLContext::Device() const
 cl_context OpenCLContext::CLContext() const
 {
 	return m_Context;
+}
+
+OpenCLCommandQueue* OpenCLContext::CreateCommandQueue()
+{
+	return new OpenCLCommandQueue( this );
+}
+
+OpenCLCommandQueue* OpenCLContext::CommandQueue() const
+{
+	return m_CommandQueue;
 }
 

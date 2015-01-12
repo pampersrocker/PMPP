@@ -6,13 +6,11 @@
 #include <direct.h>
 using namespace std;
 
-template< unsigned int IndexDimension >
+template < unsigned int IndexDimension /*= 1 */>
 inline
-OpenCLKernel_tpl<IndexDimension>::OpenCLKernel_tpl() :
-	m_SelectedPlatformIdx(0),
-	m_SelectedDeviceIdx(0)
+OpenCLKernel_tpl<IndexDimension>::OpenCLKernel_tpl( OpenCLContext* context ) :
+	m_Context( context )
 {
-
 	for( size_t i = 0; i < IndexDimension; i++ )
 	{
 		m_WorkSize[ i ] = 1;
@@ -52,6 +50,13 @@ inline int convertToString( const char *filename, std::string& s )
 	return 1;
 }
 
+template < unsigned int IndexDimension /*= 1 */>
+inline
+void OpenCLKernel_tpl<IndexDimension>::WaitForKernel()
+{
+	CL_ASSERT( clWaitForEvents( 1, &m_KernelEvent ) );
+}
+
 template< unsigned int IndexDimension >
 inline
 void OpenCLKernel_tpl<IndexDimension>::LoadKernel( const std::string& fileName, const std::string& functionName )
@@ -62,7 +67,7 @@ void OpenCLKernel_tpl<IndexDimension>::LoadKernel( const std::string& fileName, 
 	CL_ASSERT(convertToString( filename.c_str(), sourceStr ));
 	const char *source = sourceStr.c_str();
 	size_t sourceSize [] = { strlen( source ) };
-	program = clCreateProgramWithSource( context, 1, &source, sourceSize, NULL );
+	m_Program = clCreateProgramWithSource( context, 1, &source, sourceSize, NULL );
 
 	char buffer[255];
 	char *cwd = _getcwd(buffer, sizeof(buffer));
@@ -73,11 +78,11 @@ void OpenCLKernel_tpl<IndexDimension>::LoadKernel( const std::string& fileName, 
 	}
 
 	/*Step 6: Build program. */
-	CL_ASSERT(clBuildProgram( program, 1, &deviceId, ("-I " + s_cwd).c_str(), NULL, NULL ));
+	m_CurrentStatus = clBuildProgram( m_Program, 1, m_Context->Device()->CLDeviceId(), ("-I " + s_cwd).c_str(), NULL, NULL );
 	if( m_CurrentStatus )
 	{
 		char msg[ 120000 ];
-		CL_ASSERT(clGetProgramBuildInfo( program, deviceId, CL_PROGRAM_BUILD_LOG, sizeof( msg ), msg, NULL ));
+		CL_ASSERT( clGetProgramBuildInfo( m_Program, m_Context->Device()->CLDeviceId(), CL_PROGRAM_BUILD_LOG, sizeof( msg ), msg, NULL ) );
 		cerr << "=== build failed ===\n" << msg << endl;
 		getc( stdin );
 		return;
@@ -85,11 +90,9 @@ void OpenCLKernel_tpl<IndexDimension>::LoadKernel( const std::string& fileName, 
 
 	
 	/*Step 8: Create kernel object */
-	kernel = clCreateKernel( program, functionName.c_str(), &m_CurrentStatus );
+	kernel = clCreateKernel( m_Program, functionName.c_str(), &m_CurrentStatus );
 	CL_VERIFY(m_CurrentStatus);
 
-	
-	
 }
 
 template< unsigned int IndexDimension >
@@ -98,7 +101,7 @@ void OpenCLKernel_tpl<IndexDimension>::Release()
 {
 	/*Step 12: Clean the resources.*/
 	CL_ASSERT(clReleaseKernel( kernel ));				//Release kernel.
-	CL_ASSERT(clReleaseProgram( program ));				//Release the program object.
+	CL_ASSERT(clReleaseProgram( m_Program ));				//Release the program object.
 	for (auto iter = m_Args.begin(); iter != m_Args.end(); ++iter)
 	{
 		auto arg = *iter;
@@ -198,51 +201,6 @@ void OpenCLKernel_tpl<IndexDimension>::ReadOutput( size_t argIdx, void* output )
 
 }
 
-template< unsigned int IndexDimension >
-inline
-const std::vector<OpenCLPlatform*>& OpenCLKernel_tpl<IndexDimension>::Platforms() const
-{
-	return m_Platforms;
-}
-
-template< unsigned int IndexDimension >
-inline
-OpenCLPlatform* OpenCLKernel_tpl<IndexDimension>::SelectedPlatform() const
-{
-	return m_Platforms[m_SelectedPlatformIdx];
-}
-
-template< unsigned int IndexDimension >
-inline
-void OpenCLKernel_tpl<IndexDimension>::SelectPlatformAndDevice( cl_uint platformIdx, cl_uint deviceIdx )
-{
-	m_SelectedPlatformIdx = platformIdx;
-	m_SelectedDeviceIdx = deviceIdx;
-}
-
-template< unsigned int IndexDimension >
-inline
-void OpenCLKernel_tpl<IndexDimension>::SelectPlatformAndDevice( OpenCLPlatform* platform, OpenCLDevice* device )
-{
-	cl_uint idx=0;
-	for (int i = 0; i < m_Platforms.size(); ++i)
-	{
-		if (platform->CLPlatformId() == m_Platforms[i]->CLPlatformId())
-		{
-			idx = i;
-		}
-	}
-	m_SelectedPlatformIdx = idx;
-	idx =0;
-	for (int i = 0; i < m_Platforms[m_SelectedPlatformIdx]->Devices().size(); ++i)
-	{
-		if (device->CLDeviceId() == m_Platforms[m_SelectedPlatformIdx]->Devices()[i]->CLDeviceId())
-		{
-			idx = i;
-		}
-	}
-	m_SelectedDeviceIdx = idx;
-}
 template <unsigned int IndexDimension>
 inline 
 void OpenCLKernel_tpl<IndexDimension>::SetArgs()
