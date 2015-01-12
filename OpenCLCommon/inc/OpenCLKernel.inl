@@ -19,7 +19,6 @@ OpenCLKernel_tpl<IndexDimension>::OpenCLKernel_tpl( OpenCLContext* context ) :
 	}
 }
 
-
 /* convert the kernel file into a string */
 inline int convertToString( const char *filename, std::string& s )
 {
@@ -107,7 +106,7 @@ OpenCLKerneArgument OpenCLKernel_tpl<IndexDimension>::CreateGlobalArgument( Open
 
 template < unsigned int IndexDimension /*= 1 */>
 inline
-size_t OpenCLKernel_tpl<IndexDimension>::SetArgument( OpenCLKerneArgument arg )
+size_t OpenCLKernel_tpl<IndexDimension>::AddArgument( OpenCLKerneArgument arg )
 {
 	m_Args.push_back( arg );
 	return m_Args.size() - 1;
@@ -118,7 +117,7 @@ inline
 OpenCLKerneArgument OpenCLKernel_tpl<IndexDimension>::CreateAndSetGlobalArgument( OpenCLBufferPtr buffer, size_t* index /*= nullptr */ )
 {
 	auto arg = CreateGlobalArgument( buffer );
-	size_t idx = SetArgument( arg );
+	size_t idx = AddArgument( arg );
 	if (index)
 	{
 		*index = idx;
@@ -126,6 +125,53 @@ OpenCLKerneArgument OpenCLKernel_tpl<IndexDimension>::CreateAndSetGlobalArgument
 	return arg;
 }
 
+template< typename T >
+OpenCLKerneArgument OpenCLKernel_tpl::CreateArgumentValue( T value )
+{
+	OpenCLKerneArgument arg;
+	arg.SetValue<T>( value );
+	return arg;
+}
+
+template< typename T >
+OpenCLKerneArgument OpenCLKernel_tpl::CreateAndSetArgumentValue( T value, size_t* index /*= nullptr */ )
+{
+	auto arg = CreateArgumentValue<T>( value );
+	size_t idx = AddArgument( arg );
+	if (index)
+	{
+		*index = idx;
+	}
+	return arg;
+}
+
+template< typename T >
+OpenCLKerneArgument OpenCLKernel_tpl::CreateLocalArgument( size_t numElements )
+{
+	OpenCLKerneArgument arg;
+	arg.SetLocalBuffer< T >( numElements );
+	return arg;
+}
+
+template< typename T >
+OpenCLKerneArgument OpenCLKernel_tpl::CreateAndSetLocalArgument( size_t numElements, size_t* index /*= nullptr */ )
+{
+	auto arg = CreateLocalArgument <T>( value );
+	size_t idx = AddArgument( arg );
+	if( index )
+	{
+		*index = idx;
+	}
+	return arg;
+}
+
+template < unsigned int IndexDimension /*= 1 */>
+inline
+OpenCLKerneArgument OpenCLKernel_tpl<IndexDimension>::GetArgument( size_t index )
+{
+	assert( index < m_Args.size() );
+	return m_Args[ index ];
+}
 
 template< unsigned int IndexDimension >
 inline
@@ -134,9 +180,7 @@ void OpenCLKernel_tpl<IndexDimension>::Release()
 	/*Step 12: Clean the resources.*/
 	CL_ASSERT(clReleaseKernel( kernel ));				//Release kernel.
 	CL_ASSERT(clReleaseProgram( m_Program ));				//Release the program object.
-	m_Args.clear();
-
-	
+	m_Args.clear();	
 }
 
 template < unsigned int IndexDimension /*= 1 */>
@@ -163,53 +207,8 @@ void OpenCLKernel_tpl<IndexDimension>::Run()
 		globalWorkSize[ i ] = m_GroupCount[ i ] * m_WorkSize[ i ];
 	}
 
-	CL_ASSERT( clEnqueueNDRangeKernel( m_CommandQueue, kernel, IndexDimension, nullptr, globalWorkSize, m_WorkSize, 0, nullptr, &m_KernelEvent ) );
+	CL_ASSERT( clEnqueueNDRangeKernel( m_CommandQueue->CLCommandQueue(), kernel, IndexDimension, nullptr, globalWorkSize, m_WorkSize, 0, nullptr, &m_KernelEvent ) );
 }
-
-template< unsigned int IndexDimension >
-inline
-size_t OpenCLKernel_tpl<IndexDimension>::AddKernelArgGlobal( cl_mem_flags flags, size_t size, void* initialData, cl_int* ptr)
-{
-	KernelArg arg;
-	arg.flags = flags;
-	arg.size = size;
-	arg.initalData = initialData;
-	arg.ptr = ptr;
-	arg.memory = clCreateBuffer( context, flags, size, initialData, &m_CurrentStatus );
-	CL_VERIFY(m_CurrentStatus);
-	m_Args.push_back( arg );
-	return m_Args.size() - 1;
-}
-
-template< unsigned int IndexDimension >
-inline
-size_t OpenCLKernel_tpl<IndexDimension>::AddKernelArgLocal( size_t size )
-{
-	KernelArg arg;
-	arg.size = size;
-	arg.memory = nullptr;
-	arg.initalData = nullptr;
-	arg.ptr = nullptr;
-	m_Args.push_back( arg );
-	return m_Args.size() - 1;
-}
-
-
-template< unsigned int IndexDimension >
-inline
-size_t OpenCLKernel_tpl<IndexDimension>::AddKernelArgInt( cl_uint value )
-{
-	KernelArg arg;
-	arg.size = 0;
-	arg.memory = nullptr;
-	arg.initalData = nullptr;
-	arg.ptr = nullptr;
-	arg.value = value;
-	m_Args.push_back( arg );
-	return m_Args.size() - 1;
-}
-
-
 
 template< unsigned int IndexDimension >
 template< unsigned int Dimension>
@@ -220,7 +219,6 @@ void OpenCLKernel_tpl<IndexDimension>::SetWorkSize( size_t size )
 	m_WorkSize[ Dimension ] = size;
 }
 
-
 template< unsigned int IndexDimension >
 template< unsigned int Dimension>
 inline
@@ -229,7 +227,6 @@ void OpenCLKernel_tpl<IndexDimension>::SetGroupCount( size_t size )
 	static_assert( IndexDimension > Dimension, "Dimension must be smaller than IndexDimension" );
 	m_GroupCount[ Dimension ] = size;
 }
-
 
 template< unsigned int IndexDimension >
 inline

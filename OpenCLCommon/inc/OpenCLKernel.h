@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include "OpenCLCommon.h"
+#include "OpenCLBuffer.h"
+#include "OpenCLKernelArgument.h"
 
 struct KernelArg
 {
@@ -16,6 +18,7 @@ struct KernelArg
 
 class OpenCLPlatform;
 class OpenCLDevice;
+class OpenCLCommandQueue;
 
 template < unsigned int IndexDimension = 1 >
 class OpenCLKernel_tpl
@@ -26,13 +29,22 @@ public:
 
 	OpenCLKernel_tpl( OpenCLContext* context );
 	void LoadKernel( const std::string& fileName, const std::string& functionName );
-	size_t AddKernelArgGlobal(cl_mem_flags flags, size_t size, void* initialData = nullptr, cl_int* = nullptr);
-	size_t AddKernelArgInt( cl_uint value );
-	size_t AddKernelArgLocal(size_t size);
 
 	OpenCLKerneArgument CreateAndSetGlobalArgument( OpenCLBufferPtr buffer, size_t* index = nullptr );
-	size_t SetArgument( OpenCLKerneArgument arg );
 	OpenCLKerneArgument CreateGlobalArgument( OpenCLBufferPtr buffer );
+	template< typename T >
+	OpenCLKerneArgument CreateAndSetLocalArgument( size_t numElements, size_t* index = nullptr );
+	template< typename T >
+	OpenCLKerneArgument CreateLocalArgument( size_t numElements );
+	template< typename T >
+	OpenCLKerneArgument CreateAndSetArgumentValue( T value, size_t* index = nullptr );
+	template< typename T >
+	OpenCLKerneArgument CreateArgumentValue( T value );
+	OpenCLKerneArgument CreateAndSetGlobalArgument( OpenCLBufferPtr buffer, size_t* index = nullptr );
+	OpenCLKerneArgument CreateGlobalArgument( OpenCLBufferPtr buffer );
+
+	OpenCLKerneArgument GetArgument( size_t index );
+	size_t AddArgument( OpenCLKerneArgument arg );
 
 	void ReadOutput( size_t argIdx, void* output );
 	template<unsigned int Dimension>
@@ -72,5 +84,7 @@ private:
 	cl_event m_KernelEvent;
 
 };
+
+
 
 #include "OpenCLKernel.inl"
