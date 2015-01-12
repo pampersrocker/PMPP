@@ -6,7 +6,8 @@
 
 OpenCLContext::OpenCLContext( OpenCLDevice* parentDevice ) :
 	m_Device( parentDevice ),
-	m_Context( nullptr )
+	m_Context( nullptr ),
+	m_CommandQueue( nullptr )
 {
 	cl_device_id deviceId = parentDevice->CLDeviceId();
 	cl_int status = 0;
@@ -34,7 +35,6 @@ OpenCLBufferPtr OpenCLContext::CreateBuffer( size_t numElements, OpenCLBufferFla
 
 }
 
-
 template< size_t N >
 inline
 ReferenceCounted< OpenCLKernel_tpl< N > >
@@ -45,7 +45,6 @@ OpenCLContext::CreateKernel( const std::string& file, const std::string& functio
 
 	return kernel;
 }
-
 
 OpenCLDevice* OpenCLContext::Device() const
 {
@@ -72,4 +71,3 @@ OpenCLCommandQueue* OpenCLContext::CommandQueue() const
 {
 	return m_CommandQueue;
 }
-

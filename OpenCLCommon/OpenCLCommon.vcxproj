@@ -164,6 +164,7 @@
     <ClInclude Include="inc\OpenCLBuffer.h" />
     <ClInclude Include="inc\OpenCLCommandQueue.h" />
     <ClInclude Include="inc\OpenCLContext.h" />
+    <ClInclude Include="inc\OpenCLKernelArgument.h" />
     <ClInclude Include="inc\OpenCLManager.h" />
     <ClInclude Include="inc\RefCountPolicy.hpp" />
     <ClInclude Include="inc\OpenCL.h" />
@@ -181,6 +182,7 @@
     <ClCompile Include="src\OpenCLCommon.cpp" />
     <ClCompile Include="src\OpenCLContext.cpp" />
     <ClCompile Include="src\OpenCLDevice.cpp" />
+    <ClCompile Include="src\OpenCLKernelArgument.cpp" />
     <ClCompile Include="src\OpenCLPlatform.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
