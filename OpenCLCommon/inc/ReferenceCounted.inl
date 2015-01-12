@@ -121,7 +121,7 @@ T& ReferenceCounted<T, Allocator, RefCountPolicy>::operator*( )
 template< typename T, typename Allocator, typename RefCountPolicy>
 T* ReferenceCounted<T, Allocator, RefCountPolicy>::operator->( )
 {
-	return *m_CountedPointer;
+	return m_CountedPointer;
 }
 
 template< typename T, typename Allocator, typename RefCountPolicy>
