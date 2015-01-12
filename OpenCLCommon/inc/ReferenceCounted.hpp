@@ -26,7 +26,7 @@ public:
 	bool operator ==( const ReferenceCounted< T, Allocator, RefCountPolicy >& rhs ) const;
 	bool operator !=( const ReferenceCounted< T, Allocator, RefCountPolicy >& rhs ) const;
 
-	T& operator ->( );
+	T* operator ->( );
 
 	T& operator *( );
 
