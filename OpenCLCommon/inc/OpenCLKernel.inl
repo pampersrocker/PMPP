@@ -9,7 +9,8 @@ using namespace std;
 template < unsigned int IndexDimension /*= 1 */>
 inline
 OpenCLKernel_tpl<IndexDimension>::OpenCLKernel_tpl( OpenCLContext* context ) :
-	m_Context( context )
+	m_Context( context ),
+	m_CommandQueue( context->CommandQueue() )
 {
 	for( size_t i = 0; i < IndexDimension; i++ )
 	{
@@ -95,6 +96,37 @@ void OpenCLKernel_tpl<IndexDimension>::LoadKernel( const std::string& fileName, 
 
 }
 
+template < unsigned int IndexDimension /*= 1 */>
+inline
+OpenCLKerneArgument OpenCLKernel_tpl<IndexDimension>::CreateGlobalArgument( OpenCLBufferPtr buffer )
+{
+	OpenCLKerneArgument arg;
+	arg.SetGlobalBuffer( buffer );
+	return arg;
+}
+
+template < unsigned int IndexDimension /*= 1 */>
+inline
+size_t OpenCLKernel_tpl<IndexDimension>::SetArgument( OpenCLKerneArgument arg )
+{
+	m_Args.push_back( arg );
+	return m_Args.size() - 1;
+}
+
+template < unsigned int IndexDimension /*= 1 */>
+inline
+OpenCLKerneArgument OpenCLKernel_tpl<IndexDimension>::CreateAndSetGlobalArgument( OpenCLBufferPtr buffer, size_t* index /*= nullptr */ )
+{
+	auto arg = CreateGlobalArgument( buffer );
+	size_t idx = SetArgument( arg );
+	if (index)
+	{
+		*index = idx;
+	}
+	return arg;
+}
+
+
 template< unsigned int IndexDimension >
 inline
 void OpenCLKernel_tpl<IndexDimension>::Release()
@@ -102,14 +134,21 @@ void OpenCLKernel_tpl<IndexDimension>::Release()
 	/*Step 12: Clean the resources.*/
 	CL_ASSERT(clReleaseKernel( kernel ));				//Release kernel.
 	CL_ASSERT(clReleaseProgram( m_Program ));				//Release the program object.
-	for (auto iter = m_Args.begin(); iter != m_Args.end(); ++iter)
-	{
-		auto arg = *iter;
-		clReleaseMemObject( arg.memory );
-	}
 	m_Args.clear();
 
 	
+}
+
+template < unsigned int IndexDimension /*= 1 */>
+void OpenCLKernel_tpl<IndexDimension>::CommandQueue( OpenCLCommandQueue* val )
+{
+	m_CommandQueue = val;
+}
+
+template < unsigned int IndexDimension /*= 1 */>
+OpenCLCommandQueue* OpenCLKernel_tpl<IndexDimension>::CommandQueue() const
+{
+	return m_CommandQueue;
 }
 
 template< unsigned int IndexDimension >
@@ -124,7 +163,7 @@ void OpenCLKernel_tpl<IndexDimension>::Run()
 		globalWorkSize[ i ] = m_GroupCount[ i ] * m_WorkSize[ i ];
 	}
 
-	CL_ASSERT( clEnqueueNDRangeKernel( commandQueue, kernel, IndexDimension, nullptr, globalWorkSize, m_WorkSize, 0, nullptr, &m_KernelEvent ) );
+	CL_ASSERT( clEnqueueNDRangeKernel( m_CommandQueue, kernel, IndexDimension, nullptr, globalWorkSize, m_WorkSize, 0, nullptr, &m_KernelEvent ) );
 }
 
 template< unsigned int IndexDimension >

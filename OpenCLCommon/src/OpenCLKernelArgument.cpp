@@ -10,7 +10,9 @@ OpenCLKerneArgument::OpenCLKerneArgument() :
 
 OpenCLKerneArgument::~OpenCLKerneArgument()
 {
-
+	m_Type = OpenCLKernelArgumentType::None;
+	m_Buffer.SetNull();
+	m_Size = 0U;
 }
 
 OpenCLKernelArgumentType OpenCLKerneArgument::Type() const
