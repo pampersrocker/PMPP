@@ -6,5 +6,5 @@
 #include "RefCountPolicy.hpp"
 #include "OpenCLDevice.h"
 #include "OpenCLPlatform.h"
-#include "OpenCLProgram.h"
+#include "OpenCLKernel.h"
 #include "OpenCLManager.h"

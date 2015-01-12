@@ -1,4 +1,4 @@
-#include "OpenCLProgram.h"
+#include "OpenCLKernel.h"
 #include <iostream>
 #include <fstream>
 #include "OpenCLPlatform.h"
@@ -8,7 +8,7 @@ using namespace std;
 
 template< unsigned int IndexDimension >
 inline
-OpenCLProgram_tpl<IndexDimension>::OpenCLProgram_tpl() :
+OpenCLKernel_tpl<IndexDimension>::OpenCLKernel_tpl() :
 	m_SelectedPlatformIdx(0),
 	m_SelectedDeviceIdx(0)
 {
@@ -54,7 +54,7 @@ inline int convertToString( const char *filename, std::string& s )
 
 template< unsigned int IndexDimension >
 inline
-void OpenCLProgram_tpl<IndexDimension>::LoadKernel( const std::string& fileName, const std::string& functionName )
+void OpenCLKernel_tpl<IndexDimension>::LoadKernel( const std::string& fileName, const std::string& functionName )
 {
 	this->filename = fileName;
 
@@ -94,7 +94,7 @@ void OpenCLProgram_tpl<IndexDimension>::LoadKernel( const std::string& fileName,
 
 template< unsigned int IndexDimension >
 inline
-void OpenCLProgram_tpl<IndexDimension>::Release()
+void OpenCLKernel_tpl<IndexDimension>::Release()
 {
 	/*Step 12: Clean the resources.*/
 	CL_ASSERT(clReleaseKernel( kernel ));				//Release kernel.
@@ -111,7 +111,7 @@ void OpenCLProgram_tpl<IndexDimension>::Release()
 
 template< unsigned int IndexDimension >
 inline
-void OpenCLProgram_tpl<IndexDimension>::Run()
+void OpenCLKernel_tpl<IndexDimension>::Run()
 {
 	/*Step 10: Running the kernel.*/
 	size_t globalWorkSize[ IndexDimension ];
@@ -126,7 +126,7 @@ void OpenCLProgram_tpl<IndexDimension>::Run()
 
 template< unsigned int IndexDimension >
 inline
-size_t OpenCLProgram_tpl<IndexDimension>::AddKernelArgGlobal( cl_mem_flags flags, size_t size, void* initialData, cl_int* ptr)
+size_t OpenCLKernel_tpl<IndexDimension>::AddKernelArgGlobal( cl_mem_flags flags, size_t size, void* initialData, cl_int* ptr)
 {
 	KernelArg arg;
 	arg.flags = flags;
@@ -141,7 +141,7 @@ size_t OpenCLProgram_tpl<IndexDimension>::AddKernelArgGlobal( cl_mem_flags flags
 
 template< unsigned int IndexDimension >
 inline
-size_t OpenCLProgram_tpl<IndexDimension>::AddKernelArgLocal( size_t size )
+size_t OpenCLKernel_tpl<IndexDimension>::AddKernelArgLocal( size_t size )
 {
 	KernelArg arg;
 	arg.size = size;
@@ -155,7 +155,7 @@ size_t OpenCLProgram_tpl<IndexDimension>::AddKernelArgLocal( size_t size )
 
 template< unsigned int IndexDimension >
 inline
-size_t OpenCLProgram_tpl<IndexDimension>::AddKernelArgInt( cl_uint value )
+size_t OpenCLKernel_tpl<IndexDimension>::AddKernelArgInt( cl_uint value )
 {
 	KernelArg arg;
 	arg.size = 0;
@@ -172,7 +172,7 @@ size_t OpenCLProgram_tpl<IndexDimension>::AddKernelArgInt( cl_uint value )
 template< unsigned int IndexDimension >
 template< unsigned int Dimension>
 inline
-void OpenCLProgram_tpl<IndexDimension>::SetWorkSize( size_t size )
+void OpenCLKernel_tpl<IndexDimension>::SetWorkSize( size_t size )
 {
 	static_assert( IndexDimension > Dimension, "Dimension must be smaller than IndexDimension" );
 	m_WorkSize[ Dimension ] = size;
@@ -182,7 +182,7 @@ void OpenCLProgram_tpl<IndexDimension>::SetWorkSize( size_t size )
 template< unsigned int IndexDimension >
 template< unsigned int Dimension>
 inline
-void OpenCLProgram_tpl<IndexDimension>::SetGroupCount( size_t size )
+void OpenCLKernel_tpl<IndexDimension>::SetGroupCount( size_t size )
 {
 	static_assert( IndexDimension > Dimension, "Dimension must be smaller than IndexDimension" );
 	m_GroupCount[ Dimension ] = size;
@@ -191,7 +191,7 @@ void OpenCLProgram_tpl<IndexDimension>::SetGroupCount( size_t size )
 
 template< unsigned int IndexDimension >
 inline
-void OpenCLProgram_tpl<IndexDimension>::ReadOutput( size_t argIdx, void* output )
+void OpenCLKernel_tpl<IndexDimension>::ReadOutput( size_t argIdx, void* output )
 {
 	/*Step 11: Read the cout put back to host memory.*/
 	CL_ASSERT(clEnqueueReadBuffer( commandQueue, m_Args[argIdx].memory, CL_TRUE, 0, m_Args[argIdx].size, output, 0, NULL, NULL ));
@@ -200,21 +200,21 @@ void OpenCLProgram_tpl<IndexDimension>::ReadOutput( size_t argIdx, void* output 
 
 template< unsigned int IndexDimension >
 inline
-const std::vector<OpenCLPlatform*>& OpenCLProgram_tpl<IndexDimension>::Platforms() const
+const std::vector<OpenCLPlatform*>& OpenCLKernel_tpl<IndexDimension>::Platforms() const
 {
 	return m_Platforms;
 }
 
 template< unsigned int IndexDimension >
 inline
-OpenCLPlatform* OpenCLProgram_tpl<IndexDimension>::SelectedPlatform() const
+OpenCLPlatform* OpenCLKernel_tpl<IndexDimension>::SelectedPlatform() const
 {
 	return m_Platforms[m_SelectedPlatformIdx];
 }
 
 template< unsigned int IndexDimension >
 inline
-void OpenCLProgram_tpl<IndexDimension>::SelectPlatformAndDevice( cl_uint platformIdx, cl_uint deviceIdx )
+void OpenCLKernel_tpl<IndexDimension>::SelectPlatformAndDevice( cl_uint platformIdx, cl_uint deviceIdx )
 {
 	m_SelectedPlatformIdx = platformIdx;
 	m_SelectedDeviceIdx = deviceIdx;
@@ -222,7 +222,7 @@ void OpenCLProgram_tpl<IndexDimension>::SelectPlatformAndDevice( cl_uint platfor
 
 template< unsigned int IndexDimension >
 inline
-void OpenCLProgram_tpl<IndexDimension>::SelectPlatformAndDevice( OpenCLPlatform* platform, OpenCLDevice* device )
+void OpenCLKernel_tpl<IndexDimension>::SelectPlatformAndDevice( OpenCLPlatform* platform, OpenCLDevice* device )
 {
 	cl_uint idx=0;
 	for (int i = 0; i < m_Platforms.size(); ++i)
@@ -245,7 +245,7 @@ void OpenCLProgram_tpl<IndexDimension>::SelectPlatformAndDevice( OpenCLPlatform*
 }
 template <unsigned int IndexDimension>
 inline 
-void OpenCLProgram_tpl<IndexDimension>::SetArgs()
+void OpenCLKernel_tpl<IndexDimension>::SetArgs()
 {
 	for( cl_uint i = 0; i < m_Args.size(); i++ )
 	{

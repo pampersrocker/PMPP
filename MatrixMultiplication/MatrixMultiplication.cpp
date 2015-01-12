@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 
-#include "OpenCLProgram.h"
+#include "OpenCLKernel.h"
 #include "OpenCLPlatform.h"
 #include "OpenCLDevice.h"
 #include "Matrix.h"
@@ -26,7 +26,7 @@ Matrix resultGPU;
 cl_uint selectedPlatformIdx = 0;
 cl_uint selectedDeviceIdx = 0;
 
-typedef OpenCLProgram_tpl<1> OpenCLProgram;
+typedef OpenCLKernel_tpl<1> OpenCLProgram;
 
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -156,7 +156,7 @@ BPP_END_BENCHMARK
 
 BPP_BEGIN_BENCHMARK( MatrixMult, GPU_Shared )
 
-OpenCLProgram_tpl<2> program;
+OpenCLKernel_tpl<2> program;
 
 BPP_INITIALIZE_BENCHMARK
 {
@@ -217,7 +217,7 @@ BPP_END_BENCHMARK
 
 BPP_BEGIN_BENCHMARK( MatrixMult, GPU_SharedTransposed )
 
-OpenCLProgram_tpl<2> program;
+OpenCLKernel_tpl<2> program;
 
 BPP_INITIALIZE_BENCHMARK
 {
@@ -278,7 +278,7 @@ BPP_END_BENCHMARK
 
 BPP_BEGIN_BENCHMARK( MatrixMult, GPU_SharedSafe )
 
-OpenCLProgram_tpl<2> program;
+OpenCLKernel_tpl<2> program;
 
 BPP_INITIALIZE_BENCHMARK
 {

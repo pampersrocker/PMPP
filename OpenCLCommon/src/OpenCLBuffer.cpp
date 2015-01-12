@@ -22,11 +22,6 @@ OpenCLBufferFlags OpenCLBuffer::Flags() const
 	return m_Flags;
 }
 
-OpenCLBufferFlags OpenCLBuffer::Flags() const
-{
-	return m_Flags;
-}
-
 void OpenCLBuffer::Create( OpenCLContext* context, size_t size, OpenCLBufferFlags flags, void* initialData /*= nullptr */ )
 {
 	// Release old memory (if any) so we don't get leaks

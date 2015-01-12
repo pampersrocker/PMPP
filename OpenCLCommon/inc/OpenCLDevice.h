@@ -14,7 +14,7 @@ public:
 	OpenCLContext* CreateContext();
 
 	template <unsigned int IndexDimension>
-	friend class OpenCLProgram_tpl;
+	friend class OpenCLKernel_tpl;
 	friend class OpenCLManager;
 	friend class OpenCLPlatform;
 
@@ -77,23 +77,23 @@ private:
 	bool LoadData();
 
 	template <typename T>
-	void LoadData(T* dst,cl_device_info info);
+	void LoadData(T* dst, cl_device_info info);
 
 	cl_device_id m_DeviceId;
 	OpenCLPlatform* m_Platform;
 };
 
 template <typename T>
-void OpenCLDevice::LoadData( T* dst,cl_device_info info )
+void OpenCLDevice::LoadData( T* dst, cl_device_info info )
 {
 	clGetDeviceInfo(m_DeviceId, info, sizeof(T), dst, nullptr);
 }
 
 template <>
-inline void OpenCLDevice::LoadData<std::string>( std::string* dst,cl_device_info info )
+inline void OpenCLDevice::LoadData<std::string>( std::string* dst, cl_device_info info )
 {
 	char tmp[256];
-	memset(tmp,0,256);
+	memset( tmp, 0, 256 );
 	clGetDeviceInfo(m_DeviceId, info, 256, tmp, nullptr);
 	*dst = tmp;
 }

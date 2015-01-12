@@ -20,7 +20,7 @@ public:
 	const std::vector<OpenCLDevice*>& Devices() const { return m_Devices; }
 
 	template <unsigned int IndexDimension>
-	friend class OpenCLProgram_tpl;
+	friend class OpenCLKernel_tpl;
 	friend class OpenCLManager;
 protected:
 private:
