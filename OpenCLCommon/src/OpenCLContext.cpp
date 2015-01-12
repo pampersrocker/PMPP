@@ -37,10 +37,13 @@ OpenCLBufferPtr OpenCLContext::CreateBuffer( size_t numElements, OpenCLBufferFla
 
 template< size_t N >
 inline
-OpenCLKernel_tpl< N >
+ReferenceCounted< OpenCLKernel_tpl< N > >
 OpenCLContext::CreateKernel( const std::string& file, const std::string& functionName ) const
 {
+	ReferenceCounted< OpenCLKernel_tpl< N > > kernel = new OpenCLKernel_tpl< N >( this );
+	kernel->LoadKernel( file, functionName );
 
+	return kernel;
 }
 
 
@@ -56,7 +59,13 @@ cl_context OpenCLContext::CLContext() const
 
 OpenCLCommandQueue* OpenCLContext::CreateCommandQueue()
 {
-	return new OpenCLCommandQueue( this );
+	if (m_CommandQueue)
+	{
+		delete m_CommandQueue;
+		m_CommandQueue = nullptr;
+	}
+	m_CommandQueue = new OpenCLCommandQueue( this );
+	return m_CommandQueue;
 }
 
 OpenCLCommandQueue* OpenCLContext::CommandQueue() const

@@ -27,7 +27,7 @@ public:
 	template<typename T>
 	OpenCLBufferPtr CreateBuffer( size_t numElements, OpenCLBufferFlags flags, const T* initialData = nullptr ) const;
 	template< size_t N >
-	OpenCLKernel_tpl< N > CreateKernel( const std::string& file, const std::string& functionName ) const;
+	ReferenceCounted< OpenCLKernel_tpl< N > > CreateKernel( const std::string& file, const std::string& functionName ) const;
 
 private:
 
