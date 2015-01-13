@@ -33,6 +33,10 @@ public:
 	size_t Size() const;
 	OpenCLContext* Context() const;
 	OpenCLBufferFlags Flags() const;
+
+	template <typename T>
+	void ReadBuffer( T* out ) const;
+
 private:
 
 	void Create( OpenCLContext* context, size_t size, OpenCLBufferFlags flags, void* initialData = nullptr );
@@ -44,5 +48,15 @@ private:
 };
 
 typedef ReferenceCounted < OpenCLBuffer > OpenCLBufferPtr;
+
+template <typename T>
+inline
+void OpenCLBuffer::ReadBuffer( T* out ) const
+{
+	assert( ( Flags() & ( OpenCLBufferFlags::ReadWrite | OpenCLBufferFlags::WriteOnly ) ) != 0 );
+	// Read the cout put back to host memory.
+	CL_ASSERT( clEnqueueReadBuffer( commandQueue, m_Memory, CL_TRUE, 0, Size(), (void*)out, 0, nullptr, nullptr) );
+
+}
 
 #endif // OpenCLBuffer_h__
