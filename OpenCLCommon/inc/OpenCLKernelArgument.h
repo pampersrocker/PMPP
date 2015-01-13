@@ -18,8 +18,6 @@ public:
 
 	OpenCLKerneArgument();
 	~OpenCLKerneArgument();
-	OpenCLKernelArgumentType Type() const;
-	OpenCLBufferPtr Buffer() const;
 
 	template<typename T>
 	void SetValue( T value );
@@ -29,7 +27,12 @@ public:
 	template< typename T >
 	void SetLocalBuffer( size_t numElements );
 
+	OpenCLKernelArgumentType Type() const;
+	OpenCLBufferPtr Buffer() const;
 	size_t Size() const;
+
+	template< typename T >
+	T GetValue() const;
 
 protected:
 private:
@@ -39,7 +42,6 @@ private:
 
 	OpenCLKernelArgumentType m_Type;
 	OpenCLBufferPtr m_Buffer;
-
 	size_t m_Size;
 	union
 	{
@@ -52,6 +54,56 @@ private:
 		cl_uint4 UInt4;
 	};
 };
+
+template< typename T >
+T OpenCLKerneArgument::GetValue() const
+{
+	static_assert( false, "Unsupported Type for GetValue!" );
+
+}
+
+
+template<>
+inline
+cl_float OpenCLKerneArgument::GetValue< cl_float >() const
+{
+	return Float;
+}
+
+template<>
+inline
+cl_uint OpenCLKerneArgument::GetValue< cl_uint >() const
+{
+	return UInt;
+}
+
+template<>
+inline
+cl_int OpenCLKerneArgument::GetValue< cl_int >() const
+{
+	return Int;
+}
+
+template<>
+inline
+cl_uchar4 OpenCLKerneArgument::GetValue< cl_uchar4 >() const
+{
+	return UChar4;
+}
+
+template<>
+inline
+cl_float4 OpenCLKerneArgument::GetValue< cl_float4 >() const
+{
+	return Float4;
+}
+
+template<>
+inline
+cl_uint4 OpenCLKerneArgument::GetValue< cl_uint4 >() const
+{
+	return UInt4;
+}
 
 template< typename T >
 void OpenCLKerneArgument::SetLocalBuffer( size_t numElements )

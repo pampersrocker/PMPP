@@ -207,6 +207,8 @@ void OpenCLKernel_tpl<IndexDimension>::Run()
 		globalWorkSize[ i ] = m_GroupCount[ i ] * m_WorkSize[ i ];
 	}
 
+	assert( m_CommandQueue != nullptr );
+
 	CL_ASSERT( clEnqueueNDRangeKernel( m_CommandQueue->CLCommandQueue(), kernel, IndexDimension, nullptr, globalWorkSize, m_WorkSize, 0, nullptr, &m_KernelEvent ) );
 }
 
