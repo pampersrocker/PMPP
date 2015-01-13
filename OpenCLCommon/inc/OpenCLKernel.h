@@ -40,8 +40,6 @@ public:
 	OpenCLKerneArgument CreateAndSetArgumentValue( T value, size_t* index = nullptr );
 	template< typename T >
 	OpenCLKerneArgument CreateArgumentValue( T value );
-	OpenCLKerneArgument CreateAndSetGlobalArgument( OpenCLBufferPtr buffer, size_t* index = nullptr );
-	OpenCLKerneArgument CreateGlobalArgument( OpenCLBufferPtr buffer );
 
 	OpenCLKerneArgument GetArgument( size_t index );
 	size_t AddArgument( OpenCLKerneArgument arg );

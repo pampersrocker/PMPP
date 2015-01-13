@@ -125,16 +125,18 @@ OpenCLKerneArgument OpenCLKernel_tpl<IndexDimension>::CreateAndSetGlobalArgument
 	return arg;
 }
 
+template < unsigned int IndexDimension /*= 1 */>
 template< typename T >
-OpenCLKerneArgument OpenCLKernel_tpl::CreateArgumentValue( T value )
+OpenCLKerneArgument OpenCLKernel_tpl< IndexDimension >::CreateArgumentValue( T value )
 {
 	OpenCLKerneArgument arg;
 	arg.SetValue<T>( value );
 	return arg;
 }
 
+template < unsigned int IndexDimension /*= 1 */>
 template< typename T >
-OpenCLKerneArgument OpenCLKernel_tpl::CreateAndSetArgumentValue( T value, size_t* index /*= nullptr */ )
+OpenCLKerneArgument OpenCLKernel_tpl< IndexDimension >::CreateAndSetArgumentValue( T value, size_t* index /*= nullptr */ )
 {
 	auto arg = CreateArgumentValue<T>( value );
 	size_t idx = AddArgument( arg );
@@ -145,16 +147,18 @@ OpenCLKerneArgument OpenCLKernel_tpl::CreateAndSetArgumentValue( T value, size_t
 	return arg;
 }
 
+template < unsigned int IndexDimension /*= 1 */>
 template< typename T >
-OpenCLKerneArgument OpenCLKernel_tpl::CreateLocalArgument( size_t numElements )
+OpenCLKerneArgument OpenCLKernel_tpl< IndexDimension >::CreateLocalArgument( size_t numElements )
 {
 	OpenCLKerneArgument arg;
 	arg.SetLocalBuffer< T >( numElements );
 	return arg;
 }
 
+template < unsigned int IndexDimension /*= 1 */>
 template< typename T >
-OpenCLKerneArgument OpenCLKernel_tpl::CreateAndSetLocalArgument( size_t numElements, size_t* index /*= nullptr */ )
+OpenCLKerneArgument OpenCLKernel_tpl< IndexDimension >::CreateAndSetLocalArgument( size_t numElements, size_t* index /*= nullptr */ )
 {
 	auto arg = CreateLocalArgument <T>( value );
 	size_t idx = AddArgument( arg );
@@ -234,8 +238,6 @@ template< unsigned int IndexDimension >
 inline
 void OpenCLKernel_tpl<IndexDimension>::ReadOutput( size_t argIdx, void* output )
 {
-	/*Step 11: Read the cout put back to host memory.*/
-	CL_ASSERT(clEnqueueReadBuffer( commandQueue, m_Args[argIdx].memory, CL_TRUE, 0, m_Args[argIdx].size, output, 0, NULL, NULL ));
 
 }
 
