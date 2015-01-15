@@ -91,7 +91,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	kernel->Run();
 	//kernel->WaitForKernel();
 
-	kernel->ReadOutput( 1, outputBuffer );
+	resultArg.Buffer()->ReadBuffer<cl_uchar4>( outputBuffer );
 	
 
 	for( unsigned int y = 0; y < tiledImage.getSize().y; y++ )
