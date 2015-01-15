@@ -12,12 +12,12 @@ enum class OpenCLKernelArgumentType
 	Value
 };
 
-class OpenCLKerneArgument
+class OpenCLKernelArgument
 {
 public:
 
-	OpenCLKerneArgument();
-	~OpenCLKerneArgument();
+	OpenCLKernelArgument();
+	~OpenCLKernelArgument();
 
 	template<typename T>
 	void SetValue( T value );
@@ -56,7 +56,7 @@ private:
 };
 
 template< typename T >
-T OpenCLKerneArgument::GetValue() const
+T OpenCLKernelArgument::GetValue() const
 {
 	static_assert( false, "Unsupported Type for GetValue!" );
 
@@ -65,55 +65,55 @@ T OpenCLKerneArgument::GetValue() const
 
 template<>
 inline
-cl_float OpenCLKerneArgument::GetValue< cl_float >() const
+cl_float OpenCLKernelArgument::GetValue< cl_float >() const
 {
 	return Float;
 }
 
 template<>
 inline
-cl_uint OpenCLKerneArgument::GetValue< cl_uint >() const
+cl_uint OpenCLKernelArgument::GetValue< cl_uint >() const
 {
 	return UInt;
 }
 
 template<>
 inline
-cl_int OpenCLKerneArgument::GetValue< cl_int >() const
+cl_int OpenCLKernelArgument::GetValue< cl_int >() const
 {
 	return Int;
 }
 
 template<>
 inline
-cl_uchar4 OpenCLKerneArgument::GetValue< cl_uchar4 >() const
+cl_uchar4 OpenCLKernelArgument::GetValue< cl_uchar4 >() const
 {
 	return UChar4;
 }
 
 template<>
 inline
-cl_float4 OpenCLKerneArgument::GetValue< cl_float4 >() const
+cl_float4 OpenCLKernelArgument::GetValue< cl_float4 >() const
 {
 	return Float4;
 }
 
 template<>
 inline
-cl_uint4 OpenCLKerneArgument::GetValue< cl_uint4 >() const
+cl_uint4 OpenCLKernelArgument::GetValue< cl_uint4 >() const
 {
 	return UInt4;
 }
 
 template< typename T >
-void OpenCLKerneArgument::SetLocalBuffer( size_t numElements )
+void OpenCLKernelArgument::SetLocalBuffer( size_t numElements )
 {
 	m_Type = OpenCLKernelArgumentType::Local;
 	m_Size = sizeof( T ) * numElements;
 }
 
 template<typename T>
-void OpenCLKerneArgument::SetValueInternal( T value )
+void OpenCLKernelArgument::SetValueInternal( T value )
 {
 	static_assert( false, "Unsupported Type for SetValue!" );
 
@@ -121,49 +121,49 @@ void OpenCLKerneArgument::SetValueInternal( T value )
 
 template<>
 inline
-void OpenCLKerneArgument::SetValueInternal< cl_float >( cl_float value )
+void OpenCLKernelArgument::SetValueInternal< cl_float >( cl_float value )
 {
 	Float = value;
 }
 
 template<>
 inline
-void OpenCLKerneArgument::SetValueInternal< cl_uint >( cl_uint value )
+void OpenCLKernelArgument::SetValueInternal< cl_uint >( cl_uint value )
 {
 	UInt = value;
 }
 
 template<>
 inline
-void OpenCLKerneArgument::SetValueInternal< cl_int >( cl_int value )
+void OpenCLKernelArgument::SetValueInternal< cl_int >( cl_int value )
 {
 	Int = value;
 }
 
 template<>
 inline
-void OpenCLKerneArgument::SetValueInternal< cl_uchar4 >( cl_uchar4 value )
+void OpenCLKernelArgument::SetValueInternal< cl_uchar4 >( cl_uchar4 value )
 {
 	UChar4 = value;
 }
 
 template<>
 inline
-void OpenCLKerneArgument::SetValueInternal< cl_float4 >( cl_float4 value )
+void OpenCLKernelArgument::SetValueInternal< cl_float4 >( cl_float4 value )
 {
 	Float4 = value;
 }
 
 template<>
 inline
-void OpenCLKerneArgument::SetValueInternal< cl_uint4 >( cl_uint4 value )
+void OpenCLKernelArgument::SetValueInternal< cl_uint4 >( cl_uint4 value )
 {
 	UInt4 = value;
 }
 
 template<typename T>
 inline
-void OpenCLKerneArgument::SetValue( T value )
+void OpenCLKernelArgument::SetValue( T value )
 {
 	m_Size = sizeof( T );
 	m_Type = OpenCLKernelArgumentType::Value;

@@ -30,19 +30,19 @@ public:
 	OpenCLKernel_tpl( OpenCLContext* context );
 	void LoadKernel( const std::string& fileName, const std::string& functionName );
 
-	OpenCLKerneArgument CreateAndSetGlobalArgument( OpenCLBufferPtr buffer, size_t* index = nullptr );
-	OpenCLKerneArgument CreateGlobalArgument( OpenCLBufferPtr buffer );
+	OpenCLKernelArgument CreateAndSetGlobalArgument( OpenCLBufferPtr buffer, size_t* index = nullptr );
+	OpenCLKernelArgument CreateGlobalArgument( OpenCLBufferPtr buffer );
 	template< typename T >
-	OpenCLKerneArgument CreateAndSetLocalArgument( size_t numElements, size_t* index = nullptr );
+	OpenCLKernelArgument CreateAndSetLocalArgument( size_t numElements, size_t* index = nullptr );
 	template< typename T >
-	OpenCLKerneArgument CreateLocalArgument( size_t numElements );
+	OpenCLKernelArgument CreateLocalArgument( size_t numElements );
 	template< typename T >
-	OpenCLKerneArgument CreateAndSetArgumentValue( T value, size_t* index = nullptr );
+	OpenCLKernelArgument CreateAndSetArgumentValue( T value, size_t* index = nullptr );
 	template< typename T >
-	OpenCLKerneArgument CreateArgumentValue( T value );
+	OpenCLKernelArgument CreateArgumentValue( T value );
 
-	OpenCLKerneArgument GetArgument( size_t index );
-	size_t AddArgument( OpenCLKerneArgument arg );
+	OpenCLKernelArgument GetArgument( size_t index );
+	size_t AddArgument( OpenCLKernelArgument arg );
 
 	void ReadOutput( size_t argIdx, void* output );
 	template<unsigned int Dimension>
@@ -64,7 +64,7 @@ private:
 	OpenCLCommandQueue* m_CommandQueue;
 	OpenCLContext* m_Context;
 
-	std::vector< OpenCLKerneArgument > m_Args;
+	std::vector< OpenCLKernelArgument > m_Args;
 
 	cl_int m_CurrentStatus;
 

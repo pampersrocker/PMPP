@@ -4,6 +4,7 @@
 #include "OpenCLPlatform.h"
 #include "OpenCLDevice.h"
 #include <direct.h>
+#include <../Program Files (x86)/Microsoft Visual Studio 10.0/VC/include/assert.h>
 using namespace std;
 
 template < unsigned int IndexDimension /*= 1 */>
@@ -97,16 +98,16 @@ void OpenCLKernel_tpl<IndexDimension>::LoadKernel( const std::string& fileName, 
 
 template < unsigned int IndexDimension /*= 1 */>
 inline
-OpenCLKerneArgument OpenCLKernel_tpl<IndexDimension>::CreateGlobalArgument( OpenCLBufferPtr buffer )
+OpenCLKernelArgument OpenCLKernel_tpl<IndexDimension>::CreateGlobalArgument( OpenCLBufferPtr buffer )
 {
-	OpenCLKerneArgument arg;
+	OpenCLKernelArgument arg;
 	arg.SetGlobalBuffer( buffer );
 	return arg;
 }
 
 template < unsigned int IndexDimension /*= 1 */>
 inline
-size_t OpenCLKernel_tpl<IndexDimension>::AddArgument( OpenCLKerneArgument arg )
+size_t OpenCLKernel_tpl<IndexDimension>::AddArgument( OpenCLKernelArgument arg )
 {
 	m_Args.push_back( arg );
 	return m_Args.size() - 1;
@@ -114,7 +115,7 @@ size_t OpenCLKernel_tpl<IndexDimension>::AddArgument( OpenCLKerneArgument arg )
 
 template < unsigned int IndexDimension /*= 1 */>
 inline
-OpenCLKerneArgument OpenCLKernel_tpl<IndexDimension>::CreateAndSetGlobalArgument( OpenCLBufferPtr buffer, size_t* index /*= nullptr */ )
+OpenCLKernelArgument OpenCLKernel_tpl<IndexDimension>::CreateAndSetGlobalArgument( OpenCLBufferPtr buffer, size_t* index /*= nullptr */ )
 {
 	auto arg = CreateGlobalArgument( buffer );
 	size_t idx = AddArgument( arg );
@@ -127,16 +128,16 @@ OpenCLKerneArgument OpenCLKernel_tpl<IndexDimension>::CreateAndSetGlobalArgument
 
 template < unsigned int IndexDimension /*= 1 */>
 template< typename T >
-OpenCLKerneArgument OpenCLKernel_tpl< IndexDimension >::CreateArgumentValue( T value )
+OpenCLKernelArgument OpenCLKernel_tpl< IndexDimension >::CreateArgumentValue( T value )
 {
-	OpenCLKerneArgument arg;
+	OpenCLKernelArgument arg;
 	arg.SetValue<T>( value );
 	return arg;
 }
 
 template < unsigned int IndexDimension /*= 1 */>
 template< typename T >
-OpenCLKerneArgument OpenCLKernel_tpl< IndexDimension >::CreateAndSetArgumentValue( T value, size_t* index /*= nullptr */ )
+OpenCLKernelArgument OpenCLKernel_tpl< IndexDimension >::CreateAndSetArgumentValue( T value, size_t* index /*= nullptr */ )
 {
 	auto arg = CreateArgumentValue<T>( value );
 	size_t idx = AddArgument( arg );
@@ -149,16 +150,16 @@ OpenCLKerneArgument OpenCLKernel_tpl< IndexDimension >::CreateAndSetArgumentValu
 
 template < unsigned int IndexDimension /*= 1 */>
 template< typename T >
-OpenCLKerneArgument OpenCLKernel_tpl< IndexDimension >::CreateLocalArgument( size_t numElements )
+OpenCLKernelArgument OpenCLKernel_tpl< IndexDimension >::CreateLocalArgument( size_t numElements )
 {
-	OpenCLKerneArgument arg;
+	OpenCLKernelArgument arg;
 	arg.SetLocalBuffer< T >( numElements );
 	return arg;
 }
 
 template < unsigned int IndexDimension /*= 1 */>
 template< typename T >
-OpenCLKerneArgument OpenCLKernel_tpl< IndexDimension >::CreateAndSetLocalArgument( size_t numElements, size_t* index /*= nullptr */ )
+OpenCLKernelArgument OpenCLKernel_tpl< IndexDimension >::CreateAndSetLocalArgument( size_t numElements, size_t* index /*= nullptr */ )
 {
 	auto arg = CreateLocalArgument <T>( value );
 	size_t idx = AddArgument( arg );
@@ -171,7 +172,7 @@ OpenCLKerneArgument OpenCLKernel_tpl< IndexDimension >::CreateAndSetLocalArgumen
 
 template < unsigned int IndexDimension /*= 1 */>
 inline
-OpenCLKerneArgument OpenCLKernel_tpl<IndexDimension>::GetArgument( size_t index )
+OpenCLKernelArgument OpenCLKernel_tpl<IndexDimension>::GetArgument( size_t index )
 {
 	assert( index < m_Args.size() );
 	return m_Args[ index ];
