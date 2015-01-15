@@ -21,20 +21,27 @@ void PrefixSum::CalculateResult( std::vector< int >& result ) const
 	}
 }
 
-void PrefixSum::InitOpenCL( OpenCLDevice* device )
+void PrefixSum::InitOpenCL( ReferenceCounted< OpenCLKernel_tpl< 1 >> kernel)
 {
+	kernel->ClearArgs();
+	kernel->CreateAndSetGlobalArgument(
+		kernel->Context()->CreateBuffer<int>(
+		m_Data.size(),
+		OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::ReadOnly,
+		const_cast< int * >( m_Data.data() ) ) );
+	auto resultArg = kernel->CreateAndSetGlobalArgument(
+		kernel->Context()->CreateBuffer<int>(
+		m_Data.size(),
+		OpenCLBufferFlags::WriteOnly ) );
 
-	program.LoadKernel( "PrefixSum.cl", "PrefixSums" );
+	kernel->CreateAndSetLocalArgument<int>( m_Data.size() );
+	kernel->CreateAndSetArgumentValue< int >( m_Data.size() );
 
-	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( int ) * m_Data.size(), const_cast<int *>(m_Data.data()) );
-	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY, sizeof( int ) * m_Data.size() );
-	program.AddKernelArgLocal( sizeof( int ) * m_Data.size() );
-	program.AddKernelArgInt( m_Data.size() );
 
-	program.SetWorkSize<0>( 256 );
-	program.SetGroupCount<0>( 1 );
+	kernel->SetWorkSize<0>( 256 );
+	kernel->SetGroupCount<0>( 1 );
 
-	program.SetArgs();
+	kernel->SetArgs();
 
 }
 

@@ -8,12 +8,12 @@
 #include <random>
 #include <functional>
 #include <ctime>
-class OpenCLDevice;
+#include "OpenCL.h"
 class PrefixSumScenario
 {
 public:
 
-	PrefixSumScenario( size_t size, OpenCLDevice* device );
+	PrefixSumScenario( size_t size, ReferenceCounted< OpenCLKernel_tpl< 1 >> kernel );
 	~PrefixSumScenario();
 
 	std::vector< int > data;
@@ -21,7 +21,7 @@ public:
 	std::vector< int > expected;
 
 
-	OpenCLDevice* device;
+	ReferenceCounted< OpenCLKernel_tpl< 1 >> m_Kernel;
 
 	std::string ToString() const;
 

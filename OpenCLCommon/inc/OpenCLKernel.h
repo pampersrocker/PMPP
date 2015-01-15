@@ -43,6 +43,7 @@ public:
 
 	OpenCLKernelArgument GetArgument( size_t index );
 	size_t AddArgument( OpenCLKernelArgument arg );
+	void ClearArgs();
 
 	template<unsigned int Dimension>
 	void SetWorkSize( size_t size );
@@ -54,6 +55,10 @@ public:
 	OpenCLCommandQueue* CommandQueue() const;
 	void CommandQueue( OpenCLCommandQueue* val );
 
+
+
+	const OpenCLContext* const Context() const;
+
 	void SetArgs();
 
 	void WaitForKernel();
@@ -61,8 +66,8 @@ protected:
 private:
 
 	OpenCLCommandQueue* m_CommandQueue;
-	const OpenCLContext* const m_Context;
-
+	const OpenCLContext* m_Context;
+	
 	std::vector< OpenCLKernelArgument > m_Args;
 
 	cl_int m_CurrentStatus;
@@ -82,6 +87,4 @@ private:
 
 };
 
-
-
-#include "OpenCLKernel.inl"
+#include "OpenCLKernel.inl" 

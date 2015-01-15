@@ -236,6 +236,19 @@ void OpenCLKernel_tpl<IndexDimension>::SetGroupCount( size_t size )
 	m_GroupCount[ Dimension ] = size;
 }
 
+template < unsigned int IndexDimension /*= 1 */>
+const OpenCLContext* const OpenCLKernel_tpl<IndexDimension>::Context() const
+{
+	return m_Context;
+}
+
+template < unsigned int IndexDimension /*= 1 */>
+inline
+void OpenCLKernel_tpl<IndexDimension>::ClearArgs()
+{
+	m_Args.clear();
+}
+
 template <unsigned int IndexDimension>
 inline 
 void OpenCLKernel_tpl<IndexDimension>::SetArgs()
