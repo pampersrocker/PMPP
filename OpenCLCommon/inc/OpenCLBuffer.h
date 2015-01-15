@@ -7,7 +7,7 @@
 
 class OpenCLContext;
 
-enum class OpenCLBufferFlags
+enum class OpenCLBufferFlags : u32
 {
 	None = 0,
 	ReadWrite = CL_MEM_READ_WRITE,
@@ -17,6 +17,13 @@ enum class OpenCLBufferFlags
 	AllocHostPtr = CL_MEM_ALLOC_HOST_PTR,
 	CopyHostPtr = CL_MEM_COPY_HOST_PTR
 };
+
+
+OpenCLBufferFlags operator |( const OpenCLBufferFlags& a, const OpenCLBufferFlags& b ); 
+OpenCLBufferFlags operator &( const OpenCLBufferFlags& a, const OpenCLBufferFlags& b );
+OpenCLBufferFlags operator ^( const OpenCLBufferFlags& a, const OpenCLBufferFlags& b );
+OpenCLBufferFlags operator ~( const OpenCLBufferFlags& a );
+
 
 class OpenCLBuffer
 {

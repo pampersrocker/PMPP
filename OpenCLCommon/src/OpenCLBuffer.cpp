@@ -62,3 +62,26 @@ cl_mem OpenCLBuffer::Memory() const
 {
 	return m_Memory;
 }
+
+OpenCLBufferFlags operator|( const OpenCLBufferFlags& a, const OpenCLBufferFlags& b )
+{
+	return static_cast< OpenCLBufferFlags >( static_cast< unsigned int >( a ) | static_cast< unsigned int >( b ) );
+}
+
+OpenCLBufferFlags operator&( const OpenCLBufferFlags& a, const OpenCLBufferFlags& b )
+{
+	return static_cast< OpenCLBufferFlags >( static_cast< unsigned int >( a ) & static_cast< unsigned int >( b ) );
+
+}
+
+OpenCLBufferFlags operator^( const OpenCLBufferFlags& a, const OpenCLBufferFlags& b )
+{
+	return static_cast< OpenCLBufferFlags >( static_cast< unsigned int >( a ) ^ static_cast< unsigned int >( b ) );
+
+}
+
+OpenCLBufferFlags operator~( const OpenCLBufferFlags& a )
+{
+	return static_cast< OpenCLBufferFlags >( ~static_cast< unsigned int >( a ));
+
+}
