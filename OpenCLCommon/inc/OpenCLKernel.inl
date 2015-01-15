@@ -248,21 +248,20 @@ void OpenCLKernel_tpl<IndexDimension>::SetArgs()
 {
 	for( cl_uint i = 0; i < m_Args.size(); i++ )
 	{
-		if( m_Args[ i ].memory == nullptr )
+		switch( m_Args[i].Type() )
 		{
-			if( m_Args[ i ].size == 0 )
-			{
-				CL_ASSERT( clSetKernelArg( kernel, i, sizeof( cl_uint ), &( m_Args[ i ].value ) ) );
-			}
-			else
-			{
-				CL_ASSERT( clSetKernelArg( kernel, i, m_Args[ i ].size, nullptr ) );
-			}
-		}
-		else
-		{
-			CL_ASSERT( clSetKernelArg( kernel, i, sizeof( cl_mem ), &( m_Args[ i ].memory ) ) );
+		case OpenCLKernelArgumentType::Global:
+			CL_ASSERT( clSetKernelArg( kernel, i, sizeof( cl_mem ), &( m_Args[ i ].Buffer()->Memory()) ) );
+			break;
+		case OpenCLKernelArgumentType::Local:
+			CL_ASSERT( clSetKernelArg( kernel, i, m_Args[ i ]->Size(), nullptr ) );
+			break;
+		case OpenCLKernelArgumentType::Value:
+			CL_ASSERT( clSetKernelArg( kernel, i, m_Args[i]->Size(), &( m_Args[ i ]->Data ) ) );
 
+			break;
+		default:
+			break;
 		}
 	}
 }
