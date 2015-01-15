@@ -22,7 +22,7 @@ OpenCLBufferFlags OpenCLBuffer::Flags() const
 	return m_Flags;
 }
 
-void OpenCLBuffer::Create( OpenCLContext* context, size_t size, OpenCLBufferFlags flags, void* initialData /*= nullptr */ )
+void OpenCLBuffer::Create( const OpenCLContext* context, size_t size, OpenCLBufferFlags flags, void* initialData /*= nullptr */ )
 {
 	// Release old memory (if any) so we don't get leaks
 	Release();
@@ -48,7 +48,7 @@ void OpenCLBuffer::Release()
 
 }
 
-OpenCLContext* OpenCLBuffer::Context() const
+const OpenCLContext* OpenCLBuffer::Context() const
 {
 	return m_Context;
 }
@@ -61,6 +61,11 @@ size_t OpenCLBuffer::Size() const
 cl_mem OpenCLBuffer::Memory() const
 {
 	return m_Memory;
+}
+
+const cl_mem* OpenCLBuffer::MemoryPtr() const
+{
+	return &m_Memory;
 }
 
 OpenCLBufferFlags operator|( const OpenCLBufferFlags& a, const OpenCLBufferFlags& b )

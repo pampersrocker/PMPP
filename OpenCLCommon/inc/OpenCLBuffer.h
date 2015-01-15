@@ -4,6 +4,7 @@
 
 #include "stdafx.h"
 #include "ReferenceCounted.hpp"
+#include <../Program Files (x86)/Microsoft Visual Studio 10.0/VC/include/assert.h>
 
 class OpenCLContext;
 
@@ -37,8 +38,9 @@ public:
 	friend class OpenCLContext;
 
 	cl_mem Memory() const;
+	const cl_mem* MemoryPtr() const;
 	size_t Size() const;
-	OpenCLContext* Context() const;
+	const OpenCLContext* Context() const;
 	OpenCLBufferFlags Flags() const;
 
 	template <typename T>
@@ -46,11 +48,11 @@ public:
 
 private:
 
-	void Create( OpenCLContext* context, size_t size, OpenCLBufferFlags flags, void* initialData = nullptr );
+	void Create( const OpenCLContext* context, size_t size, OpenCLBufferFlags flags, void* initialData = nullptr );
 
 	cl_mem m_Memory;
 	size_t m_Size;
-	OpenCLContext* m_Context;
+	const OpenCLContext* m_Context;
 	OpenCLBufferFlags m_Flags;
 };
 
@@ -60,9 +62,9 @@ template <typename T>
 inline
 void OpenCLBuffer::ReadBuffer( T* out ) const
 {
-	assert( ( Flags() & ( OpenCLBufferFlags::ReadWrite | OpenCLBufferFlags::WriteOnly ) ) != 0 );
+	assert( ( Flags() & ( OpenCLBufferFlags::ReadWrite | OpenCLBufferFlags::WriteOnly ) ) != OpenCLBufferFlags::None );
 	// Read the cout put back to host memory.
-	CL_ASSERT( clEnqueueReadBuffer( commandQueue, m_Memory, CL_TRUE, 0, Size(), (void*)out, 0, nullptr, nullptr) );
+	CL_ASSERT( clEnqueueReadBuffer( m_Context->CommandQueue()->CLCommandQueue(), m_Memory, CL_TRUE, 0, Size(), (void*)out, 0, nullptr, nullptr) );
 
 }
 

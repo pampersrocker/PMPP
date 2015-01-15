@@ -9,7 +9,7 @@ using namespace std;
 
 template < unsigned int IndexDimension /*= 1 */>
 inline
-OpenCLKernel_tpl<IndexDimension>::OpenCLKernel_tpl( OpenCLContext* context ) :
+OpenCLKernel_tpl<IndexDimension>::OpenCLKernel_tpl( const OpenCLContext* const context ) :
 	m_Context( context ),
 	m_CommandQueue( context->CommandQueue() )
 {
@@ -68,7 +68,7 @@ void OpenCLKernel_tpl<IndexDimension>::LoadKernel( const std::string& fileName, 
 	CL_ASSERT(convertToString( filename.c_str(), sourceStr ));
 	const char *source = sourceStr.c_str();
 	size_t sourceSize [] = { strlen( source ) };
-	m_Program = clCreateProgramWithSource( context, 1, &source, sourceSize, NULL );
+	m_Program = clCreateProgramWithSource( m_Context->CLContext(), 1, &source, sourceSize, NULL );
 
 	char buffer[255];
 	char *cwd = _getcwd(buffer, sizeof(buffer));
@@ -79,7 +79,8 @@ void OpenCLKernel_tpl<IndexDimension>::LoadKernel( const std::string& fileName, 
 	}
 
 	/*Step 6: Build program. */
-	m_CurrentStatus = clBuildProgram( m_Program, 1, m_Context->Device()->CLDeviceId(), ("-I " + s_cwd).c_str(), NULL, NULL );
+	cl_device_id id = m_Context->Device()->CLDeviceId();
+	m_CurrentStatus = clBuildProgram( m_Program, 1, &id, ("-I " + s_cwd).c_str(), NULL, NULL );
 	if( m_CurrentStatus )
 	{
 		char msg[ 120000 ];
@@ -235,13 +236,6 @@ void OpenCLKernel_tpl<IndexDimension>::SetGroupCount( size_t size )
 	m_GroupCount[ Dimension ] = size;
 }
 
-template< unsigned int IndexDimension >
-inline
-void OpenCLKernel_tpl<IndexDimension>::ReadOutput( size_t argIdx, void* output )
-{
-
-}
-
 template <unsigned int IndexDimension>
 inline 
 void OpenCLKernel_tpl<IndexDimension>::SetArgs()
@@ -251,13 +245,13 @@ void OpenCLKernel_tpl<IndexDimension>::SetArgs()
 		switch( m_Args[i].Type() )
 		{
 		case OpenCLKernelArgumentType::Global:
-			CL_ASSERT( clSetKernelArg( kernel, i, sizeof( cl_mem ), &( m_Args[ i ].Buffer()->Memory()) ) );
+			CL_ASSERT( clSetKernelArg( kernel, i, sizeof( cl_mem ), ( m_Args[ i ].Buffer()->MemoryPtr()) ) );
 			break;
 		case OpenCLKernelArgumentType::Local:
-			CL_ASSERT( clSetKernelArg( kernel, i, m_Args[ i ]->Size(), nullptr ) );
+			CL_ASSERT( clSetKernelArg( kernel, i, m_Args[ i ].Size(), nullptr ) );
 			break;
 		case OpenCLKernelArgumentType::Value:
-			CL_ASSERT( clSetKernelArg( kernel, i, m_Args[i]->Size(), &( m_Args[ i ]->Data ) ) );
+			CL_ASSERT( clSetKernelArg( kernel, i, m_Args[i].Size(), m_Args[ i ].DataPtr() ) );
 
 			break;
 		default:

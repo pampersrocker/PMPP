@@ -27,7 +27,7 @@ public:
 
 	static_assert( IndexDimension > 0, "IndexDimension Template argument for OpenCLProgram_tpl must be bigger than 0!" );
 
-	OpenCLKernel_tpl( OpenCLContext* context );
+	OpenCLKernel_tpl( const OpenCLContext* const context );
 	void LoadKernel( const std::string& fileName, const std::string& functionName );
 
 	OpenCLKernelArgument CreateAndSetGlobalArgument( OpenCLBufferPtr buffer, size_t* index = nullptr );
@@ -44,7 +44,6 @@ public:
 	OpenCLKernelArgument GetArgument( size_t index );
 	size_t AddArgument( OpenCLKernelArgument arg );
 
-	void ReadOutput( size_t argIdx, void* output );
 	template<unsigned int Dimension>
 	void SetWorkSize( size_t size );
 	template<unsigned int Dimension>
@@ -62,7 +61,7 @@ protected:
 private:
 
 	OpenCLCommandQueue* m_CommandQueue;
-	OpenCLContext* m_Context;
+	const OpenCLContext* const m_Context;
 
 	std::vector< OpenCLKernelArgument > m_Args;
 

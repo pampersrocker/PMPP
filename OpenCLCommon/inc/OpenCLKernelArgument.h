@@ -34,6 +34,8 @@ public:
 	template< typename T >
 	T GetValue() const;
 
+	const void* DataPtr() const;
+
 protected:
 private:
 

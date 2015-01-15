@@ -12,6 +12,9 @@ OpenCLContext::OpenCLContext( OpenCLDevice* parentDevice ) :
 	cl_device_id deviceId = parentDevice->CLDeviceId();
 	cl_int status = 0;
 	m_Context = clCreateContext( nullptr, 1, &deviceId, nullptr, nullptr, &status );
+
+	CreateCommandQueue();
+
 	CL_VERIFY( status );
 }
 
@@ -20,30 +23,12 @@ OpenCLContext::~OpenCLContext()
 
 	m_Device = nullptr;
 	CL_ASSERT( clReleaseContext( m_Context ) );
+	if (m_CommandQueue)
+	{
+		delete m_CommandQueue;
+		m_CommandQueue = nullptr;
+	}
 	m_Context = nullptr;
-}
-
-template<typename T>
-inline 
-OpenCLBufferPtr OpenCLContext::CreateBuffer( size_t numElements, OpenCLBufferFlags flags, const T* initialData /*= nullptr */ ) const
-{
-	OpenCLBufferPtr buffer( new OpenCLBuffer() );
-
-	buffer->Create( this, sizeof( T )*numElements, flags, initialData );
-
-	return buffer;
-
-}
-
-template< size_t N >
-inline
-ReferenceCounted< OpenCLKernel_tpl< N > >
-OpenCLContext::CreateKernel( const std::string& file, const std::string& functionName ) const
-{
-	ReferenceCounted< OpenCLKernel_tpl< N > > kernel = new OpenCLKernel_tpl< N >( this );
-	kernel->LoadKernel( file, functionName );
-
-	return kernel;
 }
 
 OpenCLDevice* OpenCLContext::Device() const

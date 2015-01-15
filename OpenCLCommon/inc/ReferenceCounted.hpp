@@ -57,5 +57,7 @@ private:
 
 };
 
+#include "ReferenceCounted.inl"
+
 
 #endif // ReferenceCounted_h__

@@ -36,3 +36,8 @@ size_t OpenCLKernelArgument::Size() const
 {
 	return m_Size;
 }
+
+const void* OpenCLKernelArgument::DataPtr() const
+{
+	return &Data;
+}
