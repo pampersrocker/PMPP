@@ -21,7 +21,7 @@ public:
 	std::vector< int > expected;
 
 
-	ReferenceCounted< OpenCLKernel_tpl< 1 >> m_Kernel;
+	ReferenceCounted< OpenCLKernel_tpl< 1 >> kernel;
 
 	std::string ToString() const;
 

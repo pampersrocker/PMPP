@@ -26,7 +26,7 @@ Matrix resultGPU;
 cl_uint selectedPlatformIdx = 0;
 cl_uint selectedDeviceIdx = 0;
 
-typedef OpenCLKernel_tpl<1> OpenCLProgram;
+typedef OpenCLKernel_tpl<1> OpenCLKernel;
 
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -62,7 +62,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	expected = mat1 * mat2;
 
 	cout << "Expected Result calculated" << std::endl;
-	OpenCLProgram program;
+	OpenCLKernel program;
 	program.InitializeCL();
 	int i = 0;
 	for( auto platform : program.Platforms() )
@@ -102,7 +102,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 BPP_BEGIN_BENCHMARK( MatrixMult, GPU )
 
-OpenCLProgram program;
+OpenCLKernel program;
 
 BPP_INITIALIZE_BENCHMARK
 {

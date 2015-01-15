@@ -162,7 +162,7 @@ template < unsigned int IndexDimension /*= 1 */>
 template< typename T >
 OpenCLKernelArgument OpenCLKernel_tpl< IndexDimension >::CreateAndSetLocalArgument( size_t numElements, size_t* index /*= nullptr */ )
 {
-	auto arg = CreateLocalArgument <T>( value );
+	auto arg = CreateLocalArgument <T>( numElements );
 	size_t idx = AddArgument( arg );
 	if( index )
 	{

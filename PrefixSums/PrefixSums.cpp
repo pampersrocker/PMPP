@@ -6,18 +6,21 @@
 #include "Logging/BPPDefaultConsoleLogger.hpp"
 
 #include "PrefixSum.h"
+#include "OpenCL.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	OpenCLManager clManager;
 	clManager.Initialize();
-	clManager.ConsoleSelectPlatformAndDevice();
-	OpenCLProgram program;
+	auto device = clManager.ConsoleSelectPlatformAndDevice();
+	auto context = device->CreateContext();
+	OpenCLKernel kernel = context->CreateKernel<1>( "CL/PrefixSum.cl", "PrefixSums" );
+	
 	
 
 	std::vector< PrefixSumScenario > scenarios{
 		//PrefixSumScenario( 256, selectedDeviceIdx, selectedPlatformIdx ),
-		PrefixSumScenario( 512, nullptr ),
+		PrefixSumScenario( 512, kernel),
 		//PrefixSumScenario( 1024, selectedDeviceIdx, selectedPlatformIdx ),
 		//PrefixSumScenario( 2048, selectedDeviceIdx, selectedPlatformIdx ),
 		//PrefixSumScenario( 4096, selectedDeviceIdx, selectedPlatformIdx ),

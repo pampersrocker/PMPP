@@ -23,13 +23,15 @@ void PrefixSum::CalculateResult( std::vector< int >& result ) const
 
 void PrefixSum::InitOpenCL( ReferenceCounted< OpenCLKernel_tpl< 1 >> kernel)
 {
+	this->kernel = kernel;
+
 	kernel->ClearArgs();
 	kernel->CreateAndSetGlobalArgument(
 		kernel->Context()->CreateBuffer<int>(
 		m_Data.size(),
 		OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::ReadOnly,
 		const_cast< int * >( m_Data.data() ) ) );
-	auto resultArg = kernel->CreateAndSetGlobalArgument(
+	m_ResultArgument = kernel->CreateAndSetGlobalArgument(
 		kernel->Context()->CreateBuffer<int>(
 		m_Data.size(),
 		OpenCLBufferFlags::WriteOnly ) );
@@ -47,18 +49,20 @@ void PrefixSum::InitOpenCL( ReferenceCounted< OpenCLKernel_tpl< 1 >> kernel)
 
 void PrefixSum::RunOpenCL()
 {
-	program.Run();
+	kernel->Run();
 
-	program.WaitForKernel();
+	kernel->WaitForKernel();
 }
 
 void PrefixSum::ReleaseOpenCL( const std::vector<int>& expected, std::vector<int>* result )
 {
-	program.ReadOutput( 1, result->data() );
+	//kernel->ReadOutput( 1, result->data() );
+
+	m_ResultArgument.Buffer()->ReadBuffer( result->data() );
 
 	CheckResult( result, &expected );
 
-	program.Release();
+	kernel->Release();
 
 
 }
