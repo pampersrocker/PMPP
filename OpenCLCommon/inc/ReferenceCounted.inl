@@ -84,7 +84,7 @@ ReferenceCounted<T, Allocator, RefCountPolicy>::ReferenceCounted( ReferenceCount
 	m_Count( refCount.m_Count )
 {
 	refCount.m_CountedPointer = nullptr;
-	m_Count = nullptr;
+	refCount.m_Count = nullptr;
 }
 
 template< typename T, typename Allocator, typename RefCountPolicy>
