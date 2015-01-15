@@ -81,7 +81,7 @@ bool OpenCLDevice::LoadData()
 	return true;
 }
 
-OpenCLContext* OpenCLDevice::CreateContext()
+ReferenceCounted<OpenCLContext > OpenCLDevice::CreateContext()
 {
-	return new OpenCLContext( this );
+	return ReferenceCounted< OpenCLContext>( new OpenCLContext( this ) );
 }

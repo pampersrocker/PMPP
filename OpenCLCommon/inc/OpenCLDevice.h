@@ -1,6 +1,7 @@
 #pragma once
 #include <CL\cl.h>
 #include <string>
+#include "ReferenceCounted.hpp"
 class OpenCLPlatform;
 class OpenCLContext;
 
@@ -11,7 +12,7 @@ public:
 	OpenCLPlatform* Platform() const;
 	cl_device_id CLDeviceId() const;
 
-	OpenCLContext* CreateContext();
+	ReferenceCounted< OpenCLContext > CreateContext();
 
 	template <unsigned int IndexDimension>
 	friend class OpenCLKernel_tpl;
