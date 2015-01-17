@@ -62,9 +62,6 @@ void PrefixSum::ReleaseOpenCL( const std::vector<int>& expected, std::vector<int
 
 	CheckResult( result, &expected );
 
-	kernel->Release();
-
-
 }
 
 bool PrefixSum::CheckResult( const std::vector< int >* result, const std::vector< int >* expected )

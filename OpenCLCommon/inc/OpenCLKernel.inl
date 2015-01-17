@@ -183,9 +183,10 @@ template< unsigned int IndexDimension >
 inline
 void OpenCLKernel_tpl<IndexDimension>::Release()
 {
-	/*Step 12: Clean the resources.*/
 	CL_ASSERT(clReleaseKernel( kernel ));				//Release kernel.
+	kernel = nullptr;
 	CL_ASSERT(clReleaseProgram( m_Program ));				//Release the program object.
+	m_Program = nullptr;
 	m_Args.clear();	
 }
 
@@ -255,10 +256,15 @@ void OpenCLKernel_tpl<IndexDimension>::SetArgs()
 {
 	for( cl_uint i = 0; i < m_Args.size(); i++ )
 	{
+		const void* memPtr = nullptr;
+		if( m_Args[ i ].Buffer().Valid() )
+		{
+			 memPtr = ( m_Args[ i ].Buffer()->MemoryPtr() );
+		}
 		switch( m_Args[i].Type() )
 		{
 		case OpenCLKernelArgumentType::Global:
-			CL_ASSERT( clSetKernelArg( kernel, i, sizeof( cl_mem ), ( m_Args[ i ].Buffer()->MemoryPtr()) ) );
+			CL_ASSERT( clSetKernelArg( kernel, i, sizeof( cl_mem ), memPtr ) );
 			break;
 		case OpenCLKernelArgumentType::Local:
 			CL_ASSERT( clSetKernelArg( kernel, i, m_Args[ i ].Size(), nullptr ) );

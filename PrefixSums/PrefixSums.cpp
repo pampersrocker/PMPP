@@ -55,6 +55,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		benchmarker.Log();
 
 		benchmarker.Release();
+
+		clManager.Release();
+
+		kernel->Release();
 	}
 
 }
