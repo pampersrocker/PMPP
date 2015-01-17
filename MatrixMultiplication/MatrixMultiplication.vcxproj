@@ -176,7 +176,7 @@
   <ItemGroup>
     <ClInclude Include="inc\Matrix.h" />
     <ClInclude Include="MatrixMultScenario.h" />
-    <ClInclude Include="SharedCPPCL.h" />
+    <ClInclude Include="SharedCPPCL.cl" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>

@@ -9,9 +9,9 @@ class MatrixMultScenario
 public:
 
 	ReferenceCounted< OpenCLKernel_tpl<1> > kernel;
-	ReferenceCounted< OpenCLKernel_tpl<1> > kernelShared;
-	ReferenceCounted< OpenCLKernel_tpl<1> > kernelSharedSafe;
-	ReferenceCounted< OpenCLKernel_tpl<1> > kernelSharedTransposed;
+	ReferenceCounted< OpenCLKernel_tpl<2> > kernelShared;
+	ReferenceCounted< OpenCLKernel_tpl<2> > kernelSharedSafe;
+	ReferenceCounted< OpenCLKernel_tpl<2> > kernelSharedTransposed;
 
 	std::string ToString() const;
 

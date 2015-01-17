@@ -1,6 +1,6 @@
 
 
-#include "SharedCPPCL.h"
+#include "SharedCPPCL.cl"
 
 typedef struct
 {

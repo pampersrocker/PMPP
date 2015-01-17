@@ -34,7 +34,10 @@
     <ClInclude Include="inc\Matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SharedCPPCL.h">
+    <ClInclude Include="MatrixMultScenario.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedCPPCL.cl">
       <Filter>CL</Filter>
     </ClInclude>
   </ItemGroup>
