@@ -6,29 +6,21 @@
 #include "Logging/BPPDefaultConsoleLogger.hpp"
 
 #include "PrefixSum.h"
+#include "OpenCL.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	size_t selectedPlatformIdx;
-	size_t selectedDeviceIdx;
-	OpenCLProgram program;
-	program.InitializeCL();
-	int i = 0;
-	for( auto platform : program.Platforms() )
-	{
-		std::cout << "[ " << i++ << " ] " << platform->PlatformName() << std::endl;
-	}
-	cin >> selectedPlatformIdx;
-	i = 0;
-	for( auto device : ( program.Platforms()[ selectedPlatformIdx ]->Devices() ) )
-	{
-		std::cout << "[ " << i++ << " ] " << device->cl_device_name << " (" << ( device->CL_device_type == CL_DEVICE_TYPE_GPU ? "GPU" : "CPU" ) << ")" << std::endl;
-	}
-	cin >> selectedDeviceIdx;
+	OpenCLManager clManager;
+	clManager.Initialize();
+	auto device = clManager.ConsoleSelectPlatformAndDevice();
+	auto context = device->CreateContext();
+	OpenCLKernel kernel = context->CreateKernel<1>( "CL/PrefixSum.cl", "PrefixSums" );
+	
+	
 
 	std::vector< PrefixSumScenario > scenarios{
 		//PrefixSumScenario( 256, selectedDeviceIdx, selectedPlatformIdx ),
-		PrefixSumScenario( 512, selectedDeviceIdx, selectedPlatformIdx ),
+		PrefixSumScenario( 512, kernel),
 		//PrefixSumScenario( 1024, selectedDeviceIdx, selectedPlatformIdx ),
 		//PrefixSumScenario( 2048, selectedDeviceIdx, selectedPlatformIdx ),
 		//PrefixSumScenario( 4096, selectedDeviceIdx, selectedPlatformIdx ),
@@ -63,6 +55,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		benchmarker.Log();
 
 		benchmarker.Release();
+
+		clManager.Release();
+
+		kernel->Release();
 	}
 
 }

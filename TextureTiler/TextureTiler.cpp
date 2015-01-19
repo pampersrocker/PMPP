@@ -5,7 +5,7 @@
 #include <iostream>
 #include "OpenCL.h"
 
-typedef OpenCLProgram_tpl<1> OpenCLProgram;
+typedef ReferenceCounted< OpenCLKernel_tpl<1> > OpenCLKernelPtr;
 
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -59,41 +59,40 @@ int _tmain(int argc, _TCHAR* argv[])
 	gravelTiled.loadFromImage( tiledImage );
 	rawSprite.setScale( scale, scale );
 
-	size_t selectedPlatformIdx;
-	size_t selectedDeviceIdx;
-	OpenCLProgram program;
-	program.InitializeCL();
-	int i = 0;
-	for( auto platform : program.Platforms() )
-	{
-		std::cout << "[ " << i++ << " ] " << platform->PlatformName() << std::endl;
-	}
-	cin >> selectedPlatformIdx;
-	i = 0;
-	for( auto device : ( program.Platforms()[ selectedPlatformIdx ]->Devices() ) )
-	{
-		std::cout << "[ " << i++ << " ] " << device->cl_device_name << " (" << ( device->CL_device_type == CL_DEVICE_TYPE_GPU ? "GPU" : "CPU" ) << ")" << std::endl;
-	}
-	cin >> selectedDeviceIdx;
+	OpenCLManager clManager;
+	clManager.Initialize();
+	auto* device = clManager.ConsoleSelectPlatformAndDevice();
 
-	program.SelectPlatformAndDevice( selectedPlatformIdx, selectedDeviceIdx );
-	program.LoadKernel( "CL/TextureTiler.cl", "MakeTile" );
+	auto clContext = device->CreateContext();
 
-	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, size * sizeof( cl_uchar4 ), imageBuffer );
-	program.AddKernelArgGlobal( CL_MEM_WRITE_ONLY , size * sizeof( cl_uchar4 ) );
-	program.AddKernelArgInt( rawImage.getSize().x );
-	program.AddKernelArgInt( rawImage.getSize().y );
+	OpenCLKernelPtr kernel = clContext->CreateKernel<1>( "CL/TextureTiler.cl", "MakeTile" );
 
-	program.SetWorkSize<0>( 256 );
+
+
+	kernel->CreateAndSetGlobalArgument( 
+		clContext->CreateBuffer<cl_uchar4>( 
+		size, 
+		OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::ReadOnly, 
+		imageBuffer ));
+
+	OpenCLKernelArgument resultArg = kernel->CreateAndSetGlobalArgument(
+		clContext->CreateBuffer<cl_uchar4 >( size, OpenCLBufferFlags::WriteOnly ) );
+
+
+	kernel->CreateAndSetArgumentValue< cl_uint >( rawImage.getSize().x ); 
+	kernel->CreateAndSetArgumentValue< cl_uint >( rawImage.getSize().y );
+
+	kernel->SetWorkSize<0>( 256 );
 	int groupCount = size / 256;
 	groupCount++;
-	program.SetGroupCount<0>( groupCount );
+	kernel->SetGroupCount<0>( groupCount );
 
-	program.SetArgs();
-	program.Run();
-	//program.WaitForKernel();
+	kernel->SetArgs();
+	kernel->Run();
+	//kernel->WaitForKernel();
 
-	program.ReadOutput( 1, outputBuffer );
+	resultArg.Buffer()->ReadBuffer<cl_uchar4>( outputBuffer );
+	
 
 	for( unsigned int y = 0; y < tiledImage.getSize().y; y++ )
 	{
@@ -111,7 +110,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	gravelTiled.loadFromImage( tiledImage );
 
-	program.Release();
+	kernel->Release();
+
+	clManager.Release();
 
 	while( window.isOpen() )
 	{

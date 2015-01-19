@@ -69,7 +69,7 @@ OpenCLPlatform::~OpenCLPlatform()
 	m_Devices.clear();
 }
 
-cl_platform_id OpenCLPlatform::PlatformId() const
+cl_platform_id OpenCLPlatform::CLPlatformId() const
 {
 	return m_PlatformId;
 }

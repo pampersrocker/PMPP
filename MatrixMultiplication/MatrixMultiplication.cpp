@@ -3,16 +3,16 @@
 
 #include "stdafx.h"
 
-#include "OpenCLProgram.h"
-#include "OpenCLPlatform.h"
-#include "OpenCLDevice.h"
+#include "OpenCL.h"
 #include "Matrix.h"
 #include <iostream>
 #include <random>
+#include "MatrixMultScenario.h"
+#define BPP_CUSTOM_SCENARIO ::MatrixMultScenario
 #include <bpp.hpp>
 #include <functional>
 #include "Logging\BPPDefaultConsoleLogger.hpp"
-#include "SharedCPPCL.h"
+#include "SharedCPPCL.cl"
 
 using namespace std;
 typedef Matrix_tpl<float> Matrix;
@@ -26,7 +26,7 @@ Matrix resultGPU;
 cl_uint selectedPlatformIdx = 0;
 cl_uint selectedDeviceIdx = 0;
 
-typedef OpenCLProgram_tpl<1> OpenCLProgram;
+typedef OpenCLKernel_tpl<1> OpenCLKernel;
 
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -62,21 +62,18 @@ int _tmain(int argc, _TCHAR* argv[])
 	expected = mat1 * mat2;
 
 	cout << "Expected Result calculated" << std::endl;
-	OpenCLProgram program;
-	program.InitializeCL();
-	int i = 0;
-	for( auto platform : program.Platforms() )
-	{
-		std::cout << "[ " << i++ << " ] " << platform->PlatformName() << std::endl;
-	}
-	cin >> selectedPlatformIdx;
-	i = 0;
-	for( auto device : ( program.Platforms()[ selectedPlatformIdx ]->Devices() ) )
-	{
-		std::cout << "[ " << i++ << " ] " << device->cl_device_name << " (" << ( device->CL_device_type == CL_DEVICE_TYPE_GPU ? "GPU" : "CPU" ) << ")" << std::endl;
-	}
-	cin >> selectedDeviceIdx;
+	
+	OpenCLManager clManager;
+	clManager.Initialize();
 
+	auto* device = clManager.ConsoleSelectPlatformAndDevice();
+	auto context = device->CreateContext();
+
+	MatrixMultScenario scenario;
+	scenario.kernel = context->CreateKernel<1>( "CL/MatrixMultiplication.cl", "matmult" );
+	scenario.kernelShared = context->CreateKernel<2>( "CL/MatrixMultiplicationShared.cl", "MatrixMultShared" );
+	scenario.kernelSharedSafe = context->CreateKernel<2>( "CL/MatrixMultiplicationSharedSafe.cl", "MatrixMultShared" );
+	scenario.kernelSharedTransposed = context->CreateKernel<2>( "CL/MatrixMultiplicationSharedTransposed.cl", "MatrixMultShared" );
 
 	{
 		using namespace bpp;
@@ -84,7 +81,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		DefaultConsoleLogger logger;
 		benchmarker.AddLogger( &logger );
 
-		benchmarker.Iterations( 5 );
+		benchmarker.AddScenario( &scenario );
+
+		benchmarker.Iterations( 1 );
 
 		benchmarker.Run();
 
@@ -102,41 +101,43 @@ int _tmain(int argc, _TCHAR* argv[])
 
 BPP_BEGIN_BENCHMARK( MatrixMult, GPU )
 
-OpenCLProgram program;
-
 BPP_INITIALIZE_BENCHMARK
 {
 	for( size_t i = 0; i < resultGPU.SizeX()*resultGPU.SizeY(); i++ )
 	{
 		resultGPU.Data()[ i ] = 0.0f;
 	}
-	program.InitializeCL();
 
-	program.SelectPlatformAndDevice( selectedPlatformIdx, selectedDeviceIdx );
+	auto kernel = curScenario->kernel;
 
-	program.LoadKernel( "MatrixMultiplication.cl", "matmult" );
+	kernel->ClearArgs();
 
-	program.AddKernelArgInt( mat1.SizeX() );
-	program.AddKernelArgInt( resultGPU.SizeX() );
-	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat1.SizeX()*mat1.SizeY(), mat1.Data() );
-	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat2.SizeX()*mat2.SizeY(), mat2.Data() );
-	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof( float )*resultGPU.SizeX()*resultGPU.SizeY(), resultGPU.Data() );
+	kernel->CreateAndSetArgumentValue<cl_uint>( mat1.SizeX() );
+	kernel->CreateAndSetArgumentValue<cl_uint>( resultGPU.SizeX() );
+	
+	kernel->CreateAndSetGlobalArgument(
+		kernel->Context()->CreateBuffer<float>( mat1.SizeX()*mat1.SizeY(), OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::ReadOnly, mat1.Data() ) );
+	kernel->CreateAndSetGlobalArgument(
+		kernel->Context()->CreateBuffer<float>( mat2.SizeX()*mat2.SizeY(), OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::ReadOnly, mat2.Data() ) );
 
-	program.SetWorkSize<0>( program.SelectedDevice()->cl_device_max_work_group_size ); 
+	kernel->CreateAndSetGlobalArgument(
+		kernel->Context()->CreateBuffer<float>( resultGPU.SizeX()*resultGPU.SizeY(), OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::WriteOnly, resultGPU.Data() ) );
+	
+	kernel->SetWorkSize<0>( kernel->Context()->Device()->cl_device_max_work_group_size ); 
 
-	program.SetArgs();
+	kernel->SetArgs();
 }
 
 BPP_BENCHMARK
 {
-	program.Run();
+	curScenario->kernel->Run();
 
-	program.WaitForKernel();
+	curScenario->kernel->WaitForKernel();
 }
 
 BPP_RELEASE_BENCHMARK
 {
-	program.ReadOutput( 4, resultGPU.Data() );
+	curScenario->kernel->GetArgument( 4 ).Buffer()->ReadBuffer( resultGPU.Data() );
 
 	if( expected == resultGPU )
 	{
@@ -149,55 +150,55 @@ BPP_RELEASE_BENCHMARK
 		cout << "Idx: " << idx << " Expected:" << expected.Data()[idx] << " Got:" << resultGPU.Data()[ idx ] << std::endl;
 	}
 
-	program.Release();
 }
 
 BPP_END_BENCHMARK
 
 BPP_BEGIN_BENCHMARK( MatrixMult, GPU_Shared )
 
-OpenCLProgram_tpl<2> program;
-
 BPP_INITIALIZE_BENCHMARK
 {
 	for( size_t i = 0; i < resultGPU.SizeX()*resultGPU.SizeY(); i++ )
 	{
-		resultGPU.Data()[ i ] = -1.0f;
+		resultGPU.Data()[ i ] = 0.0f;
 	}
 
-	program.InitializeCL();
+	auto kernel = curScenario->kernelShared;
 
-	program.SelectPlatformAndDevice( selectedPlatformIdx, selectedDeviceIdx );
+	kernel->ClearArgs();
 
-	program.LoadKernel( "MatrixMultiplicationShared.cl", "MatrixMultShared" );
+	kernel->CreateAndSetArgumentValue<cl_uint>( mat1.SizeX() );
+	kernel->CreateAndSetArgumentValue<cl_uint>( resultGPU.SizeX() );
 
-	program.AddKernelArgInt( mat1.SizeX() );
-	program.AddKernelArgInt( resultGPU.SizeX() );
-	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat1.SizeX()*mat1.SizeY(), mat1.Data() );
-	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat2.SizeX()*mat2.SizeY(), mat2.Data() );
-	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof( float )*resultGPU.SizeX()*resultGPU.SizeY(), resultGPU.Data() );
-	program.AddKernelArgLocal( sizeof( float ) * BLOCK_SIZE * BLOCK_SIZE );
-	program.AddKernelArgLocal( sizeof( float ) * BLOCK_SIZE * BLOCK_SIZE );
+	kernel->CreateAndSetGlobalArgument(
+		kernel->Context()->CreateBuffer<float>( mat1.SizeX()*mat1.SizeY(), OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::ReadOnly, mat1.Data() ) );
+	kernel->CreateAndSetGlobalArgument(
+		kernel->Context()->CreateBuffer<float>( mat2.SizeX()*mat2.SizeY(), OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::ReadOnly, mat2.Data() ) );
 
-	program.SetWorkSize<0>( BLOCK_SIZE );
-	program.SetWorkSize<1>( BLOCK_SIZE );
+	kernel->CreateAndSetGlobalArgument(
+		kernel->Context()->CreateBuffer<float>( resultGPU.SizeX()*resultGPU.SizeY(), OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::WriteOnly, resultGPU.Data() ) );
 
-	program.SetGroupCount<0>( mat1.SizeX() / BLOCK_SIZE );
-	program.SetGroupCount<1>( mat1.SizeX() / BLOCK_SIZE );
+	kernel->CreateAndSetLocalArgument<float>( BLOCK_SIZE * BLOCK_SIZE );
+	kernel->CreateAndSetLocalArgument<float>( BLOCK_SIZE * BLOCK_SIZE );
+	kernel->SetWorkSize<0>( BLOCK_SIZE );
+	kernel->SetWorkSize<1>( BLOCK_SIZE );
+	kernel->SetGroupCount<0>( mat1.SizeX() / BLOCK_SIZE );
+	kernel->SetGroupCount<1>( mat1.SizeX() / BLOCK_SIZE );
 
-	program.SetArgs();
+
+	kernel->SetArgs();
 }
 
 BPP_BENCHMARK
 {
-	program.Run();
+	curScenario->kernelShared->Run();
 
-	program.WaitForKernel();
+	curScenario->kernelShared->WaitForKernel();
 }
 
 BPP_RELEASE_BENCHMARK
 {
-	program.ReadOutput( 4, resultGPU.Data() );
+	curScenario->kernelShared->GetArgument( 4 ).Buffer()->ReadBuffer( resultGPU.Data() );
 
 	if( expected == resultGPU )
 	{
@@ -210,55 +211,55 @@ BPP_RELEASE_BENCHMARK
 		cout << "Idx: " << idx << " Expected:" << expected.Data()[ idx ] << " Got:" << resultGPU.Data()[ idx ] << std::endl;
 	}
 
-	program.Release();
 }
 
 BPP_END_BENCHMARK
 
 BPP_BEGIN_BENCHMARK( MatrixMult, GPU_SharedTransposed )
 
-OpenCLProgram_tpl<2> program;
-
 BPP_INITIALIZE_BENCHMARK
 {
 	for( size_t i = 0; i < resultGPU.SizeX()*resultGPU.SizeY(); i++ )
 	{
-		resultGPU.Data()[ i ] = -1.0f;
+		resultGPU.Data()[ i ] = 0.0f;
 	}
 
-	program.InitializeCL();
+	auto kernel = curScenario->kernelSharedTransposed;
 
-	program.SelectPlatformAndDevice( selectedPlatformIdx, selectedDeviceIdx );
+	kernel->ClearArgs();
 
-	program.LoadKernel( "MatrixMultiplicationSharedTransposed.cl", "MatrixMultShared" );
+	kernel->CreateAndSetArgumentValue<cl_uint>( mat1.SizeX() );
+	kernel->CreateAndSetArgumentValue<cl_uint>( resultGPU.SizeX() );
 
-	program.AddKernelArgInt( mat1.SizeX() );
-	program.AddKernelArgInt( resultGPU.SizeX() );
-	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat1.SizeX()*mat1.SizeY(), mat1.Data() );
-	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat2.SizeX()*mat2.SizeY(), mat2.Data() );
-	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof( float )*resultGPU.SizeX()*resultGPU.SizeY(), resultGPU.Data() );
-	program.AddKernelArgLocal( sizeof( float ) * BLOCK_SIZE * BLOCK_SIZE );
-	program.AddKernelArgLocal( sizeof( float ) * BLOCK_SIZE * BLOCK_SIZE );
+	kernel->CreateAndSetGlobalArgument(
+		kernel->Context()->CreateBuffer<float>( mat1.SizeX()*mat1.SizeY(), OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::ReadOnly, mat1.Data() ) );
+	kernel->CreateAndSetGlobalArgument(
+		kernel->Context()->CreateBuffer<float>( mat2.SizeX()*mat2.SizeY(), OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::ReadOnly, mat2.Data() ) );
 
-	program.SetWorkSize<0>( BLOCK_SIZE );
-	program.SetWorkSize<1>( BLOCK_SIZE );
+	kernel->CreateAndSetGlobalArgument(
+		kernel->Context()->CreateBuffer<float>( resultGPU.SizeX()*resultGPU.SizeY(), OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::WriteOnly, resultGPU.Data() ) );
 
-	program.SetGroupCount<0>( mat1.SizeX() / BLOCK_SIZE );
-	program.SetGroupCount<1>( mat1.SizeX() / BLOCK_SIZE );
+	kernel->CreateAndSetLocalArgument<float>( BLOCK_SIZE * BLOCK_SIZE );
+	kernel->CreateAndSetLocalArgument<float>( BLOCK_SIZE * BLOCK_SIZE );
+	kernel->SetWorkSize<0>( BLOCK_SIZE );
+	kernel->SetWorkSize<1>( BLOCK_SIZE );
+	kernel->SetGroupCount<0>( mat1.SizeX() / BLOCK_SIZE );
+	kernel->SetGroupCount<1>( mat1.SizeX() / BLOCK_SIZE );
 
-	program.SetArgs();
+
+	kernel->SetArgs();
 }
 
 BPP_BENCHMARK
 {
-	program.Run();
+	curScenario->kernelSharedTransposed->Run();
 
-	program.WaitForKernel();
+	curScenario->kernelSharedTransposed->WaitForKernel();
 }
 
 BPP_RELEASE_BENCHMARK
 {
-	program.ReadOutput( 4, resultGPU.Data() );
+	curScenario->kernelSharedTransposed->GetArgument( 4 ).Buffer()->ReadBuffer( resultGPU.Data() );
 
 	if( expected == resultGPU )
 	{
@@ -271,55 +272,55 @@ BPP_RELEASE_BENCHMARK
 		cout << "Idx: " << idx << " Expected:" << expected.Data()[ idx ] << " Got:" << resultGPU.Data()[ idx ] << std::endl;
 	}
 
-	program.Release();
 }
 
 BPP_END_BENCHMARK
 
 BPP_BEGIN_BENCHMARK( MatrixMult, GPU_SharedSafe )
 
-OpenCLProgram_tpl<2> program;
-
 BPP_INITIALIZE_BENCHMARK
 {
 	for( size_t i = 0; i < resultGPU.SizeX()*resultGPU.SizeY(); i++ )
 	{
-		resultGPU.Data()[ i ] = -1.0f;
+		resultGPU.Data()[ i ] = 0.0f;
 	}
 
-	program.InitializeCL();
+	auto kernel = curScenario->kernelSharedSafe;
 
-	program.SelectPlatformAndDevice( selectedPlatformIdx, selectedDeviceIdx );
+	kernel->ClearArgs();
 
-	program.LoadKernel( "MatrixMultiplicationSharedSafe.cl", "MatrixMultShared" );
+	kernel->CreateAndSetArgumentValue<cl_uint>( mat1.SizeX() );
+	kernel->CreateAndSetArgumentValue<cl_uint>( resultGPU.SizeX() );
 
-	program.AddKernelArgInt( mat1.SizeX() );
-	program.AddKernelArgInt( resultGPU.SizeX() );
-	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat1.SizeX()*mat1.SizeY(), mat1.Data() );
-	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_READ_ONLY, sizeof( float )*mat2.SizeX()*mat2.SizeY(), mat2.Data() );
-	program.AddKernelArgGlobal( CL_MEM_COPY_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof( float )*resultGPU.SizeX()*resultGPU.SizeY(), resultGPU.Data() );
-	program.AddKernelArgLocal( sizeof( float ) * BLOCK_SIZE * BLOCK_SIZE );
-	program.AddKernelArgLocal( sizeof( float ) * BLOCK_SIZE * BLOCK_SIZE );
+	kernel->CreateAndSetGlobalArgument(
+		kernel->Context()->CreateBuffer<float>( mat1.SizeX()*mat1.SizeY(), OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::ReadOnly, mat1.Data() ) );
+	kernel->CreateAndSetGlobalArgument(
+		kernel->Context()->CreateBuffer<float>( mat2.SizeX()*mat2.SizeY(), OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::ReadOnly, mat2.Data() ) );
 
-	program.SetWorkSize<0>( BLOCK_SIZE );
-	program.SetWorkSize<1>( BLOCK_SIZE );
+	kernel->CreateAndSetGlobalArgument(
+		kernel->Context()->CreateBuffer<float>( resultGPU.SizeX()*resultGPU.SizeY(), OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::WriteOnly, resultGPU.Data() ) );
 
-	program.SetGroupCount<0>( mat1.SizeX() / BLOCK_SIZE + 1 );
-	program.SetGroupCount<1>( mat1.SizeX() / BLOCK_SIZE + 1 );
+	kernel->CreateAndSetLocalArgument<float>( BLOCK_SIZE * BLOCK_SIZE );
+	kernel->CreateAndSetLocalArgument<float>( BLOCK_SIZE * BLOCK_SIZE );
+	kernel->SetWorkSize<0>( BLOCK_SIZE );
+	kernel->SetWorkSize<1>( BLOCK_SIZE );
 
-	program.SetArgs();
+	kernel->SetGroupCount<0>( mat1.SizeX( ) / BLOCK_SIZE );
+	kernel->SetGroupCount<1>( mat1.SizeX( ) / BLOCK_SIZE );
+
+	kernel->SetArgs();
 }
 
 BPP_BENCHMARK
 {
-	program.Run();
+	curScenario->kernelSharedSafe->Run();
 
-	program.WaitForKernel();
+	curScenario->kernelSharedSafe->WaitForKernel();
 }
 
 BPP_RELEASE_BENCHMARK
 {
-	program.ReadOutput( 4, resultGPU.Data() );
+	curScenario->kernelSharedSafe->GetArgument( 4 ).Buffer()->ReadBuffer( resultGPU.Data() );
 
 	if( expected == resultGPU )
 	{
@@ -332,9 +333,7 @@ BPP_RELEASE_BENCHMARK
 		cout << "Idx: " << idx << " Expected:" << expected.Data()[ idx ] << " Got:" << resultGPU.Data()[ idx ] << std::endl;
 	}
 
-	program.Release();
 }
-
 BPP_END_BENCHMARK
 
 

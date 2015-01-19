@@ -8,23 +8,24 @@ class OpenCLPlatform
 {
 public:
 
-	OpenCLPlatform(cl_platform_id platformId);
 
 	std::string PlatformProfile() const;
 	std::string PlatformVersion() const;
 	std::string PlatformName() const;
 	std::string PlatformVendor() const;
 	std::string PlatformExtensions() const;
-	cl_platform_id PlatformId() const;
+	cl_platform_id CLPlatformId() const;
 
 
 	const std::vector<OpenCLDevice*>& Devices() const { return m_Devices; }
 
-	~OpenCLPlatform();
 	template <unsigned int IndexDimension>
-	friend class OpenCLProgram_tpl;
+	friend class OpenCLKernel_tpl;
+	friend class OpenCLManager;
 protected:
 private:
+	OpenCLPlatform(cl_platform_id platformId);
+	~OpenCLPlatform();
 
 	void AddDevice(OpenCLDevice* device);
 	void LoadData();

@@ -4,7 +4,7 @@
 #include <string>
 
 
-std::string OpenCLHelper::GetErrorMessage( cl_uint code )
+std::string OpenCLHelper::GetErrorMessage( cl_int code )
 {
 	switch (code)
 	{

@@ -84,7 +84,7 @@ ReferenceCounted<T, Allocator, RefCountPolicy>::ReferenceCounted( ReferenceCount
 	m_Count( refCount.m_Count )
 {
 	refCount.m_CountedPointer = nullptr;
-	m_Count = nullptr;
+	refCount.m_Count = nullptr;
 }
 
 template< typename T, typename Allocator, typename RefCountPolicy>
@@ -119,9 +119,9 @@ T& ReferenceCounted<T, Allocator, RefCountPolicy>::operator*( )
 }
 
 template< typename T, typename Allocator, typename RefCountPolicy>
-T& ReferenceCounted<T, Allocator, RefCountPolicy>::operator->( )
+T* ReferenceCounted<T, Allocator, RefCountPolicy>::operator->( )
 {
-	return *m_CountedPointer;
+	return m_CountedPointer;
 }
 
 template< typename T, typename Allocator, typename RefCountPolicy>
@@ -172,8 +172,6 @@ ReferenceCounted<T, Allocator, RefCountPolicy>& ReferenceCounted<T, Allocator, R
 
 	return *this;
 }
-
-
 
 template< typename T, typename Allocator, typename RefCountPolicy>
 void ReferenceCounted<T, Allocator, RefCountPolicy>::DecRef( void )

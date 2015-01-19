@@ -2,11 +2,14 @@
 #include <iostream>
 #include "CL/cl.h"
 #include <stdint.h>
+#include <string>
+
+class OpenCLManager;
 
 class OpenCLHelper
 {
 public:
-	static std::string GetErrorMessage(cl_uint code);
+	static std::string GetErrorMessage(cl_int code);
 };
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -24,10 +27,10 @@ public:
 
 #define CL_ASSERT( command ) \
 	do{ \
-		m_CurrentStatus = command; \
-		if( m_CurrentStatus != CL_SUCCESS ) \
+		cl_int currentStatus = command; \
+		if( currentStatus != CL_SUCCESS ) \
 		{\
-			std::cout << OpenCLHelper::GetErrorMessage(m_CurrentStatus) << std::endl; \
+			std::cout << OpenCLHelper::GetErrorMessage(currentStatus) << std::endl; \
 			if (::IsDebuggerPresent())\
 			{\
 				::DebugBreak();\

@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include <vector>
 
-typedef OpenCLProgram_tpl<1> OpenCLProgram;
+typedef ReferenceCounted< OpenCLKernel_tpl<1> > OpenCLKernel;
 
 class PrefixSum
 {
@@ -16,13 +16,15 @@ public:
 
 	static bool CheckResult( const std::vector< int >* result, const std::vector< int >* expected );
 
-	void InitOpenCL( size_t selectedPlatform, size_t selectedDevice );
+	void InitOpenCL( OpenCLKernel device );
 	void RunOpenCL();
 	void ReleaseOpenCL( const std::vector<int>& expected, std::vector<int>* result );
 
 private:
 
-	OpenCLProgram program;
+	OpenCLKernel kernel;
+
+	OpenCLKernelArgument m_ResultArgument;
 
 	const std::vector< int >& m_Data;
 

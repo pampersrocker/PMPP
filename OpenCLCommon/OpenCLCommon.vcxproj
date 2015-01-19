@@ -161,20 +161,28 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\Allocator.hpp" />
-    <ClInclude Include="inc\CLMemory.h" />
+    <ClInclude Include="inc\OpenCLBuffer.h" />
+    <ClInclude Include="inc\OpenCLCommandQueue.h" />
+    <ClInclude Include="inc\OpenCLContext.h" />
+    <ClInclude Include="inc\OpenCLKernelArgument.h" />
+    <ClInclude Include="inc\OpenCLManager.h" />
     <ClInclude Include="inc\RefCountPolicy.hpp" />
     <ClInclude Include="inc\OpenCL.h" />
     <ClInclude Include="inc\OpenCLCommon.h" />
     <ClInclude Include="inc\OpenCLDevice.h" />
     <ClInclude Include="inc\OpenCLPlatform.h" />
-    <ClInclude Include="inc\OpenCLProgram.h" />
+    <ClInclude Include="inc\OpenCLKernel.h" />
     <ClInclude Include="inc\ReferenceCounted.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\OpenCLBuffer.cpp" />
+    <ClCompile Include="src\OpenCLCommandQueue.cpp" />
     <ClCompile Include="src\OpenCLCommon.cpp" />
+    <ClCompile Include="src\OpenCLContext.cpp" />
     <ClCompile Include="src\OpenCLDevice.cpp" />
+    <ClCompile Include="src\OpenCLKernelArgument.cpp" />
     <ClCompile Include="src\OpenCLPlatform.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -185,7 +193,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="inc\Allocator.inl" />
-    <None Include="inc\OpenCLProgram.inl" />
+    <None Include="inc\OpenCLManager.inl" />
+    <None Include="inc\OpenCLKernel.inl" />
     <None Include="inc\ReferenceCounted.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

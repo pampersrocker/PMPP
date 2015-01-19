@@ -1,13 +1,14 @@
 #pragma once
 #ifndef ReferenceCounted_h__
 #define ReferenceCounted_h__
-
+#include "Allocator.hpp"
+#include "RefCountPolicy.hpp"
 
 /**
 \brief Reference Counter class.
 
 */
-template< typename T, typename Allocator, typename RefCountPolicy = DefaultRefCountPolicy >
+template< typename T, typename Allocator = DefaultAllocator, typename RefCountPolicy = DefaultRefCountPolicy >
 class ReferenceCounted
 {
 public:
@@ -25,7 +26,7 @@ public:
 	bool operator ==( const ReferenceCounted< T, Allocator, RefCountPolicy >& rhs ) const;
 	bool operator !=( const ReferenceCounted< T, Allocator, RefCountPolicy >& rhs ) const;
 
-	T& operator ->( );
+	T* operator ->( );
 
 	T& operator *( );
 
@@ -55,6 +56,8 @@ private:
 	Allocator m_Alloc;
 
 };
+
+#include "ReferenceCounted.inl"
 
 
 #endif // ReferenceCounted_h__
