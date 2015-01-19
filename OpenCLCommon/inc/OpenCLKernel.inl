@@ -4,7 +4,7 @@
 #include "OpenCLPlatform.h"
 #include "OpenCLDevice.h"
 #include <direct.h>
-#include <../Program Files (x86)/Microsoft Visual Studio 10.0/VC/include/assert.h>
+#include <assert.h>
 using namespace std;
 
 template < unsigned int IndexDimension /*= 1 */>
