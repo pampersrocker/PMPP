@@ -182,6 +182,8 @@ BPP_INITIALIZE_BENCHMARK
 	kernel->CreateAndSetLocalArgument<float>( BLOCK_SIZE * BLOCK_SIZE );
 	kernel->SetWorkSize<0>( BLOCK_SIZE );
 	kernel->SetWorkSize<1>( BLOCK_SIZE );
+	kernel->SetGroupCount<0>( mat1.SizeX() / BLOCK_SIZE );
+	kernel->SetGroupCount<1>( mat1.SizeX() / BLOCK_SIZE );
 
 
 	kernel->SetArgs();
@@ -241,6 +243,8 @@ BPP_INITIALIZE_BENCHMARK
 	kernel->CreateAndSetLocalArgument<float>( BLOCK_SIZE * BLOCK_SIZE );
 	kernel->SetWorkSize<0>( BLOCK_SIZE );
 	kernel->SetWorkSize<1>( BLOCK_SIZE );
+	kernel->SetGroupCount<0>( mat1.SizeX() / BLOCK_SIZE );
+	kernel->SetGroupCount<1>( mat1.SizeX() / BLOCK_SIZE );
 
 
 	kernel->SetArgs();
@@ -300,6 +304,9 @@ BPP_INITIALIZE_BENCHMARK
 	kernel->CreateAndSetLocalArgument<float>( BLOCK_SIZE * BLOCK_SIZE );
 	kernel->SetWorkSize<0>( BLOCK_SIZE );
 	kernel->SetWorkSize<1>( BLOCK_SIZE );
+
+	kernel->SetGroupCount<0>( mat1.SizeX( ) / BLOCK_SIZE );
+	kernel->SetGroupCount<1>( mat1.SizeX( ) / BLOCK_SIZE );
 
 	kernel->SetArgs();
 }
