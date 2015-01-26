@@ -6,16 +6,6 @@
 #include "OpenCLBuffer.h"
 #include "OpenCLKernelArgument.h"
 
-struct KernelArg
-{
-	cl_mem memory;
-	cl_mem_flags flags;
-	size_t size;
-	void* initalData;
-	cl_int* ptr; //for what?
-	cl_uint value;
-};
-
 class OpenCLPlatform;
 class OpenCLDevice;
 class OpenCLCommandQueue;
@@ -42,8 +32,34 @@ public:
 	OpenCLKernelArgument CreateArgumentValue( T value );
 
 	OpenCLKernelArgument GetArgument( size_t index );
+	/**
+	@brief Adds a given arg to the argument list of the kernel.
+	The arg itself is just a small proxy class which can be copied with no harm
+	
+	*/
 	size_t AddArgument( OpenCLKernelArgument arg );
+	/**
+	\brief Clears the stored vector of arguments.
+
+	Useful for freeing up still referenced buffers or preparing kernel for another run with new parameters 
+	(BeginArgs also calls this).
+	
+	*/
 	void ClearArgs();
+
+	/**
+	@brief Clears the set arguments and prepares kernel to retrieve new arguments using the Create or Set Argument Methods
+	
+	Essentially clears the stores argument vector so create, add and/or set argument are working on a new vector. 
+	*/
+	void BeginArgs();
+
+	/**
+	\brief Pushes the arguments to the OpenCL internal kernel and concludes the arguments passed to this kernel.
+	Subsequents adds are not visible to the CL Kernel unless EndArgs or SetArgs is called again.
+	
+	*/
+	void EndArgs();
 
 	template<unsigned int Dimension>
 	void SetWorkSize( size_t size );

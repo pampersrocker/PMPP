@@ -179,6 +179,7 @@
   <ItemGroup>
     <ClInclude Include="BenchmarkPrefixSumScenario.h" />
     <ClInclude Include="PrefixSum.h" />
+    <ClInclude Include="PrefixSumRecursive.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -187,6 +188,7 @@
     <ClCompile Include="BenchmarkPrefixSumGPU.cpp" />
     <ClCompile Include="BenchmarkPrefixSumScenario.cpp" />
     <ClCompile Include="PrefixSum.cpp" />
+    <ClCompile Include="PrefixSumRecursive.cpp" />
     <ClCompile Include="PrefixSums.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
