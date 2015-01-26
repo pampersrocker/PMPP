@@ -60,7 +60,7 @@ void PrefixSum::InitOpenCL( ReferenceCounted< OpenCLKernel_tpl< 1 >> kernel)
 	}
 	else
 	{
-		OpenCLBufferPtr ptr = OpenCLBufferPtr( nullptr );
+		OpenCLBufferPtr ptr = OpenCLBufferPtr( new OpenCLBuffer() );
 		kernel->CreateAndSetGlobalArgument( ptr );
 	}
 	kernel->SetWorkSize<0>( 256 );
