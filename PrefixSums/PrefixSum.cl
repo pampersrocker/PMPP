@@ -44,7 +44,14 @@ void PrefixSums512(global int* data, global int* result, local int* cache)
 	barrier(CLK_LOCAL_MEM_FENCE);
 }
 
-kernel void PrefixSums(global int* data, global int* result, local int* cache, int size)
+kernel void PrefixSums(global int* data, global int* result, local int* cache, int size, global int* tmpResultBuffer)
 {
-	PrefixSums512(data, result, cache);
+	int offset = get_local_size( 0 ) * get_group_id( 0 );
+	// Split several work groups to its own region
+	PrefixSums512(data + offset, result + offset, cache + offset);
+	barrier( CLK_LOCAL_MEM_FENCE );
+	if( tmpResultBuffer != 0 && get_local_id(0) == 0)
+	{
+		tmpResultBuffer[ get_group_id( 0 ) ] = result[((get_local_size( 0 ) +1) * get_group_id( 0 )) -1 ];
+	}
 }

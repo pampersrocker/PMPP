@@ -4,7 +4,12 @@
 PrefixSum::PrefixSum( const std::vector< int >& data ) :
 	m_Data(data)
 {
-
+	int remaining = m_Data.size() % 512;
+	originalSize = m_Data.size();
+	if (remaining)
+	{
+		m_Data.resize( m_Data.size() + remaining );
+	}
 }
 
 PrefixSum::~PrefixSum()
@@ -36,12 +41,30 @@ void PrefixSum::InitOpenCL( ReferenceCounted< OpenCLKernel_tpl< 1 >> kernel)
 		m_Data.size(),
 		OpenCLBufferFlags::WriteOnly ) );
 
-	kernel->CreateAndSetLocalArgument<int>( m_Data.size() );
+	numGroups = m_Data.size() / 512;
+
+	int remaining = m_Data.size() % 512;
+	if ( remaining )
+	{
+		numGroups++;
+	}
+
+	kernel->CreateAndSetLocalArgument<int>( m_Data.size() * numGroups );
 	kernel->CreateAndSetArgumentValue< int >( m_Data.size() );
-
-
+	if (numGroups > 512)
+	{
+		kernel->CreateAndSetGlobalArgument(
+			kernel->Context()->CreateBuffer<int>(
+			numGroups,
+			OpenCLBufferFlags::WriteOnly ) );
+	}
+	else
+	{
+		OpenCLBufferPtr ptr = OpenCLBufferPtr( nullptr );
+		kernel->CreateAndSetGlobalArgument( ptr );
+	}
 	kernel->SetWorkSize<0>( 256 );
-	kernel->SetGroupCount<0>( 1 );
+	kernel->SetGroupCount<0>( numGroups );
 
 	kernel->SetArgs();
 

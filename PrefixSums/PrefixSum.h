@@ -26,8 +26,10 @@ private:
 
 	OpenCLKernelArgument m_ResultArgument;
 
-	const std::vector< int >& m_Data;
+	std::vector< int > m_Data;
+	size_t originalSize;
 
+	int numGroups;
 };
 
 #endif // PrefixSum_h__
