@@ -21,8 +21,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	std::vector< PrefixSumScenario > scenarios{
 		//PrefixSumScenario( 256, selectedDeviceIdx, selectedPlatformIdx ),
-		PrefixSumScenario( 512, kernel,arraySum),
-		//PrefixSumScenario( 1024, selectedDeviceIdx, selectedPlatformIdx ),
+		//PrefixSumScenario( 512, kernel,arraySum),
+		PrefixSumScenario( 1024, kernel, arraySum),
 		//PrefixSumScenario( 2048, selectedDeviceIdx, selectedPlatformIdx ),
 		//PrefixSumScenario( 4096, selectedDeviceIdx, selectedPlatformIdx ),
 		//PrefixSumScenario( 8192, selectedDeviceIdx, selectedPlatformIdx ),
@@ -49,7 +49,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			benchmarker.AddScenario( &it );
 		}
 
-		benchmarker.Iterations( 5 );
+		benchmarker.Iterations( 1 );
 
 		benchmarker.Run();
 

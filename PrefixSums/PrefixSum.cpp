@@ -29,15 +29,15 @@ void PrefixSum::CalculateResult( std::vector< int >& result ) const
 
 void PrefixSum::InitOpenCL( OpenCLKernelPtr sumKernel, OpenCLKernelPtr arraySum )
 {
-	this->kernel = kernel;
+	//this->kernel = kernel;
 
 	
-	m_DataBuffer = kernel->Context()->CreateBuffer<int>(
+	m_DataBuffer = sumKernel->Context()->CreateBuffer<int>(
 		m_Data.size(),
 		OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::ReadWrite,
 		 m_Data.data());
 
-	recursiveWrapper = new PrefixSumRecursive( kernel, arraySum, m_DataBuffer, m_Data.size() );
+	recursiveWrapper = new PrefixSumRecursive( sumKernel, arraySum, m_DataBuffer, m_Data.size() );
 
 
 }

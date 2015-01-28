@@ -27,7 +27,7 @@ void PrefixSumRecursive::Run()
 
 	m_SumKernel->CreateAndSetGlobalArgument( m_InputBuffer );
 	m_SumKernel->CreateAndSetGlobalArgument( m_OutputBuffer );
-	m_SumKernel->CreateAndSetLocalArgument<int>( 512 );
+	m_SumKernel->CreateAndSetLocalArgument<int>( 512 * m_NumGroups );
 	m_SumKernel->CreateAndSetArgumentValue<int>( m_NumGroups * 512 );
 	int cacheSize =0;
 

@@ -33,7 +33,14 @@ OpenCLBufferPtr OpenCLKernelArgument::Buffer() const
 OpenCLKernelArgument& OpenCLKernelArgument::SetGlobalBuffer( OpenCLBufferPtr buffer )
 {
 	m_Buffer = buffer;
-	m_Size = m_Buffer->Size();
+	if (m_Buffer.Valid())
+	{
+		m_Size = m_Buffer->Size();
+	}
+	else
+	{
+		m_Size = 0;
+	}
 	m_Type = OpenCLKernelArgumentType::Global;
 	return *this;
 }
