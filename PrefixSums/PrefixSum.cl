@@ -52,6 +52,8 @@ kernel void PrefixSums(global int* data, global int* result, local int* cache, i
 	barrier( CLK_LOCAL_MEM_FENCE );
 	if( tmpResultBuffer != 0 && get_local_id(0) == 0)
 	{
-		tmpResultBuffer[ get_group_id( 0 ) ] = result[((get_local_size( 0 ) +1) * get_group_id( 0 )) -1 ];
+		tmpResultBuffer[ get_group_id( 0 ) ] = result[((512) * (get_group_id( 0 )+1)) -1 ];
 	}
+
+
 }

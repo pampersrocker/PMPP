@@ -31,15 +31,11 @@ void PrefixSumRecursive::Run()
 	m_SumKernel->CreateAndSetArgumentValue<int>( m_NumGroups * 512 );
 	int cacheSize =0;
 
-	if (m_NumGroups > 512)
+	if (m_NumGroups > 1)
 	{
 		std::vector<int> initialCacheData;
-		cacheSize = m_NumGroups / 512;
-		if (m_NumGroups % 512 != 0)
-		{
-			cacheSize++;
-		}
-		cacheSize *= 512;
+		cacheSize = m_NumGroups;
+		cacheSize += 512 - ( m_NumGroups % 512 );
 		initialCacheData.resize( cacheSize );
 		m_CacheBuffer = m_SumKernel->CreateAndSetGlobalArgument(
 			m_SumKernel->Context()->CreateBuffer<int>( cacheSize, OpenCLBufferFlags::ReadWrite | OpenCLBufferFlags::CopyHostPtr, initialCacheData.data() )
@@ -57,14 +53,12 @@ void PrefixSumRecursive::Run()
 	m_SumKernel->Run();
 	m_SumKernel->WaitForKernel();
 
-	if (m_NumGroups > 512)
-	{
-		PrefixSumRecursive recursion( m_SumKernel, m_TmpSumKernel, m_CacheBuffer, cacheSize);
-		recursion.Run();
-	}
-
 	if (m_NumGroups > 1)
 	{
+
+		PrefixSumRecursive recursion( m_SumKernel, m_TmpSumKernel, m_CacheBuffer, cacheSize );
+		recursion.Run();
+
 		m_TmpSumKernel->BeginArgs();
 		m_TmpSumKernel->CreateAndSetGlobalArgument( m_OutputBuffer );
 		m_TmpSumKernel->CreateAndSetGlobalArgument( m_CacheBuffer );

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "PrefixSum.h"
+#include <../Program Files (x86)/Microsoft Visual Studio 10.0/VC/include/conio.h>
 
 PrefixSum::PrefixSum( const std::vector< int >& data ) :
 	m_Data(data),
@@ -70,6 +71,11 @@ bool PrefixSum::CheckResult( const std::vector< int >* result, const std::vector
 				" expected " << (*expected)[ i ] <<
 				" got " << (*result)[ i ] << std::endl;
 			//break;
+			if (i%100 == 0)
+			{
+				std::cout << "Pausing Error Log for Scroll (Any Key To Continue)..." << std::endl;
+				_getch();
+			}
 		}
 	}
 
