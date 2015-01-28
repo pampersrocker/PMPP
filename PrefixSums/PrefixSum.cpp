@@ -2,7 +2,8 @@
 #include "PrefixSum.h"
 
 PrefixSum::PrefixSum( const std::vector< int >& data ) :
-	m_Data(data)
+	m_Data(data),
+	recursiveWrapper(nullptr)
 {
 	int remaining = m_Data.size() % 512;
 	originalSize = m_Data.size();
@@ -26,62 +27,31 @@ void PrefixSum::CalculateResult( std::vector< int >& result ) const
 	}
 }
 
-void PrefixSum::InitOpenCL( ReferenceCounted< OpenCLKernel_tpl< 1 >> kernel)
+void PrefixSum::InitOpenCL( OpenCLKernelPtr sumKernel, OpenCLKernelPtr arraySum )
 {
 	this->kernel = kernel;
 
-	kernel->ClearArgs();
-	kernel->CreateAndSetGlobalArgument(
-		kernel->Context()->CreateBuffer<int>(
+	
+	m_DataBuffer = kernel->Context()->CreateBuffer<int>(
 		m_Data.size(),
-		OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::ReadOnly,
-		const_cast< int * >( m_Data.data() ) ) );
-	m_ResultArgument = kernel->CreateAndSetGlobalArgument(
-		kernel->Context()->CreateBuffer<int>(
-		m_Data.size(),
-		OpenCLBufferFlags::WriteOnly ) );
+		OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::ReadWrite,
+		 m_Data.data());
 
-	numGroups = m_Data.size() / 512;
+	recursiveWrapper = new PrefixSumRecursive( kernel, arraySum, m_DataBuffer, m_Data.size() );
 
-	int remaining = m_Data.size() % 512;
-	if ( remaining )
-	{
-		numGroups++;
-	}
-
-	kernel->CreateAndSetLocalArgument<int>( m_Data.size() * numGroups );
-	kernel->CreateAndSetArgumentValue< int >( m_Data.size() );
-	if (numGroups > 512)
-	{
-		kernel->CreateAndSetGlobalArgument(
-			kernel->Context()->CreateBuffer<int>(
-			numGroups,
-			OpenCLBufferFlags::WriteOnly ) );
-	}
-	else
-	{
-		OpenCLBufferPtr ptr = OpenCLBufferPtr( new OpenCLBuffer() );
-		kernel->CreateAndSetGlobalArgument( ptr );
-	}
-	kernel->SetWorkSize<0>( 256 );
-	kernel->SetGroupCount<0>( numGroups );
-
-	kernel->SetArgs();
 
 }
 
 void PrefixSum::RunOpenCL()
 {
-	kernel->Run();
-
-	kernel->WaitForKernel();
+	recursiveWrapper->Run();
 }
 
 void PrefixSum::ReleaseOpenCL( const std::vector<int>& expected, std::vector<int>* result )
 {
 	//kernel->ReadOutput( 1, result->data() );
 
-	m_ResultArgument.Buffer()->ReadBuffer( result->data() );
+	m_DataBuffer->ReadBuffer( result->data() );
 
 	CheckResult( result, &expected );
 

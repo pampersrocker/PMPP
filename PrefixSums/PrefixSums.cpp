@@ -14,13 +14,14 @@ int _tmain(int argc, _TCHAR* argv[])
 	clManager.Initialize();
 	auto device = clManager.ConsoleSelectPlatformAndDevice();
 	auto context = device->CreateContext();
-	OpenCLKernel kernel = context->CreateKernel<1>( "CL/PrefixSum.cl", "PrefixSums" );
+	OpenCLKernelPtr kernel = context->CreateKernel<1>( "CL/PrefixSum.cl", "PrefixSums" );
+	OpenCLKernelPtr arraySum= context->CreateKernel<1>( "CL/ArraySum.cl", "ArraySum512" );
 	
 	
 
 	std::vector< PrefixSumScenario > scenarios{
 		//PrefixSumScenario( 256, selectedDeviceIdx, selectedPlatformIdx ),
-		PrefixSumScenario( 512, kernel),
+		PrefixSumScenario( 512, kernel,arraySum),
 		//PrefixSumScenario( 1024, selectedDeviceIdx, selectedPlatformIdx ),
 		//PrefixSumScenario( 2048, selectedDeviceIdx, selectedPlatformIdx ),
 		//PrefixSumScenario( 4096, selectedDeviceIdx, selectedPlatformIdx ),

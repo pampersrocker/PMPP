@@ -26,7 +26,7 @@ Matrix resultGPU;
 cl_uint selectedPlatformIdx = 0;
 cl_uint selectedDeviceIdx = 0;
 
-typedef OpenCLKernel_tpl<1> OpenCLKernel;
+typedef OpenCLKernel_tpl<1> OpenCLKernelPtr;
 
 
 int _tmain(int argc, _TCHAR* argv[])

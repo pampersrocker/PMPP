@@ -15,8 +15,9 @@ PrefixSumScenario::~PrefixSumScenario()
 
 }
 
-PrefixSumScenario::PrefixSumScenario( size_t size, ReferenceCounted< OpenCLKernel_tpl< 1 >> kernel) :
-	kernel( kernel )
+PrefixSumScenario::PrefixSumScenario( size_t size, ReferenceCounted< OpenCLKernel_tpl< 1 >> kernel, ReferenceCounted< OpenCLKernel_tpl< 1 >> arraySum ) :
+	kernel( kernel ),
+	arraySumKernel( arraySum )
 {
 	using namespace std;
 	default_random_engine engine( ( unsigned int ) std::time( 0 ) );
