@@ -17,15 +17,16 @@ class OpenCLKernelArgument
 public:
 
 	OpenCLKernelArgument();
+	OpenCLKernelArgument( OpenCLBufferPtr ptr );
 	~OpenCLKernelArgument();
 
 	template<typename T>
-	void SetValue( T value );
+	OpenCLKernelArgument& SetValue( T value );
 
-	void SetGlobalBuffer( OpenCLBufferPtr buffer );
+	OpenCLKernelArgument& SetGlobalBuffer( OpenCLBufferPtr buffer );
 
 	template< typename T >
-	void SetLocalBuffer( size_t numElements );
+	OpenCLKernelArgument& SetLocalBuffer( size_t numElements );
 
 	OpenCLKernelArgumentType Type() const;
 	OpenCLBufferPtr Buffer() const;
@@ -108,10 +109,11 @@ cl_uint4 OpenCLKernelArgument::GetValue< cl_uint4 >() const
 }
 
 template< typename T >
-void OpenCLKernelArgument::SetLocalBuffer( size_t numElements )
+OpenCLKernelArgument& OpenCLKernelArgument::SetLocalBuffer( size_t numElements )
 {
 	m_Type = OpenCLKernelArgumentType::Local;
 	m_Size = sizeof( T ) * numElements;
+	return *this;
 }
 
 template<typename T>
@@ -165,11 +167,12 @@ void OpenCLKernelArgument::SetValueInternal< cl_uint4 >( cl_uint4 value )
 
 template<typename T>
 inline
-void OpenCLKernelArgument::SetValue( T value )
+OpenCLKernelArgument& OpenCLKernelArgument::SetValue( T value )
 {
 	m_Size = sizeof( T );
 	m_Type = OpenCLKernelArgumentType::Value;
 	SetValueInternal<T>( value );
+	return *this;
 }
 
 #endif // OpenCLKernelArgument_h__

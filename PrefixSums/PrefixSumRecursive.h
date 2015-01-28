@@ -11,12 +11,16 @@ class PrefixSumRecursive
 public:
 	PrefixSumRecursive( OpenCLKernelPtr sumKernel, OpenCLKernelPtr tmpSumsKernel, OpenCLBufferPtr inputBuffer, size_t numElements );
 
+	void Run();
+
 private:
 	OpenCLKernelPtr m_SumKernel;
 	OpenCLKernelPtr m_TmpSumKernel;
 	OpenCLBufferPtr m_InputBuffer;
 	OpenCLBufferPtr m_OutputBuffer;
 	OpenCLBufferPtr m_CacheBuffer;
+	int m_NumGroups;
+	int m_NumElements;
 };
 
 #endif // RecursiveSum_h__
