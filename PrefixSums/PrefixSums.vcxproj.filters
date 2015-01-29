@@ -22,6 +22,9 @@
     <Text Include="PrefixSum.cl">
       <Filter>CL</Filter>
     </Text>
+    <Text Include="ArraySum.cl">
+      <Filter>CL</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -62,10 +65,5 @@
     <ClCompile Include="PrefixSumRecursive.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ArraySum.cl">
-      <Filter>CL</Filter>
-    </None>
   </ItemGroup>
 </Project>

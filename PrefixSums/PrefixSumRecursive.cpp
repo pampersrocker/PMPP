@@ -56,8 +56,13 @@ void PrefixSumRecursive::Run()
 	if (m_NumGroups > 1)
 	{
 
+		std::vector<int> cacheBuffer;
+		cacheBuffer.resize( cacheSize );
+		m_CacheBuffer->ReadBuffer( cacheBuffer.data() );
+
 		PrefixSumRecursive recursion( m_SumKernel, m_TmpSumKernel, m_CacheBuffer, cacheSize );
 		recursion.Run();
+		m_CacheBuffer->ReadBuffer( cacheBuffer.data() );
 
 		m_TmpSumKernel->BeginArgs();
 		m_TmpSumKernel->CreateAndSetGlobalArgument( m_OutputBuffer );
@@ -67,6 +72,10 @@ void PrefixSumRecursive::Run()
 
 		m_TmpSumKernel->SetWorkSize<0>( 256 );
 		m_TmpSumKernel->SetGroupCount<0>( m_NumGroups );
+
+		m_TmpSumKernel->Run();
+
+		m_TmpSumKernel->WaitForKernel();
 	}
 }
 

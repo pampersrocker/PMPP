@@ -13,6 +13,10 @@ void PrefixSums512(global int* data, global int* result, local int* cache)
 		if( targetArrayIdx < 512 )
 		{
 			int otherSrcIdx = targetArrayIdx - ( 1 << d );
+			if( otherSrcIdx < 0 )
+			{
+				otherSrcIdx = 0;
+			}
 			cache[ targetArrayIdx ] = cache[ targetArrayIdx ] + cache[ otherSrcIdx ];
 		}
 		barrier(CLK_LOCAL_MEM_FENCE);
