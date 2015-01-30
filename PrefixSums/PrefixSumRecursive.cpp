@@ -64,11 +64,18 @@ void PrefixSumRecursive::Run()
 		recursion.Run();
 		m_CacheBuffer->ReadBuffer( cacheBuffer.data() );
 
+		std::vector<int> outputBuffer;
+		outputBuffer.resize( m_OutputBuffer->Size() / sizeof( int ) );
+
+		m_OutputBuffer->ReadBuffer( outputBuffer.data() );
+
 		m_TmpSumKernel->BeginArgs();
 		m_TmpSumKernel->CreateAndSetGlobalArgument( m_OutputBuffer );
 		m_TmpSumKernel->CreateAndSetGlobalArgument( m_CacheBuffer );
 		m_TmpSumKernel->CreateAndSetArgumentValue<int>( m_NumElements );
 		m_TmpSumKernel->EndArgs();
+
+
 
 		m_TmpSumKernel->SetWorkSize<0>( 256 );
 		m_TmpSumKernel->SetGroupCount<0>( m_NumGroups );
@@ -76,6 +83,7 @@ void PrefixSumRecursive::Run()
 		m_TmpSumKernel->Run();
 
 		m_TmpSumKernel->WaitForKernel();
+		m_OutputBuffer->ReadBuffer( outputBuffer.data() );
 	}
 }
 

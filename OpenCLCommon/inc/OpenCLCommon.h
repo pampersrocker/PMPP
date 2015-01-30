@@ -38,7 +38,7 @@ public:
 		}\
 	} while(0)
 #else
-#define CL_ASSERT( ... )m_CurrentStatus = __VA_ARGS__
+#define CL_ASSERT( ... ) __VA_ARGS__
 #define CL_VERIFY( status )
 #endif
 

@@ -21,14 +21,14 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	std::vector< PrefixSumScenario > scenarios{
 		//PrefixSumScenario( 256, selectedDeviceIdx, selectedPlatformIdx ),
-		//PrefixSumScenario( 512, kernel,arraySum),
+		PrefixSumScenario( 512, kernel,arraySum),
 		PrefixSumScenario( 1024, kernel, arraySum),
-		//PrefixSumScenario( 2048, selectedDeviceIdx, selectedPlatformIdx ),
-		//PrefixSumScenario( 4096, selectedDeviceIdx, selectedPlatformIdx ),
-		//PrefixSumScenario( 8192, selectedDeviceIdx, selectedPlatformIdx ),
-		//PrefixSumScenario( 16384, selectedDeviceIdx, selectedPlatformIdx ),
-		//PrefixSumScenario( 32768, selectedDeviceIdx, selectedPlatformIdx ),
-		//PrefixSumScenario( 65536, selectedDeviceIdx, selectedPlatformIdx ),
+		PrefixSumScenario( 2048,kernel, arraySum),
+		PrefixSumScenario( 4096,kernel, arraySum),
+		PrefixSumScenario( 8192,kernel, arraySum),
+		//PrefixSumScenario( 16384,kernel, arraySum),
+		//PrefixSumScenario( 32768,kernel, arraySum),
+		//PrefixSumScenario( 65536,kernel, arraySum),
 		//PrefixSumScenario( 131072, selectedDeviceIdx, selectedPlatformIdx ),
 		//PrefixSumScenario( 2621440, selectedDeviceIdx, selectedPlatformIdx ),
 		//PrefixSumScenario( 10000000, selectedDeviceIdx, selectedPlatformIdx )

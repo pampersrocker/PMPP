@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "PrefixSum.h"
-#include <../Program Files (x86)/Microsoft Visual Studio 10.0/VC/include/conio.h>
+#include <conio.h>
 
 PrefixSum::PrefixSum( const std::vector< int >& data ) :
 	m_Data(data),
