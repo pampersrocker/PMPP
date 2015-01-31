@@ -42,6 +42,10 @@ void PrefixSumRecursive::Run()
 		int curGroups = groupsToCalculate > 20 ? 20 : groupsToCalculate;
 		groupsToCalculate -= curGroups;
 
+		size_t maxWorkGroupSize = m_SumKernel->QueryMaxWorkGroupSize();
+		cl_ulong localMemSize = m_SumKernel->QueryLocalMemSize();
+		cl_ulong privateMemSize = m_SumKernel->QueryPrivateMemSize();
+
 		m_SumKernel->BeginArgs();
 
 		m_SumKernel->CreateAndSetGlobalArgument( m_InputBuffer );
@@ -61,11 +65,23 @@ void PrefixSumRecursive::Run()
 		m_SumKernel->CreateAndSetArgumentValue<int>( curGroupOffset );
 
 		m_SumKernel->EndArgs();
+
+		localMemSize = m_SumKernel->QueryLocalMemSize();
+		privateMemSize = m_SumKernel->QueryPrivateMemSize();
+
+
 		m_SumKernel->SetWorkSize<0>( 256 );
 		m_SumKernel->SetGroupCount<0>( curGroups );
 
+		localMemSize = m_SumKernel->QueryLocalMemSize();
+		privateMemSize = m_SumKernel->QueryPrivateMemSize();
+
+
 		m_SumKernel->Run();
 		//m_SumKernel->WaitForKernel();
+		localMemSize = m_SumKernel->QueryLocalMemSize();
+		privateMemSize = m_SumKernel->QueryPrivateMemSize();
+
 
 
 		curGroupOffset += curGroups;

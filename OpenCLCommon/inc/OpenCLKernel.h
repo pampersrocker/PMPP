@@ -71,6 +71,29 @@ public:
 	OpenCLCommandQueue* CommandQueue() const;
 	void CommandQueue( OpenCLCommandQueue* val );
 
+	/**
+	\brief Queries the maximal possible WorkGroupSize for this Kernel
+	
+	*/
+	size_t QueryMaxWorkGroupSize();
+
+	/**
+	\brief Queries the Local Memory Size used by this kernel,
+	If arguments are already set, the local arguments are taken into account, otherwise their size will be evaluated as 0.
+
+	\note Seems to be broken, at least on nVidia cards
+	
+	*/
+	cl_ulong QueryLocalMemSize();
+
+	/**
+	\brief Queries the Private Memory Size used by this kernel,
+
+	\note Seems to be broken, at least on nVidia cards
+
+	*/
+	cl_ulong QueryPrivateMemSize();
+
 
 
 	const OpenCLContext* const Context() const;

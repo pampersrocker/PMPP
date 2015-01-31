@@ -267,6 +267,37 @@ void OpenCLKernel_tpl<IndexDimension>::ClearArgs()
 	m_Args.clear();
 }
 
+template < unsigned int IndexDimension /*= 1 */>
+inline
+size_t OpenCLKernel_tpl<IndexDimension>::QueryMaxWorkGroupSize()
+{
+	size_t workGroups;
+	CL_ASSERT( clGetKernelWorkGroupInfo( kernel, m_Context->Device()->CLDeviceId(), 
+		CL_KERNEL_WORK_GROUP_SIZE, sizeof( decltype( workGroups ) ), &workGroups, nullptr ) );
+	return workGroups;
+}
+
+template < unsigned int IndexDimension /*= 1 */>
+inline
+cl_ulong OpenCLKernel_tpl<IndexDimension>::QueryLocalMemSize()
+{
+	cl_ulong localMemSize;
+	CL_ASSERT( clGetKernelWorkGroupInfo( kernel, nullptr,
+		CL_KERNEL_LOCAL_MEM_SIZE, sizeof( decltype( localMemSize ) ), &localMemSize, nullptr ) );
+	return localMemSize;
+}
+
+template < unsigned int IndexDimension /*= 1 */>
+inline
+cl_ulong OpenCLKernel_tpl<IndexDimension>::QueryPrivateMemSize()
+{
+	cl_ulong privateMemSize;
+	CL_ASSERT( clGetKernelWorkGroupInfo( kernel, nullptr,
+		CL_KERNEL_PRIVATE_MEM_SIZE, sizeof( decltype( privateMemSize ) ), &privateMemSize, nullptr ) );
+	return privateMemSize;
+}
+
+
 template <unsigned int IndexDimension>
 inline 
 void OpenCLKernel_tpl<IndexDimension>::SetArgs()
