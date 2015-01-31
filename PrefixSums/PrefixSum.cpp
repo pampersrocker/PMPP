@@ -6,7 +6,7 @@ PrefixSum::PrefixSum( const std::vector< int >& data ) :
 	m_Data(data),
 	recursiveWrapper(nullptr)
 {
-	int remaining = m_Data.size() % 512;
+	int remaining = 512 - m_Data.size() % 512;
 	originalSize = m_Data.size();
 	if (remaining)
 	{
@@ -22,7 +22,7 @@ PrefixSum::~PrefixSum()
 void PrefixSum::CalculateResult( std::vector< int >& result ) const
 {
 	result[ 0 ] = 0;
-	for( size_t i = 1; i < m_Data.size(); i++ )
+	for( size_t i = 1; i < originalSize; i++ )
 	{
 		result[ i ] = result[ i - 1 ] + m_Data[ i - 1 ];
 	}
@@ -52,7 +52,7 @@ void PrefixSum::ReleaseOpenCL( const std::vector<int>& expected, std::vector<int
 {
 	//kernel->ReadOutput( 1, result->data() );
 
-	m_DataBuffer->ReadBuffer( result->data() );
+	m_DataBuffer->ReadBuffer( result->data(), result->size() * sizeof(int) );
 
 	CheckResult( result, &expected );
 
