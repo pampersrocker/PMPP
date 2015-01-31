@@ -31,3 +31,8 @@ OpenCLContext* OpenCLCommandQueue::Context() const
 {
 	return m_Context;
 }
+
+void OpenCLCommandQueue::EnqueueBarrier() const
+{
+	CL_ASSERT( clEnqueueBarrier( m_CommandQueue ) );
+}

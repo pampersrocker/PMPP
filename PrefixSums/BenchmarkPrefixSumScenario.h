@@ -13,7 +13,7 @@ class PrefixSumScenario
 {
 public:
 
-	PrefixSumScenario( size_t size, ReferenceCounted< OpenCLKernel_tpl< 1 >> kernel );
+	PrefixSumScenario( size_t size, ReferenceCounted< OpenCLKernel_tpl< 1 >> kernel, ReferenceCounted< OpenCLKernel_tpl< 1 >> arraySum);
 	~PrefixSumScenario();
 
 	std::vector< int > data;
@@ -22,6 +22,7 @@ public:
 
 
 	ReferenceCounted< OpenCLKernel_tpl< 1 >> kernel;
+	ReferenceCounted< OpenCLKernel_tpl< 1 >> arraySumKernel;
 
 	std::string ToString() const;
 

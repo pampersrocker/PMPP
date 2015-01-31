@@ -8,6 +8,11 @@ OpenCLKernelArgument::OpenCLKernelArgument() :
 
 }
 
+OpenCLKernelArgument::OpenCLKernelArgument( OpenCLBufferPtr ptr )
+{
+	SetGlobalBuffer( ptr );
+}
+
 OpenCLKernelArgument::~OpenCLKernelArgument()
 {
 	m_Type = OpenCLKernelArgumentType::None;
@@ -25,11 +30,19 @@ OpenCLBufferPtr OpenCLKernelArgument::Buffer() const
 	return m_Buffer;
 }
 
-void OpenCLKernelArgument::SetGlobalBuffer( OpenCLBufferPtr buffer )
+OpenCLKernelArgument& OpenCLKernelArgument::SetGlobalBuffer( OpenCLBufferPtr buffer )
 {
 	m_Buffer = buffer;
-	m_Size = m_Buffer->Size();
+	if (m_Buffer.Valid())
+	{
+		m_Size = m_Buffer->Size();
+	}
+	else
+	{
+		m_Size = 0;
+	}
 	m_Type = OpenCLKernelArgumentType::Global;
+	return *this;
 }
 
 size_t OpenCLKernelArgument::Size() const

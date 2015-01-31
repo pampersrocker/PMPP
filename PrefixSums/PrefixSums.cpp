@@ -14,23 +14,36 @@ int _tmain(int argc, _TCHAR* argv[])
 	clManager.Initialize();
 	auto device = clManager.ConsoleSelectPlatformAndDevice();
 	auto context = device->CreateContext();
-	OpenCLKernel kernel = context->CreateKernel<1>( "CL/PrefixSum.cl", "PrefixSums" );
+	OpenCLKernelPtr kernel = context->CreateKernel<1>( "CL/PrefixSum.cl", "PrefixSums" );
+	OpenCLKernelPtr arraySum= context->CreateKernel<1>( "CL/ArraySum.cl", "ArraySum512" );
 	
 	
 
 	std::vector< PrefixSumScenario > scenarios{
-		//PrefixSumScenario( 256, selectedDeviceIdx, selectedPlatformIdx ),
-		PrefixSumScenario( 512, kernel),
-		//PrefixSumScenario( 1024, selectedDeviceIdx, selectedPlatformIdx ),
-		//PrefixSumScenario( 2048, selectedDeviceIdx, selectedPlatformIdx ),
-		//PrefixSumScenario( 4096, selectedDeviceIdx, selectedPlatformIdx ),
-		//PrefixSumScenario( 8192, selectedDeviceIdx, selectedPlatformIdx ),
-		//PrefixSumScenario( 16384, selectedDeviceIdx, selectedPlatformIdx ),
-		//PrefixSumScenario( 32768, selectedDeviceIdx, selectedPlatformIdx ),
-		//PrefixSumScenario( 65536, selectedDeviceIdx, selectedPlatformIdx ),
-		//PrefixSumScenario( 131072, selectedDeviceIdx, selectedPlatformIdx ),
-		//PrefixSumScenario( 2621440, selectedDeviceIdx, selectedPlatformIdx ),
-		//PrefixSumScenario( 10000000, selectedDeviceIdx, selectedPlatformIdx )
+		PrefixSumScenario( 256, kernel, arraySum ),
+		PrefixSumScenario( 512, kernel,arraySum),
+		PrefixSumScenario( 1024, kernel, arraySum),
+		PrefixSumScenario( 2048,kernel, arraySum),
+		PrefixSumScenario( 4096,kernel, arraySum),
+		PrefixSumScenario( 2157, kernel, arraySum ),
+		PrefixSumScenario( 8192, kernel, arraySum ),
+		PrefixSumScenario( 10240, kernel, arraySum ),
+		PrefixSumScenario( 512 * 21, kernel, arraySum ),
+		PrefixSumScenario( 512 * 22, kernel, arraySum ),
+		PrefixSumScenario( 512 * 23, kernel, arraySum ),
+		PrefixSumScenario( 512 * 24, kernel, arraySum ),
+		PrefixSumScenario( 512 * 25, kernel, arraySum ),
+		PrefixSumScenario( 16384, kernel, arraySum ),
+		PrefixSumScenario( 32768,kernel, arraySum),
+		PrefixSumScenario( 65536,kernel, arraySum),
+		PrefixSumScenario( 131072, kernel, arraySum ),
+		PrefixSumScenario( 2621440, kernel, arraySum ),
+		PrefixSumScenario( 10000000, kernel, arraySum ),
+		PrefixSumScenario( 20000000, kernel, arraySum ),
+		PrefixSumScenario( 50000000, kernel, arraySum ),
+		PrefixSumScenario( 100000000, kernel, arraySum ),
+		// The following needs approximately 4gb of GPU ram
+		//PrefixSumScenario( 1000000000, kernel, arraySum )
 	
 	};
 

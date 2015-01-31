@@ -10,7 +10,7 @@ BPP_INITIALIZE_BENCHMARK
 {
 	prefixSum = new PrefixSum( curScenario->data );
 
-	prefixSum->InitOpenCL( curScenario->kernel );
+	prefixSum->InitOpenCL( curScenario->kernel, curScenario->arraySumKernel );
 }
 
 BPP_BENCHMARK

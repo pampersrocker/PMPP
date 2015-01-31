@@ -44,7 +44,10 @@ public:
 	OpenCLBufferFlags Flags() const;
 
 	template <typename T>
-	void ReadBuffer( T* out ) const;
+	void ReadBuffer( T* out, size_t byteCount = 0, size_t offset =0 ) const;
+
+	template <typename T>
+	std::vector<T> DebugReadBuffer();
 
 private:
 
@@ -59,12 +62,22 @@ private:
 typedef ReferenceCounted < OpenCLBuffer > OpenCLBufferPtr;
 
 template <typename T>
+std::vector<T>
+OpenCLBuffer::DebugReadBuffer()
+{
+	std::vector<T> result;
+	result.resize( Size() / sizeof( T ) );
+	ReadBuffer( result.data() );
+	return result;
+}
+
+template <typename T>
 inline
-void OpenCLBuffer::ReadBuffer( T* out ) const
+void OpenCLBuffer::ReadBuffer( T* out, size_t byteCount , size_t offset) const
 {
 	assert( ( Flags() & ( OpenCLBufferFlags::ReadWrite | OpenCLBufferFlags::WriteOnly ) ) != OpenCLBufferFlags::None );
 	// Read the cout put back to host memory.
-	CL_ASSERT( clEnqueueReadBuffer( m_Context->CommandQueue()->CLCommandQueue(), m_Memory, CL_TRUE, 0, Size(), (void*)out, 0, nullptr, nullptr) );
+	CL_ASSERT( clEnqueueReadBuffer( m_Context->CommandQueue()->CLCommandQueue(), m_Memory, CL_TRUE, offset, byteCount ? byteCount : Size(), (void*)out, 0, nullptr, nullptr) );
 
 }
 

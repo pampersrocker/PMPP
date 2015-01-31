@@ -3,8 +3,9 @@
 #define PrefixSum_h__
 #include "stdafx.h"
 #include <vector>
+#include "PrefixSumRecursive.h"
 
-typedef ReferenceCounted< OpenCLKernel_tpl<1> > OpenCLKernel;
+typedef ReferenceCounted< OpenCLKernel_tpl<1U> > OpenCLKernelPtr;
 
 class PrefixSum
 {
@@ -16,18 +17,22 @@ public:
 
 	static bool CheckResult( const std::vector< int >* result, const std::vector< int >* expected );
 
-	void InitOpenCL( OpenCLKernel device );
+	void InitOpenCL( OpenCLKernelPtr sumKernel, OpenCLKernelPtr arraySum );
 	void RunOpenCL();
 	void ReleaseOpenCL( const std::vector<int>& expected, std::vector<int>* result );
 
 private:
 
-	OpenCLKernel kernel;
+	OpenCLKernelPtr kernel;
 
-	OpenCLKernelArgument m_ResultArgument;
+	OpenCLBufferPtr m_DataBuffer;
 
-	const std::vector< int >& m_Data;
+	PrefixSumRecursive* recursiveWrapper;
 
+	std::vector< int > m_Data;
+	size_t originalSize;
+
+	int numGroups;
 };
 
 #endif // PrefixSum_h__

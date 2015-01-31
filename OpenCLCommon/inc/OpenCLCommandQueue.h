@@ -13,6 +13,8 @@ public:
 	OpenCLContext* Context() const;
 	cl_command_queue CLCommandQueue() const;
 
+	void EnqueueBarrier() const;
+
 private:
 
 	OpenCLContext* m_Context;

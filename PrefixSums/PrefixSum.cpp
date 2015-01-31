@@ -1,10 +1,17 @@
 #include "stdafx.h"
 #include "PrefixSum.h"
+#include <conio.h>
 
 PrefixSum::PrefixSum( const std::vector< int >& data ) :
-	m_Data(data)
+	m_Data(data),
+	recursiveWrapper(nullptr)
 {
-
+	int remaining = (512 - m_Data.size() % 512) % 512;
+	originalSize = m_Data.size();
+	if (remaining)
+	{
+		m_Data.resize( m_Data.size() + remaining );
+	}
 }
 
 PrefixSum::~PrefixSum()
@@ -15,50 +22,37 @@ PrefixSum::~PrefixSum()
 void PrefixSum::CalculateResult( std::vector< int >& result ) const
 {
 	result[ 0 ] = 0;
-	for( size_t i = 1; i < m_Data.size(); i++ )
+	for( size_t i = 1; i < originalSize; i++ )
 	{
 		result[ i ] = result[ i - 1 ] + m_Data[ i - 1 ];
 	}
 }
 
-void PrefixSum::InitOpenCL( ReferenceCounted< OpenCLKernel_tpl< 1 >> kernel)
+void PrefixSum::InitOpenCL( OpenCLKernelPtr sumKernel, OpenCLKernelPtr arraySum )
 {
-	this->kernel = kernel;
+	//this->kernel = kernel;
 
-	kernel->ClearArgs();
-	kernel->CreateAndSetGlobalArgument(
-		kernel->Context()->CreateBuffer<int>(
+	
+	m_DataBuffer = sumKernel->Context()->CreateBuffer<int>(
 		m_Data.size(),
-		OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::ReadOnly,
-		const_cast< int * >( m_Data.data() ) ) );
-	m_ResultArgument = kernel->CreateAndSetGlobalArgument(
-		kernel->Context()->CreateBuffer<int>(
-		m_Data.size(),
-		OpenCLBufferFlags::WriteOnly ) );
+		OpenCLBufferFlags::CopyHostPtr | OpenCLBufferFlags::ReadWrite,
+		 m_Data.data());
 
-	kernel->CreateAndSetLocalArgument<int>( m_Data.size() );
-	kernel->CreateAndSetArgumentValue< int >( m_Data.size() );
+	recursiveWrapper = new PrefixSumRecursive( sumKernel, arraySum, m_DataBuffer, m_Data.size() );
 
-
-	kernel->SetWorkSize<0>( 256 );
-	kernel->SetGroupCount<0>( 1 );
-
-	kernel->SetArgs();
 
 }
 
 void PrefixSum::RunOpenCL()
 {
-	kernel->Run();
-
-	kernel->WaitForKernel();
+	recursiveWrapper->Run();
 }
 
 void PrefixSum::ReleaseOpenCL( const std::vector<int>& expected, std::vector<int>* result )
 {
 	//kernel->ReadOutput( 1, result->data() );
 
-	m_ResultArgument.Buffer()->ReadBuffer( result->data() );
+	m_DataBuffer->ReadBuffer( result->data(), result->size() * sizeof(int) );
 
 	CheckResult( result, &expected );
 
@@ -77,6 +71,11 @@ bool PrefixSum::CheckResult( const std::vector< int >* result, const std::vector
 				" expected " << (*expected)[ i ] <<
 				" got " << (*result)[ i ] << std::endl;
 			//break;
+			if (i%100 == 0)
+			{
+				std::cout << "Pausing Error Log for Scroll (Any Key To Continue)..." << std::endl;
+				_getch();
+			}
 		}
 	}
 
