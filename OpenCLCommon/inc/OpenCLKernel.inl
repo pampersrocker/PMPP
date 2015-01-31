@@ -216,7 +216,12 @@ void OpenCLKernel_tpl<IndexDimension>::Run()
 
 	assert( m_CommandQueue != nullptr );
 
+	m_KernelEvent = nullptr;
+
 	CL_ASSERT( clEnqueueNDRangeKernel( m_CommandQueue->CLCommandQueue(), kernel, IndexDimension, nullptr, globalWorkSize, m_WorkSize, 0, nullptr, &m_KernelEvent ) );
+
+	CL_ASSERT( clFlush( m_CommandQueue->CLCommandQueue() ) );
+
 }
 
 template < unsigned int IndexDimension /*= 1 */>

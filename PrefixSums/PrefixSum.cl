@@ -1,5 +1,5 @@
 
-void PrefixSums512(global int* data, global int* result, local int* cache, global int* tmpResultBuffer)
+void PrefixSums512(global int* data, global int* result, local int* cache, global int* tmpResultBuffer, int groupOffset)
 {
 	cache[ get_local_id(0) ] = data[ get_local_id(0) ];
 	cache[ get_local_id(0) + 256 ] = data[ get_local_id(0) + 256 ];
@@ -45,7 +45,7 @@ void PrefixSums512(global int* data, global int* result, local int* cache, globa
 	//Special case, add the last Element to the cache in the recursion for the next group to be added.
 	if( tmpResultBuffer != 0 && get_local_id(0) == 0)
 	{
-		tmpResultBuffer[ get_group_id( 0 ) ] = result[511];
+		tmpResultBuffer[ get_group_id( 0 ) + groupOffset ] = result[511];
 	}
 
 	barrier(CLK_LOCAL_MEM_FENCE);
@@ -58,15 +58,16 @@ void PrefixSums512(global int* data, global int* result, local int* cache, globa
 	barrier(CLK_LOCAL_MEM_FENCE);
 }
 
-kernel void PrefixSums(global int* data, global int* result, local int* cache, int size, global int* tmpResultBuffer)
+kernel void PrefixSums(global int* data, global int* result, local int* cache, int size, global int* tmpResultBuffer, int groupOffset)
 {
-	int offset = get_local_size( 0 ) * 2 * get_group_id( 0 );
+	int offset = get_local_size( 0 ) * 2 * (get_group_id( 0 ) +groupOffset);
+	int cacheOffset = get_local_size( 0 ) * 2 * (get_group_id( 0 ));
 	// Split several work groups to its own region
-	PrefixSums512(data + offset, result + offset, cache + offset,tmpResultBuffer);
+	PrefixSums512(data + offset, result + offset, cache + cacheOffset,tmpResultBuffer,groupOffset);
 	barrier( CLK_LOCAL_MEM_FENCE );
 	if( tmpResultBuffer != 0 && get_local_id(0) == 0)
 	{
-		tmpResultBuffer[ get_group_id( 0 ) ] += result[((512) * (get_group_id( 0 )+1)) -1 ];
+		tmpResultBuffer[ get_group_id( 0 ) + groupOffset ] += result[(512* (get_group_id( 0 ) + groupOffset)) +511 ];
 	}
 
 

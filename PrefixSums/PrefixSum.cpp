@@ -6,7 +6,7 @@ PrefixSum::PrefixSum( const std::vector< int >& data ) :
 	m_Data(data),
 	recursiveWrapper(nullptr)
 {
-	int remaining = 512 - m_Data.size() % 512;
+	int remaining = (512 - m_Data.size() % 512) % 512;
 	originalSize = m_Data.size();
 	if (remaining)
 	{

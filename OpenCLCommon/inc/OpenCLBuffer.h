@@ -46,6 +46,9 @@ public:
 	template <typename T>
 	void ReadBuffer( T* out, size_t byteCount = 0, size_t offset =0 ) const;
 
+	template <typename T>
+	std::vector<T> DebugReadBuffer();
+
 private:
 
 	void Create( const OpenCLContext* context, size_t size, OpenCLBufferFlags flags, void* initialData = nullptr );
@@ -57,6 +60,16 @@ private:
 };
 
 typedef ReferenceCounted < OpenCLBuffer > OpenCLBufferPtr;
+
+template <typename T>
+std::vector<T>
+OpenCLBuffer::DebugReadBuffer()
+{
+	std::vector<T> result;
+	result.resize( Size() / sizeof( T ) );
+	ReadBuffer( result.data() );
+	return result;
+}
 
 template <typename T>
 inline
