@@ -14,20 +14,122 @@ template < unsigned int IndexDimension = 1 >
 class OpenCLKernel_tpl
 {
 public:
-
+	// Check if we got a valid Dimension for the program.
 	static_assert( IndexDimension > 0, "IndexDimension Template argument for OpenCLProgram_tpl must be bigger than 0!" );
 
 	OpenCLKernel_tpl( const OpenCLContext* const context );
 	void LoadKernel( const std::string& fileName, const std::string& functionName );
 
+	/**
+	@brief Creates a new Argument containing a global Memory Pointer and adds it to the argument List
+
+	The OpenCLBufferPtr will be stored inside a OpenCLKernelArgument so the Reference will be kept as long as this argument is set.
+
+	@param buffer The global Memory Pointer to be added to the arguments of the kernel.
+	@param index If provided the currentIndex of the created OpenCLKernelArgument will be returned, 
+	if nullptr if provided, this argument is ignored
+	
+	@return The generated OpenCLKernelArgument
+	*/
 	OpenCLKernelArgument CreateAndSetGlobalArgument( OpenCLBufferPtr buffer, size_t* index = nullptr );
+
+	/**
+	@brief Creates a new Argument containing a global Memory Pointer
+	This is a convenience wrapper for creating a OpenCLKernelArgument the easy way, 
+	without automatically setting it as argument.
+
+	The OpenCLBufferPtr will be stored inside a OpenCLKernelArgument,
+	so the Reference will be kept as long as this argument exists.
+
+	@param buffer The global Memory Pointer for which the Kernel Argument is created.
+	
+	@return The generated OpenCLKernelArgument which is not registered as part of the Kernel Args
+	*/
 	OpenCLKernelArgument CreateGlobalArgument( OpenCLBufferPtr buffer );
+
+	/**
+	@brief Creates a new Argument representing a local Memory and adds it to the argument List
+	The size of the local Memory will be sizeof( T ) * numElements
+
+	The size of the local Memory will be stored inside a OpenCLKernelArgument.
+
+
+	@tparam T the type of the Elements inside the localMemory
+	@param numElements The number of Elements the localMemory can hold
+	@param index If provided the currentIndex of the created OpenCLKernelArgument will be returned,
+	if nullptr if provided, this argument is ignored
+
+	@return The generated OpenCLKernelArgument
+	*/
 	template< typename T >
 	OpenCLKernelArgument CreateAndSetLocalArgument( size_t numElements, size_t* index = nullptr );
+	
+	/**
+	@brief Creates a new Argument which holds the necessary information to create a local Argument
+	The size of the local Memory will be sizeof( T ) * numElements
+
+	This is a convenience wrapper for creating a OpenCLKernelArgument the easy way,
+	without automatically setting it as argument.
+
+	The size of the local Memory will be stored inside a OpenCLKernelArgument.
+
+	@tparam T the type of the Elements inside the localMemory
+	@param numElements The number of Elements the localMemory can hold
+	
+	@return The generated OpenCLKernelArgument which is not registered as part of the Kernel Args 
+	*/
 	template< typename T >
 	OpenCLKernelArgument CreateLocalArgument( size_t numElements );
+
+
+	
+	/**
+	@brief Creates a new Argument containing a value and adds it to the argument List
+	The size of the value will be determined by sizeof( T ) and stored in the argument next to the actual value.
+
+	Value Types for T can be:
+	- cl_uchar
+	- cl_float
+	- cl_uint
+	- cl_int
+	- cl_uchar4
+	- cl_float4
+	- cl_uint4
+
+	Other Types will create a compile fail.
+	
+	@param value The value of Type T to be stored in the Argument
+	@param index If provided the currentIndex of the created OpenCLKernelArgument will be returned,
+	if nullptr if provided, this argument is ignored
+
+	@return The generated OpenCLKernelArgument
+	*/
 	template< typename T >
 	OpenCLKernelArgument CreateAndSetArgumentValue( T value, size_t* index = nullptr );
+	
+	/**
+	@brief Creates a new Argument containing a value
+	The size of the value will be determined by sizeof( T ) and stored in the argument next to the actual value.
+
+	This is a convenience wrapper for creating a OpenCLKernelArgument the easy way,
+	without automatically setting it as argument.
+
+
+	Value Types for T can be:
+	- cl_uchar
+	- cl_float
+	- cl_uint
+	- cl_int
+	- cl_uchar4
+	- cl_float4
+	- cl_uint4
+
+	Other Types will create a compile fail.
+
+	@param value The value of Type T to be stored in the Argument
+
+	@return The generated OpenCLKernelArgument which is not registered as part of the Kernel Args
+	*/
 	template< typename T >
 	OpenCLKernelArgument CreateArgumentValue( T value );
 
