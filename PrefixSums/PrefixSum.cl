@@ -1,5 +1,5 @@
 
-void PrefixSums512(global int* data, global int* result, local int* cache, global int* tmpResultBuffer, int groupOffset)
+void PrefixSums512(global int* data, global int* result, local int* cache, global int* tmpResultBuffer)
 {
 	//Store all data into the localMemory for faster access times.
 	cache[ get_local_id(0) * 2 ] = data[ get_local_id(0) * 2 ];
@@ -73,7 +73,7 @@ void PrefixSums512(global int* data, global int* result, local int* cache, globa
 	//Special case, add the last Element to the cache in the recursion for the next group to be added.
 	if( tmpResultBuffer != 0 && get_local_id(0) == 0)
 	{
-		tmpResultBuffer[ get_group_id( 0 ) + groupOffset ] = result[511];
+		tmpResultBuffer[ get_group_id( 0 ) ] = result[511];
 	}
 
 	barrier(CLK_LOCAL_MEM_FENCE);
@@ -83,22 +83,18 @@ void PrefixSums512(global int* data, global int* result, local int* cache, globa
 	result[ get_local_id(0) * 2 + 1 ] = cache[ get_local_id(0) * 2 +1];
 }
 
-kernel void PrefixSums(global int* data, global int* result, local int* cache, int size, global int* tmpResultBuffer, int groupOffset)
+kernel void PrefixSums(global int* data, global int* result, local int* cache, int size, global int* tmpResultBuffer)
 {
-	//Calculate the offset of the data according the current group id and the given group offset, which tells the kernel, 
-	//how many groups has been adressed in the previous kernel invocation, (if any)
-	int offset = 512 * (get_group_id( 0 ) +groupOffset);
-	//Cache offset is calculated separatly because local memory is independent from the groupOffset, 
-	//as this is the main reason for making multiple kernel invocations because of insufficient amount of local memory
-	int cacheOffset = 512 * (get_group_id( 0 ));
+	//Calculate the offset of the data according the current group id
+	int offset = 512 * (get_group_id( 0 ));
 	// Split several work groups to its own region
-	PrefixSums512(data + offset, result + offset, cache + cacheOffset,tmpResultBuffer,groupOffset);
+	PrefixSums512(data + offset, result + offset, cache,tmpResultBuffer);
 	barrier( CLK_LOCAL_MEM_FENCE );
 	//If we get a resultBuffer provided, because recursion is needed store our largest value from this group into the according cache Buffer
 	//On which this kernel is run the the next recursion step
 	if( tmpResultBuffer != 0 && get_local_id(0) == 0)
 	{
-		tmpResultBuffer[ get_group_id( 0 ) + groupOffset ] += result[(512* (get_group_id( 0 ) + groupOffset)) +511 ];
+		tmpResultBuffer[ get_group_id( 0 ) ] += result[(512* (get_group_id( 0 ))) +511 ];
 	}
 
 

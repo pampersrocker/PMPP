@@ -52,7 +52,16 @@ void PrefixSum::ReleaseOpenCL( const std::vector<int>& expected, std::vector<int
 {
 	//kernel->ReadOutput( 1, result->data() );
 
+	memset( result->data(), 0, sizeof( int ) * result->size() );
+
 	m_DataBuffer->ReadBuffer( result->data(), result->size() * sizeof(int) );
+
+	m_DataBuffer.SetNull();
+
+	recursiveWrapper->Clear();
+
+	delete recursiveWrapper;
+	recursiveWrapper = nullptr;
 
 	CheckResult( result, &expected );
 
@@ -74,6 +83,7 @@ bool PrefixSum::CheckResult( const std::vector< int >* result, const std::vector
 			if (i%100 == 0)
 			{
 				std::cout << "Pausing Error Log for Scroll (Any Key To Continue)..." << std::endl;
+				fflush( stdin );
 				_getch();
 			}
 		}

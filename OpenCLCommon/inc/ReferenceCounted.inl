@@ -181,6 +181,10 @@ void ReferenceCounted<T, Allocator, RefCountPolicy>::DecRef( void )
 		RefCountPolicy::DecRef( *m_Count );
 		if( *m_Count == 0 )
 		{
+			if( m_CountedPointer )
+			{
+				m_CountedPointer->~T();
+			}
 			RefCountPolicy::Destroy( &m_Alloc, reinterpret_cast< void* >( m_CountedPointer ), m_Count );
 			m_CountedPointer = nullptr;
 			m_Count = nullptr;
