@@ -18,6 +18,9 @@ public:
 	static_assert( IndexDimension > 0, "IndexDimension Template argument for OpenCLProgram_tpl must be bigger than 0!" );
 
 	OpenCLKernel_tpl( const OpenCLContext* const context );
+
+	~OpenCLKernel_tpl();
+
 	void LoadKernel( const std::string& fileName, const std::string& functionName );
 
 	/**

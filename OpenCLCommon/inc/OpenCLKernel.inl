@@ -20,6 +20,13 @@ OpenCLKernel_tpl<IndexDimension>::OpenCLKernel_tpl( const OpenCLContext* const c
 	}
 }
 
+template < unsigned int IndexDimension /*= 1 */>
+inline
+OpenCLKernel_tpl<IndexDimension>::~OpenCLKernel_tpl()
+{
+	m_Args.clear();
+}
+
 /* convert the kernel file into a string */
 inline int convertToString( const char *filename, std::string& s )
 {

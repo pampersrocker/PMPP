@@ -13,6 +13,8 @@ public:
 
 	void Run();
 
+	void Clear();
+
 private:
 	OpenCLKernelPtr m_SumKernel;
 	OpenCLKernelPtr m_TmpSumKernel;
