@@ -5,6 +5,9 @@
 #include <iostream>
 #include "OpenCL.h"
 #include "CalcStatisticKernelWrapper.h"
+#include "Logging/BPPDefaultConsoleLogger.hpp"
+#include <conio.h>
+
 
 typedef ReferenceCounted< OpenCLKernel_tpl<1> > OpenCLKernelPtr;
 
@@ -15,21 +18,26 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	sf::Texture inputTexture;
 	sf::Texture histogramTexture;
+	sf::Texture histogramTextureAtomic;
 	sf::Sprite rawSprite;
 	sf::Sprite histogramSprite;
+	sf::Sprite histogramSpriteAtomic;
+	sf::Text text;
 
 	sf::Vector2i imageOffset;
 	sf::Vector2i initialOffset;
 	bool offsetActive = false;
 
 	sf::Image histogramImage;
-	if( !inputTexture.loadFromFile( "Gravel.jpg" ) )
+	sf::Image histogramImageAtomic;
+	if( !inputTexture.loadFromFile( "Histogram.PNG" ) )
 	{
-		std::cout << "Failed to load Gravel.jpg!" << std::endl;
+		std::cout << "Failed to load Histogram.PNG!" << std::endl;
 	}
 	sf::Image rawImage = inputTexture.copyToImage();
 
-	histogramImage.create( 258,258, sf::Color::Transparent );
+	histogramImage.create( 258, 258, sf::Color::Transparent );
+	histogramImageAtomic.create( 258, 258, sf::Color::Transparent );
 
 	float scale = 1.0f;
 
@@ -46,25 +54,49 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	OpenCLKernelPtr kernel = clContext->CreateKernel<1>( "CL/Histogram.cl", "calcStatistic" );
 	OpenCLKernelPtr reduceStatistic = clContext->CreateKernel<1>( "CL/ReduceStatistic.cl", "reduceStatistic" );
+	OpenCLKernelPtr atomicKernel = clContext->CreateKernel<1>( "CL/HistogramAtomic.cl", "calcStatisticAtomic" );
 
 
+	{
+		HistogramGPUScenario scenario( kernel, reduceStatistic, atomicKernel, rawImage );
+		auto& benchmarker = bpp::Benchmarker::Instance();
 
-	CalcStatisticKernelWrapper wrapper( kernel, reduceStatistic );
+		bpp::DefaultConsoleLogger logger;
+
+		benchmarker.AddLogger( &logger );
+		benchmarker.Iterations( 20 );
+
+		benchmarker.AddScenario( &scenario );
+
+		//benchmarker.Run();
+		//benchmarker.Log();
+
+		benchmarker.Release();
+	}
+
+	CalcStatisticKernelWrapper wrapper( kernel, reduceStatistic, atomicKernel );
 
 	wrapper.SetImage( rawImage );
-
+	wrapper.NumPixelsPerThread( 32 );
 	wrapper.Run();
-
+	
 
 	for( size_t i = 0; i < 258; i++ )
 	{
-		histogramImage.setPixel( 0, i, sf::Color(255, 255, 255 ) );
-		histogramImage.setPixel( 257, i, sf::Color(255, 255, 255 ) );
-		histogramImage.setPixel( i, 0, sf::Color(255, 255, 255 ) );
-		histogramImage.setPixel( i, 257, sf::Color(255, 255, 255 ) );
+		histogramImage.setPixel( 0, i, sf::Color(127, 127, 127 ) );
+		histogramImage.setPixel( 257, i, sf::Color(127, 127, 127 ) );
+		histogramImage.setPixel( i, 0, sf::Color(127, 127, 127 ) );
+		histogramImage.setPixel( i, 257, sf::Color( 127, 127, 127 ) );
+		histogramImageAtomic.setPixel( 0, i, sf::Color( 127, 127, 127 ) );
+		histogramImageAtomic.setPixel( 257, i, sf::Color( 127, 127, 127 ) );
+		histogramImageAtomic.setPixel( i, 0, sf::Color( 127, 127, 127 ) );
+		histogramImageAtomic.setPixel( i, 257, sf::Color( 127, 127, 127 ) );
 	}
 	
-	auto result = wrapper.ResultArray();
+	std::array<int, 256> result;
+	std::array<int, 256> resultAtomic;
+
+	wrapper.ReadOutput( result );
 
 	int max = result[0];
 	for( size_t i = 1; i < 256; i++ )
@@ -86,9 +118,58 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 	}
 
+	wrapper.UseAtomicKernel( true );
+
+	wrapper.Run();
+
+	wrapper.ReadOutput( resultAtomic );
+
+	max = resultAtomic[ 0 ];
+	for( size_t i = 1; i < 256; i++ )
+	{
+		if( resultAtomic[ i ] > max )
+		{
+			max = resultAtomic[ i ];
+		}
+	}
+
+	for( size_t x = 0; x < 256; x++ )
+	{
+		for( size_t y = 0; y < 256; y++ )
+		{
+			if( ( ( float ) resultAtomic[ x ] / ( float ) max ) * 255 >= y )
+			{
+				histogramImageAtomic.setPixel( x + 1, 256 - y, sf::Color::White );
+			}
+		}
+	}
+
+	for( size_t i = 0; i < 256; i++ )
+	{
+		if( result[i] != resultAtomic[i] )
+		{
+			std::cout <<
+				"Incorrect result at idx: " << i <<
+				" atomic " << ( resultAtomic )[ i ] <<
+				" normal result " << ( result )[ i ] <<
+				" diff: " << ( result[i] - resultAtomic[i] ) <<std::endl;
+			//break;
+			if( i % 100 == 0 && i != 0 )
+			{
+				std::cout << "Pausing Error Log for Scroll (Any Key To Continue)..." << std::endl;
+				fflush( stdin );
+				_getch();
+			}
+			
+		}
+	}
+
 	histogramTexture.loadFromImage( histogramImage );
+	histogramTextureAtomic.loadFromImage( histogramImageAtomic );
 	histogramSprite.setTexture( histogramTexture );
 	histogramSprite.setPosition( 1280.0f - 258.0f, 200 );
+	histogramSpriteAtomic.setTexture( histogramTextureAtomic );
+	histogramSpriteAtomic.setPosition( 1280.0f - 258.0f, 500 );
 	clManager.Release();
 
 	while( window.isOpen() )
@@ -161,6 +242,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		rawSprite.setPosition( imageOffset.x, imageOffset.y );
 		window.draw( rawSprite );
 		window.draw( histogramSprite );
+		window.draw( histogramSpriteAtomic );
 
 
 		window.display();

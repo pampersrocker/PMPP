@@ -12,6 +12,9 @@
 
 #include <SFML/Graphics.hpp>
 #include <OpenCL.h>
+#include "HistogramGPUScenario.h"
+#define BPP_CUSTOM_SCENARIO ::HistogramGPUScenario
+#include <bpp.hpp>
 
 typedef ReferenceCounted< OpenCLKernel_tpl < 1U > > OpenCLKernelPtr;
 

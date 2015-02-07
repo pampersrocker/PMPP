@@ -10,7 +10,7 @@ OpenCLCommandQueue::OpenCLCommandQueue( OpenCLContext* parentContext ) :
 	cl_int status = 0;
 	m_CommandQueue = clCreateCommandQueue( 
 		m_Context->CLContext(), 
-		m_Context->Device()->CLDeviceId(), 0, &status );
+		m_Context->Device()->CLDeviceId(), CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &status );
 	CL_VERIFY( status );
 
 }
