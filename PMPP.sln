@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenCLCommon", "OpenCLCommon\OpenCLCommon.vcxproj", "{269C88F5-21E7-4A44-90E4-C65FECC5FE3C}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PrefixSums", "PrefixSums\PrefixSums.vcxproj", "{97CDFA62-0BF4-4A93-B694-0BB17F88F4B4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TextureTiler", "TextureTiler\TextureTiler.vcxproj", "{F69710FC-A309-487D-88D5-8A80ABCCFB39}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Histogram", "Histogram\Histogram.vcxproj", "{396CB266-D855-450D-8A75-ACAA7B23DFAA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,14 @@ Global
 		{F69710FC-A309-487D-88D5-8A80ABCCFB39}.Release|Win32.Build.0 = Release|Win32
 		{F69710FC-A309-487D-88D5-8A80ABCCFB39}.Release|x64.ActiveCfg = Release|x64
 		{F69710FC-A309-487D-88D5-8A80ABCCFB39}.Release|x64.Build.0 = Release|x64
+		{396CB266-D855-450D-8A75-ACAA7B23DFAA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{396CB266-D855-450D-8A75-ACAA7B23DFAA}.Debug|Win32.Build.0 = Debug|Win32
+		{396CB266-D855-450D-8A75-ACAA7B23DFAA}.Debug|x64.ActiveCfg = Debug|x64
+		{396CB266-D855-450D-8A75-ACAA7B23DFAA}.Debug|x64.Build.0 = Debug|x64
+		{396CB266-D855-450D-8A75-ACAA7B23DFAA}.Release|Win32.ActiveCfg = Release|Win32
+		{396CB266-D855-450D-8A75-ACAA7B23DFAA}.Release|Win32.Build.0 = Release|Win32
+		{396CB266-D855-450D-8A75-ACAA7B23DFAA}.Release|x64.ActiveCfg = Release|x64
+		{396CB266-D855-450D-8A75-ACAA7B23DFAA}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
