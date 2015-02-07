@@ -7,6 +7,7 @@
 
 #include "PrefixSum.h"
 #include "OpenCL.h"
+#include <conio.h>
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -69,6 +70,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		kernel->Release();
 	}
 
+	std::cout << "Press any key to continue....";
+	fflush( stdin );
+	_getch();
 }
 
 

@@ -13,6 +13,7 @@
 #include <functional>
 #include "Logging\BPPDefaultConsoleLogger.hpp"
 #include "SharedCPPCL.cl"
+#include <conio.h>
 
 using namespace std;
 typedef Matrix_tpl<float> Matrix;
@@ -92,8 +93,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		benchmarker.Release();
 	}
 
-	char dummy;
-	cin >> dummy;
+
+	std::cout << "Press any key to continue....";
+	fflush( stdin );
+	_getch();
 
 	return 0;
 }

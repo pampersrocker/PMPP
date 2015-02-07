@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "ReferenceCounted.hpp"
 #include <assert.h>
+#include <vector>
 
 class OpenCLContext;
 
