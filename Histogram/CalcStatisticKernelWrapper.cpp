@@ -9,10 +9,12 @@ CalcStatisticKernelWrapper::~CalcStatisticKernelWrapper()
 
 }
 
-CalcStatisticKernelWrapper::CalcStatisticKernelWrapper( OpenCLKernelPtr calcStaticKernel, OpenCLKernelPtr reduceStatisticKernel ) :
+CalcStatisticKernelWrapper::CalcStatisticKernelWrapper( OpenCLKernelPtr calcStaticKernel, OpenCLKernelPtr reduceStatisticKernel, OpenCLKernelPtr atomicKernel ) :
 m_CalcStatisticKernel(calcStaticKernel),
 m_ReduceStatisticKernel( reduceStatisticKernel ),
-m_NumPixelsPerThread( 256 )
+m_NumPixelsPerThread( 256 ),
+m_AtomicKernel( atomicKernel ),
+m_UseAtomicKernel( false )
 {
 
 }
@@ -48,12 +50,42 @@ void CalcStatisticKernelWrapper::SetImage( sf::Image image )
 void CalcStatisticKernelWrapper::Run()
 {
 	const int workGroupSize = 32;
-	int numGroups = m_ImageData.size() / (workGroupSize * m_NumPixelsPerThread);
+	int numGroups = m_ImageData.size() / ( workGroupSize * m_NumPixelsPerThread );
 	if( m_ImageData.size() % ( workGroupSize * m_NumPixelsPerThread ) )
 	{
 		numGroups++;
 	}
 
+	if( m_UseAtomicKernel )
+	{
+		RunAtomic( numGroups, workGroupSize );
+	}
+	else
+	{
+		RunNonAtomic( numGroups, workGroupSize );
+	}
+}
+
+void CalcStatisticKernelWrapper::ReadOutput( std::array<int, 256>& out )
+{
+	m_ResultBuffer->ReadBuffer<int>( out.data(), 256 * sizeof( int ) );
+}
+
+void CalcStatisticKernelWrapper::NumPixelsPerThread( size_t val )
+{
+	m_NumPixelsPerThread = val;
+}
+
+size_t CalcStatisticKernelWrapper::NumPixelsPerThread() const
+{
+	return m_NumPixelsPerThread;
+}
+
+
+
+
+void CalcStatisticKernelWrapper::RunNonAtomic( int numGroups, const int workGroupSize )
+{
 	m_CalcStatisticKernel->BeginArgs();
 
 	m_CalcStatisticKernel->CreateAndSetGlobalArgument( m_ImageBuffer );
@@ -86,22 +118,40 @@ void CalcStatisticKernelWrapper::Run()
 	m_ReduceStatisticKernel->Run();
 	// Wait for the second kernel to finish (to ensure we take all compute time into account for our benchmark)
 	m_ReduceStatisticKernel->WaitForKernel();
-
 }
 
-void CalcStatisticKernelWrapper::ReadOutput( std::array<int, 256>& out )
+void CalcStatisticKernelWrapper::UseAtomicKernel( bool val )
 {
-	m_ResultBuffer->ReadBuffer<int>( out.data(), 256 * sizeof( int ) );
+	m_UseAtomicKernel = val;
 }
 
-void CalcStatisticKernelWrapper::NumPixelsPerThread( size_t val )
+bool CalcStatisticKernelWrapper::UseAtomicKernel() const
 {
-	m_NumPixelsPerThread = val;
+	return m_UseAtomicKernel;
 }
 
-size_t CalcStatisticKernelWrapper::NumPixelsPerThread() const
+void CalcStatisticKernelWrapper::RunAtomic( int numGroups, const int workGroupSize )
 {
-	return m_NumPixelsPerThread;
+	m_AtomicKernel->BeginArgs();
+
+	m_AtomicKernel->CreateAndSetGlobalArgument( m_ImageBuffer );
+	m_AtomicKernel->CreateAndSetArgumentValue<int>( m_ImageData.size() );
+
+	std::array<int, 256> data;
+	memset( data.data(), 0, sizeof( int )*data.size() );
+	m_ResultBuffer = m_AtomicKernel->CreateAndSetGlobalArgument(
+		m_AtomicKernel->Context()->CreateBuffer<int>( data.size(), OpenCLBufferFlags::ReadWrite | OpenCLBufferFlags::CopyHostPtr, data.data() )
+		).Buffer();
+	m_AtomicKernel->CreateAndSetArgumentValue<int>( m_NumPixelsPerThread );
+
+	m_AtomicKernel->EndArgs();
+
+	m_AtomicKernel->SetWorkSize<0>( workGroupSize );
+	m_AtomicKernel->SetGroupCount<0>( numGroups );
+
+	// Start the kernel but don't wait for it, prepare the other kernel as long as this one is running
+	m_AtomicKernel->Run();
+
+	m_AtomicKernel->WaitForKernel();
+
 }
-
-

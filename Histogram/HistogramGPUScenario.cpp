@@ -4,9 +4,11 @@
 HistogramGPUScenario::HistogramGPUScenario( 
 	ReferenceCounted< OpenCLKernel_tpl<1>> calcStatisticsKernel, 
 	ReferenceCounted< OpenCLKernel_tpl<1>> reduceStatisticsKernel,
+	ReferenceCounted< OpenCLKernel_tpl<1>> atomicKernel,
 	sf::Image image) :
 CalcStatisticsKernel(calcStatisticsKernel),
-ReduceStatisticsKernel(reduceStatisticsKernel),
+AtomicKernel( atomicKernel),
+ReduceStatisticsKernel( reduceStatisticsKernel ),
 Image(image)
 {
 

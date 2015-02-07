@@ -25,6 +25,9 @@
     <Text Include="ReduceStatistic.cl">
       <Filter>CL</Filter>
     </Text>
+    <Text Include="HistogramAtomic.cl">
+      <Filter>CL</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">

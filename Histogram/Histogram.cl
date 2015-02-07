@@ -15,28 +15,33 @@ kernel void calcStatistic(global uchar4* data, int size, global int* histogram, 
 
 	// No sync needed, because every thread sets its own data, so no thread needs to wait for the others
 
-	int brightness = 0;
+	uchar brightness = 0;
 	uchar4 curPixel;
 
 	for(int pixelIdx = 0; pixelIdx<pixelperThread; ++pixelIdx)
 	{
-		int dataIdx = GID * pixelperThread * LSIZE + LX + pixelIdx * 32;
+		int dataIdx = GID * pixelperThread * LSIZE +
+						LX +
+						pixelIdx * LSIZE;
 		if( dataIdx < size)
 		{
 			curPixel = data[dataIdx];
-			brightness = (int)(curPixel.x * 0.299f + curPixel.y * 0.587f + curPixel.z * 0.114f);
+			brightness = (int)round(curPixel.x * 0.299f + curPixel.y * 0.587f + curPixel.z * 0.114f);
 			++tmpHistogram[LX][brightness];
 		}
 	}
 
-	barrier(CLK_LOCAL_MEM_FENCE);
-
-	for(int i = 1; i < 8; ++i)
+	barrier(CLK_GLOBAL_MEM_FENCE);
+	// Add all except the first to the first work item cache
+	for(int k = 1; k < LSIZE; ++k)
 	{
-		tmpHistogram[0][LX * i] += tmpHistogram[LX][LX + i * LSIZE];
+		for(int i = 0; i < 8; ++i)
+		{
+			tmpHistogram[0][LX + i * LSIZE] += tmpHistogram[k][LX + i * LSIZE];
+		}
 	}
 
-	barrier(CLK_LOCAL_MEM_FENCE);
+	barrier(CLK_GLOBAL_MEM_FENCE);
 
 	for(int i = 0; i < 8; ++i)
 	{

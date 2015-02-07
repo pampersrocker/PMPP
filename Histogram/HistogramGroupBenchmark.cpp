@@ -12,7 +12,8 @@ BPP_INITIALIZE_BENCHMARK									\
 {															\
 	wrapper = new CalcStatisticKernelWrapper( 				\
 	curScenario->CalcStatisticsKernel, 						\
-	curScenario->ReduceStatisticsKernel );					\
+	curScenario->ReduceStatisticsKernel,					\
+	curScenario->AtomicKernel );							\
 	wrapper->SetImage( curScenario->Image );				\
 	wrapper->NumPixelsPerThread( pixelperThreads );			\
 															\
