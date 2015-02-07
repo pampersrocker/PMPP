@@ -4,7 +4,7 @@
 #define LSIZE get_local_size(0)
 #define GX get_global_id(0)
 
-kernel void calcStatistic(global uchar4* data, int size, global int* histogram)
+kernel void calcStatistic(global uchar4* data, int size, global int* histogram, int pixelperThread)
 {
 	local tmpHistogram[32][256];
 
@@ -18,9 +18,9 @@ kernel void calcStatistic(global uchar4* data, int size, global int* histogram)
 	int brightness = 0;
 	uchar4 curPixel;
 
-	for(int pixelIdx = 0; pixelIdx<256; ++pixelIdx)
+	for(int pixelIdx = 0; pixelIdx<pixelperThread; ++pixelIdx)
 	{
-		int dataIdx = GID * 256 * LSIZE + LX + pixelIdx * 32;
+		int dataIdx = GID * pixelperThread * LSIZE + LX + pixelIdx * 32;
 		if( dataIdx < size)
 		{
 			curPixel = data[dataIdx];

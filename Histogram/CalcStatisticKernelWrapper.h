@@ -14,20 +14,24 @@ public:
 
 	void Run();
 
+	void ReadOutput( std::array<int, 256>& out);
+
 	~CalcStatisticKernelWrapper();
 
 	const std::array< int, 256 >& ResultArray() const;
+	size_t NumPixelsPerThread() const;
+	void NumPixelsPerThread( size_t val );
 private:
 
 	sf::Image m_Image;
 	OpenCLKernelPtr m_CalcStatisticKernel;
 	OpenCLKernelPtr m_ReduceStatisticKernel;
 
+	size_t m_NumPixelsPerThread;
 	OpenCLBufferPtr m_ImageBuffer;
+	OpenCLBufferPtr m_ResultBuffer;
 
 	std::vector< cl_uchar4 > m_ImageData;
-
-	std::array< int, 256 > m_ResultArray;
 
 };
 

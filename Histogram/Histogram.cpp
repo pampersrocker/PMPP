@@ -5,6 +5,8 @@
 #include <iostream>
 #include "OpenCL.h"
 #include "CalcStatisticKernelWrapper.h"
+#include "Logging/BPPDefaultConsoleLogger.hpp"
+
 
 typedef ReferenceCounted< OpenCLKernel_tpl<1> > OpenCLKernelPtr;
 
@@ -48,13 +50,28 @@ int _tmain(int argc, _TCHAR* argv[])
 	OpenCLKernelPtr reduceStatistic = clContext->CreateKernel<1>( "CL/ReduceStatistic.cl", "reduceStatistic" );
 
 
+	{
+		HistogramGPUScenario scenario( kernel, reduceStatistic, rawImage );
+		auto& benchmarker = bpp::Benchmarker::Instance();
+
+		bpp::DefaultConsoleLogger logger;
+
+		benchmarker.AddLogger( &logger );
+		benchmarker.Iterations( 5 );
+
+		benchmarker.AddScenario( &scenario );
+
+		benchmarker.Run();
+		benchmarker.Log();
+
+		benchmarker.Release();
+	}
 
 	CalcStatisticKernelWrapper wrapper( kernel, reduceStatistic );
 
 	wrapper.SetImage( rawImage );
 
 	wrapper.Run();
-
 
 	for( size_t i = 0; i < 258; i++ )
 	{
@@ -64,7 +81,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		histogramImage.setPixel( i, 257, sf::Color(255, 255, 255 ) );
 	}
 	
-	auto result = wrapper.ResultArray();
+	std::array<int, 256> result;
+
+	wrapper.ReadOutput( result );
 
 	int max = result[0];
 	for( size_t i = 1; i < 256; i++ )

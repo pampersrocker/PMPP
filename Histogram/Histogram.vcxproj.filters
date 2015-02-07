@@ -22,6 +22,9 @@
     <Text Include="Histogram.cl">
       <Filter>CL</Filter>
     </Text>
+    <Text Include="ReduceStatistic.cl">
+      <Filter>CL</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -31,6 +34,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CalcStatisticKernelWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HistogramGPUScenario.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,10 +50,11 @@
     <ClCompile Include="CalcStatisticKernelWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ReduceStatistic.cl">
-      <Filter>CL</Filter>
-    </None>
+    <ClCompile Include="HistogramGPUScenario.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HistogramGroupBenchmark.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
