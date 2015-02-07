@@ -45,10 +45,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	auto clContext = device->CreateContext();
 
 	OpenCLKernelPtr kernel = clContext->CreateKernel<1>( "CL/Histogram.cl", "calcStatistic" );
+	OpenCLKernelPtr reduceStatistic = clContext->CreateKernel<1>( "CL/ReduceStatistic.cl", "reduceStatistic" );
 
 
 
-	CalcStatisticKernelWrapper wrapper( kernel, kernel );
+	CalcStatisticKernelWrapper wrapper( kernel, reduceStatistic );
 
 	wrapper.SetImage( rawImage );
 

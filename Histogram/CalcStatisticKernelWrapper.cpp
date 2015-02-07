@@ -44,6 +44,11 @@ void CalcStatisticKernelWrapper::SetImage( sf::Image image )
 		size, OpenCLBufferFlags::ReadOnly | OpenCLBufferFlags::CopyHostPtr, m_ImageData.data() );
 }
 
+const std::array< int, 256 >& CalcStatisticKernelWrapper::ResultArray() const
+{
+	return m_ResultArray;
+}
+
 void CalcStatisticKernelWrapper::Run()
 {
 	int workGroupSize = 32;
@@ -68,8 +73,22 @@ void CalcStatisticKernelWrapper::Run()
 	m_CalcStatisticKernel->SetGroupCount<0>( numGroups );
 
 	m_CalcStatisticKernel->Run();
-
 	m_CalcStatisticKernel->WaitForKernel();
+
+
+	m_ReduceStatisticKernel->BeginArgs();
+
+	m_ReduceStatisticKernel->CreateAndSetGlobalArgument( tmpHistogram.Buffer() );
+	m_ReduceStatisticKernel->CreateAndSetArgumentValue<int>( numGroups );
+	m_ReduceStatisticKernel->EndArgs();
+
+	m_ReduceStatisticKernel->SetWorkSize<0>( 256 );
+	m_ReduceStatisticKernel->SetGroupCount<0>( 1 );
+
+	m_ReduceStatisticKernel->Run();
+	m_ReduceStatisticKernel->WaitForKernel();
+
+	tmpHistogram.Buffer()->ReadBuffer<int>( m_ResultArray.data(), 256 * sizeof( int ) );
 }
 
 

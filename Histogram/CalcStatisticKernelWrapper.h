@@ -16,6 +16,7 @@ public:
 
 	~CalcStatisticKernelWrapper();
 
+	const std::array< int, 256 >& ResultArray() const;
 private:
 
 	sf::Image m_Image;
@@ -27,7 +28,6 @@ private:
 	std::vector< cl_uchar4 > m_ImageData;
 
 	std::array< int, 256 > m_ResultArray;
-
 
 };
 
