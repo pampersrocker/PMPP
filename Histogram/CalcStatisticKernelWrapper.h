@@ -5,22 +5,24 @@
 #include "stdafx.h"
 #include <array>
 
-class CalcStaticKernelWrapper
+class CalcStatisticKernelWrapper
 {
 public:
-	CalcStaticKernelWrapper( OpenCLKernelPtr calcStaticKernel, OpenCLKernelPtr reduceStatisticKernel );
+	CalcStatisticKernelWrapper( OpenCLKernelPtr calcStaticKernel, OpenCLKernelPtr reduceStatisticKernel );
 
 	void SetImage( sf::Image image );
 
 	void Run();
 
-	~CalcStaticKernelWrapper();
+	~CalcStatisticKernelWrapper();
 
 private:
 
 	sf::Image m_Image;
-	OpenCLKernelPtr m_CalcStaticKernel;
-	OpenCLKernelPtr m_ReduceStaticKernel;
+	OpenCLKernelPtr m_CalcStatisticKernel;
+	OpenCLKernelPtr m_ReduceStatisticKernel;
+
+	OpenCLBufferPtr m_ImageBuffer;
 
 	std::vector< cl_uchar4 > m_ImageData;
 

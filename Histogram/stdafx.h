@@ -13,7 +13,7 @@
 #include <SFML/Graphics.hpp>
 #include <OpenCL.h>
 
-typedef OpenCLKernel_tpl < 1U > OpenCLKernelPtr;
+typedef ReferenceCounted< OpenCLKernel_tpl < 1U > > OpenCLKernelPtr;
 
 
 // TODO: reference additional headers your program requires here

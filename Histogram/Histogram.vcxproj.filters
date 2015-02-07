@@ -19,6 +19,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+    <Text Include="Histogram.cl">
+      <Filter>CL</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -27,7 +30,7 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CalcStaticKernelWrapper.h">
+    <ClInclude Include="CalcStatisticKernelWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,13 +41,8 @@
     <ClCompile Include="Histogram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CalcStaticKernelWrapper.cpp">
+    <ClCompile Include="CalcStatisticKernelWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Histogram.cl">
-      <Filter>CL</Filter>
-    </None>
   </ItemGroup>
 </Project>
