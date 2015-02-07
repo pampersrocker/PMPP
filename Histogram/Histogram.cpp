@@ -14,28 +14,28 @@ int _tmain(int argc, _TCHAR* argv[])
 	sf::RenderWindow window( sf::VideoMode( 1280, 800), "Histogram" );
 
 	sf::Texture inputTexture;
-	sf::Texture gravelTiled;
+	sf::Texture histogramTexture;
 	sf::Sprite rawSprite;
+	sf::Sprite histogramSprite;
 
 	sf::Vector2i imageOffset;
 	sf::Vector2i initialOffset;
 	bool offsetActive = false;
 
-	sf::Image tiledImage;
+	sf::Image histogramImage;
 	if( !inputTexture.loadFromFile( "Gravel.jpg" ) )
 	{
 		std::cout << "Failed to load Gravel.jpg!" << std::endl;
 	}
 	sf::Image rawImage = inputTexture.copyToImage();
 
-	tiledImage.create( rawImage.getSize().x, rawImage.getSize().y );
+	histogramImage.create( 258,258, sf::Color::Transparent );
 
 	float scale = 1.0f;
 
 	
 
 	rawSprite.setTexture( inputTexture );
-	gravelTiled.loadFromImage( tiledImage );
 	rawSprite.setScale( scale, scale );
 
 	OpenCLManager clManager;
@@ -55,6 +55,40 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	wrapper.Run();
 
+
+	for( size_t i = 0; i < 258; i++ )
+	{
+		histogramImage.setPixel( 0, i, sf::Color(255, 255, 255 ) );
+		histogramImage.setPixel( 257, i, sf::Color(255, 255, 255 ) );
+		histogramImage.setPixel( i, 0, sf::Color(255, 255, 255 ) );
+		histogramImage.setPixel( i, 257, sf::Color(255, 255, 255 ) );
+	}
+	
+	auto result = wrapper.ResultArray();
+
+	int max = result[0];
+	for( size_t i = 1; i < 256; i++ )
+	{
+		if( result[i] > max )
+		{
+			max = result[ i ];
+		}
+	}
+
+	for( size_t x = 0; x < 256; x++ )
+	{
+		for( size_t y = 0; y < 256; y++ )
+		{
+			if( ((float)result[ x ] / (float)max) * 255 >= y )
+			{
+				histogramImage.setPixel( x + 1, 256 - y , sf::Color::White );
+			}
+		}
+	}
+
+	histogramTexture.loadFromImage( histogramImage );
+	histogramSprite.setTexture( histogramTexture );
+	histogramSprite.setPosition( 1280.0f - 258.0f, 200 );
 	clManager.Release();
 
 	while( window.isOpen() )
@@ -123,14 +157,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		unsigned int xSize = 5;
 		unsigned int ySize = 5;
 
-		for( size_t x = 0; x < xSize; x++ )
-		{
-			for( size_t y = 0; y < ySize; y++ )
-			{
-				rawSprite.setPosition( ( float ) size.x * x + imageOffset.x, ( float ) size.y * y + imageOffset.y );
-				window.draw( rawSprite );
-			}
-		}
+		
+		rawSprite.setPosition( imageOffset.x, imageOffset.y );
+		window.draw( rawSprite );
+		window.draw( histogramSprite );
 
 
 		window.display();

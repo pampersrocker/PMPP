@@ -45,4 +45,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ReduceStatistic.cl">
+      <Filter>CL</Filter>
+    </None>
+  </ItemGroup>
 </Project>
