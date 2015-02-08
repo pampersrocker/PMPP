@@ -11,12 +11,14 @@ public:
 		ReferenceCounted< OpenCLKernel_tpl<1>> calcStatisticsKernel, 
 		ReferenceCounted< OpenCLKernel_tpl<1>> reduceStatisticKernel,
 		ReferenceCounted< OpenCLKernel_tpl<1>> atomicKernel,
+		ReferenceCounted< OpenCLKernel_tpl<1>> atomicKernelRGB,
 		sf::Image image );
 	~HistogramGPUScenario();
 
 
 	ReferenceCounted< OpenCLKernel_tpl<1>> CalcStatisticsKernel;
 	ReferenceCounted< OpenCLKernel_tpl<1>> AtomicKernel;
+	ReferenceCounted< OpenCLKernel_tpl<1>> AtomicKernelRGB;
 	ReferenceCounted< OpenCLKernel_tpl<1>> ReduceStatisticsKernel;
 
 	sf::Image Image;

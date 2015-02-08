@@ -54,7 +54,7 @@ void PrefixSum::ReleaseOpenCL( const std::vector<int>& expected, std::vector<int
 
 	memset( result->data(), 0, sizeof( int ) * result->size() );
 
-	m_DataBuffer->ReadBuffer( result->data(), result->size() * sizeof(int) );
+	m_DataBuffer->ReadBuffer( result->data(), result->size() );
 
 	m_DataBuffer.SetNull();
 

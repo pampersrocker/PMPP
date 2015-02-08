@@ -14,14 +14,29 @@ kernel void calcStatisticAtomic(global uchar4* data, int size, global int* histo
 		if( dataIdx < size)
 		{
 			curPixel = data[dataIdx];
-			//brightness = ( convert_int(curPixel.x * 0.299f) +
-			//	convert_int(curPixel.y * 0.587f) +
-			//	convert_int(curPixel.z * 0.114f));
-			//brightness = curPixel.x + curPixel.y + curPixel.z;
-			//brightness/=3;
 			brightness = (int)round(curPixel.x * 0.299f + curPixel.y * 0.587f + curPixel.z * 0.114f);
-			//brightness = curPixel.w;
 			atomic_inc( histogram + brightness );
+		}
+	}
+}
+
+kernel void calcStatisticAtomicRGB(global uchar4* data, int size, global int* histogram, int pixelperThread)
+{
+	uchar brightness = 0;
+	uchar4 curPixel;
+
+	for(int pixelIdx = 0; pixelIdx<pixelperThread; ++pixelIdx)
+	{
+		int dataIdx = GID * pixelperThread * LSIZE + LX + pixelIdx * LSIZE;
+		if( dataIdx < size)
+		{
+			curPixel = data[dataIdx];
+			brightness = curPixel.x;
+			atomic_inc( histogram + 256*0 + brightness );
+			brightness = curPixel.y;
+			atomic_inc( histogram + 256*1 + brightness );
+			brightness = curPixel.z;
+			atomic_inc( histogram + 256*2 + brightness );
 		}
 	}
 }

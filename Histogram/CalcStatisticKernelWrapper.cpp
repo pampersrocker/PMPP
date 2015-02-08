@@ -6,11 +6,16 @@ CalcStatisticKernelWrapper::~CalcStatisticKernelWrapper()
 
 }
 
-CalcStatisticKernelWrapper::CalcStatisticKernelWrapper( OpenCLKernelPtr calcStaticKernel, OpenCLKernelPtr reduceStatisticKernel, OpenCLKernelPtr atomicKernel ) :
+CalcStatisticKernelWrapper::CalcStatisticKernelWrapper( 
+	OpenCLKernelPtr calcStaticKernel, 
+	OpenCLKernelPtr reduceStatisticKernel, 
+	OpenCLKernelPtr atomicKernel,
+	OpenCLKernelPtr atomicKernelRGB ) :
 m_CalcStatisticKernel(calcStaticKernel),
 m_ReduceStatisticKernel( reduceStatisticKernel ),
 m_NumPixelsPerThread( 256 ),
 m_AtomicKernel( atomicKernel ),
+m_AtomicKernelRGB( atomicKernelRGB ),
 m_UseAtomicKernel( false )
 {
 
@@ -53,7 +58,11 @@ void CalcStatisticKernelWrapper::Run()
 		numGroups++;
 	}
 
-	if( m_UseAtomicKernel )
+	if( m_UseAtomicRGBKernel )
+	{
+		RunRGBAtomic( numGroups, workGroupSize );
+	}
+	else if( m_UseAtomicKernel )
 	{
 		RunAtomic( numGroups, workGroupSize );
 	}
@@ -63,9 +72,9 @@ void CalcStatisticKernelWrapper::Run()
 	}
 }
 
-void CalcStatisticKernelWrapper::ReadOutput( std::array<int, 256>& out )
+void CalcStatisticKernelWrapper::ReadOutput( std::array<int, 256>& out, size_t offset )
 {
-	m_ResultBuffer->ReadBuffer<int>( out.data(), 256 * sizeof( int ) );
+	m_ResultBuffer->ReadBuffer<int>( out.data(), 256, offset );
 }
 
 void CalcStatisticKernelWrapper::NumPixelsPerThread( size_t val )
@@ -147,4 +156,39 @@ void CalcStatisticKernelWrapper::RunAtomic( int numGroups, const int workGroupSi
 
 	m_AtomicKernel->WaitForKernel();
 
+}
+
+void CalcStatisticKernelWrapper::UseAtomicRGBKernel( bool val )
+{
+	m_UseAtomicRGBKernel = val;
+}
+
+bool CalcStatisticKernelWrapper::UseAtomicRGBKernel() const
+{
+	return m_UseAtomicRGBKernel;
+}
+
+void CalcStatisticKernelWrapper::RunRGBAtomic( int numGroups, const int workGroupSize )
+{
+	m_AtomicKernelRGB->BeginArgs();
+
+	m_AtomicKernelRGB->CreateAndSetGlobalArgument( m_ImageBuffer );
+	m_AtomicKernelRGB->CreateAndSetArgumentValue<int>( m_ImageData.size() );
+
+	std::array<int, 256*3> data;
+	memset( data.data(), 0, sizeof( int )*data.size() );
+	m_ResultBuffer = m_AtomicKernelRGB->CreateAndSetGlobalArgument(
+		m_AtomicKernelRGB->Context()->CreateBuffer<int>( data.size(), OpenCLBufferFlags::ReadWrite | OpenCLBufferFlags::CopyHostPtr, data.data() )
+		).Buffer();
+	m_AtomicKernelRGB->CreateAndSetArgumentValue<int>( m_NumPixelsPerThread );
+
+	m_AtomicKernelRGB->EndArgs();
+
+	m_AtomicKernelRGB->SetWorkSize<0>( workGroupSize );
+	m_AtomicKernelRGB->SetGroupCount<0>( numGroups );
+
+	// Start the kernel but don't wait for it, prepare the other kernel as long as this one is running
+	m_AtomicKernelRGB->Run();
+
+	m_AtomicKernelRGB->WaitForKernel();
 }

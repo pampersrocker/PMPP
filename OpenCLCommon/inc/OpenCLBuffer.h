@@ -74,11 +74,11 @@ OpenCLBuffer::DebugReadBuffer()
 
 template <typename T>
 inline
-void OpenCLBuffer::ReadBuffer( T* out, size_t byteCount , size_t offset) const
+void OpenCLBuffer::ReadBuffer( T* out, size_t numElements , size_t elementOffset) const
 {
 	assert( ( Flags() & ( OpenCLBufferFlags::ReadWrite | OpenCLBufferFlags::WriteOnly ) ) != OpenCLBufferFlags::None );
 	// Read the cout put back to host memory.
-	CL_ASSERT( clEnqueueReadBuffer( m_Context->CommandQueue()->CLCommandQueue(), m_Memory, CL_TRUE, offset, byteCount ? byteCount : Size(), (void*)out, 0, nullptr, nullptr) );
+	CL_ASSERT( clEnqueueReadBuffer( m_Context->CommandQueue()->CLCommandQueue(), m_Memory, CL_TRUE, elementOffset * sizeof( T ), numElements ? numElements* sizeof( T ) : Size(), ( void* ) out, 0, nullptr, nullptr ) );
 
 }
 

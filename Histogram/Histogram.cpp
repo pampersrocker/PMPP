@@ -55,10 +55,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	OpenCLKernelPtr kernel = clContext->CreateKernel<1>( "CL/Histogram.cl", "calcStatistic" );
 	OpenCLKernelPtr reduceStatistic = clContext->CreateKernel<1>( "CL/ReduceStatistic.cl", "reduceStatistic" );
 	OpenCLKernelPtr atomicKernel = clContext->CreateKernel<1>( "CL/HistogramAtomic.cl", "calcStatisticAtomic" );
+	OpenCLKernelPtr atomicKernelRGB = clContext->CreateKernel<1>( "CL/HistogramAtomic.cl", "calcStatisticAtomicRGB" );
 
 
 	{
-		HistogramGPUScenario scenario( kernel, reduceStatistic, atomicKernel, rawImage );
+		HistogramGPUScenario scenario( kernel, reduceStatistic, atomicKernel, atomicKernelRGB, rawImage );
 		auto& benchmarker = bpp::Benchmarker::Instance();
 
 		bpp::DefaultConsoleLogger logger;
@@ -74,7 +75,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		benchmarker.Release();
 	}
 
-	CalcStatisticKernelWrapper wrapper( kernel, reduceStatistic, atomicKernel );
+	CalcStatisticKernelWrapper wrapper( kernel, reduceStatistic, atomicKernel, atomicKernelRGB );
 
 	wrapper.SetImage( rawImage );
 	wrapper.NumPixelsPerThread( 32 );
@@ -94,7 +95,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	
 	std::array<int, 256> result;
-	std::array<int, 256> resultAtomic;
+	std::array<int, 256> resultAtomicR;
+	std::array<int, 256> resultAtomicG;
+	std::array<int, 256> resultAtomicB;
 
 	wrapper.ReadOutput( result );
 
@@ -118,18 +121,28 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 	}
 
-	wrapper.UseAtomicKernel( true );
+	wrapper.UseAtomicRGBKernel( true );
 
 	wrapper.Run();
 
-	wrapper.ReadOutput( resultAtomic );
+	wrapper.ReadOutput( resultAtomicR );
+	wrapper.ReadOutput( resultAtomicG, 256 );
+	wrapper.ReadOutput( resultAtomicB, 512 );
 
-	max = resultAtomic[ 0 ];
-	for( size_t i = 1; i < 256; i++ )
+	max = resultAtomicR[ 0 ];
+	for( size_t i = 0; i < 256; i++ )
 	{
-		if( resultAtomic[ i ] > max )
+		if( resultAtomicR[ i ] > max )
 		{
-			max = resultAtomic[ i ];
+			max = resultAtomicR[ i ];
+		}
+		if( resultAtomicG[ i ] > max )
+		{
+			max = resultAtomicG[ i ];
+		}
+		if( resultAtomicB[ i ] > max )
+		{
+			max = resultAtomicB[ i ];
 		}
 	}
 
@@ -137,30 +150,23 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		for( size_t y = 0; y < 256; y++ )
 		{
-			if( ( ( float ) resultAtomic[ x ] / ( float ) max ) * 255 >= y )
+			sf::Color color = histogramImageAtomic.getPixel( x + 1, 256 - y );
+			if( ( ( float ) resultAtomicR[ x ] / ( float ) max ) * 255 >= y )
 			{
-				histogramImageAtomic.setPixel( x + 1, 256 - y, sf::Color::White );
+				color.r = 255;
+				color.a = 255;
 			}
-		}
-	}
-
-	for( size_t i = 0; i < 256; i++ )
-	{
-		if( result[i] != resultAtomic[i] )
-		{
-			std::cout <<
-				"Incorrect result at idx: " << i <<
-				" atomic " << ( resultAtomic )[ i ] <<
-				" normal result " << ( result )[ i ] <<
-				" diff: " << ( result[i] - resultAtomic[i] ) <<std::endl;
-			//break;
-			if( i % 100 == 0 && i != 0 )
+			if( ( ( float ) resultAtomicG[ x ] / ( float ) max ) * 255 >= y )
 			{
-				std::cout << "Pausing Error Log for Scroll (Any Key To Continue)..." << std::endl;
-				fflush( stdin );
-				_getch();
+				color.g = 255;
+				color.a = 255;
 			}
-			
+			if( ( ( float ) resultAtomicB[ x ] / ( float ) max ) * 255 >= y )
+			{
+				color.b = 255;
+				color.a = 255;
+			}
+			histogramImageAtomic.setPixel( x + 1, 256 - y, color );
 		}
 	}
 
