@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "CalcStatisticKernelWrapper.h"
 
-
-
-
 CalcStatisticKernelWrapper::~CalcStatisticKernelWrapper()
 {
 
@@ -81,9 +78,6 @@ size_t CalcStatisticKernelWrapper::NumPixelsPerThread() const
 	return m_NumPixelsPerThread;
 }
 
-
-
-
 void CalcStatisticKernelWrapper::RunNonAtomic( int numGroups, const int workGroupSize )
 {
 	m_CalcStatisticKernel->BeginArgs();
@@ -102,7 +96,6 @@ void CalcStatisticKernelWrapper::RunNonAtomic( int numGroups, const int workGrou
 
 	// Start the kernel but don't wait for it, prepare the other kernel as long as this one is running
 	m_CalcStatisticKernel->Run();
-
 
 	m_ReduceStatisticKernel->BeginArgs();
 

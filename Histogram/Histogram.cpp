@@ -68,8 +68,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		benchmarker.AddScenario( &scenario );
 
-		//benchmarker.Run();
-		//benchmarker.Log();
+		benchmarker.Run();
+		benchmarker.Log();
 
 		benchmarker.Release();
 	}
