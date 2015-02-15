@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+Common Header for the complete OpenCLWrapper. 
+This header can be included in the project and covers all relevant headers needed for the wrapper.
+No other headers are required. (CL itself should be in your buildpath)
+*/
+
 #include "OpenCLCommon.h"
 #include "Allocator.hpp"
 #include "Allocator.inl"
